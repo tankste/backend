@@ -1,0 +1,5 @@
+CHANGELOG
+=========
+
+## Upcoming version ##
+
