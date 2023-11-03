@@ -19,6 +19,16 @@ config :station_web, Tankste.StationWeb.Endpoint,
   code_reloader: true,
   check_origin: false
 
+# Station Web
+config :fill_web, Tankste.FillWeb.Endpoint,
+  http: [port: 4001],
+  url: [host: "localhost"],
+  secret_key_base: "OrSLcaXYmTmTesZg7xRNAHf5vE6mod5m+t8fB1Xei5n7jpJ+GDdIEWrW7j968a3r",
+  live_view: [signing_salt: "D6dg3fGL"],
+  debug_errors: true,
+  code_reloader: true,
+  check_origin: false
+
 config :logger, :console, format: "[$level] $message\n"
 
 config :phoenix, :plug_init_mode, :runtime

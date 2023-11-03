@@ -4,7 +4,7 @@ defmodule Tankste.StationWeb.StationController do
   alias Tankste.Station.Stations
 
   def index(conn, _params) do
-    stations = Tankste.Station.Stations.list()
+    stations = Stations.list()
     render(conn, "index.json", stations: stations)
   end
 end

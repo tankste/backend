@@ -1,6 +1,11 @@
 defmodule Tankste.Station.Stations.Station do
   use Ecto.Schema
 
+  import Ecto.Changeset
+
+  # TODO: define fields & validations (required fields) independend of the MTS-K schema
+
+
   schema "stations" do
     field :external_id, :string
     field :origin, :string
@@ -16,5 +21,11 @@ defmodule Tankste.Station.Stations.Station do
     field :last_changes_at, :utc_datetime
 
     timestamps()
+  end
+
+  def changeset(station, attrs) do
+    station
+    |> cast(attrs, [:external_id, :origin, :name, :brand, :location_latitude, :location_longitude, :address_street, :address_house_number, :address_post_code, :address_city, :address_country, :last_changes_at])
+    |> validate_required([:external_id, :origin, :name, :location_latitude, :location_longitude, :last_changes_at])
   end
 end
