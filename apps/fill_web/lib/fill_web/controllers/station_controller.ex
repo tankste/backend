@@ -2,7 +2,6 @@ defmodule Tankste.FillWeb.StationController do
   use Tankste.FillWeb, :controller
 
   alias Tankste.Station.Stations
-  alias Tankste.Station.Repo
 
   # def index(conn, _params) do
   #   stations = Tankste.Station.Stations.list()

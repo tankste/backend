@@ -7,4 +7,9 @@ defmodule Tankste.StationWeb.StationController do
     stations = Stations.list()
     render(conn, "index.json", stations: stations)
   end
+
+  def show(conn, %{"id" => station_id}) do
+    station = Stations.get(station_id)
+    render(conn, "show.json", station: station)
+  end
 end

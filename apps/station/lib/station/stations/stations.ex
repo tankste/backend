@@ -23,12 +23,8 @@ defmodule Tankste.Station.Stations do
     |> query_where_external_id(external_id)
   end
 
-  defp query_where_external_id(query, nil) do
-    query
-  end
-  defp query_where_external_id(query, []) do
-    query
-  end
+  defp query_where_external_id(query, nil), do: query
+  defp query_where_external_id(query, []), do: query
   defp query_where_external_id(query, external_ids) when is_list(external_ids) do
     query
     |> where([s], s.external_id in ^external_ids)

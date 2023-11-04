@@ -18,6 +18,8 @@ defmodule Tankste.StationWeb.Router do
 
     get "/health", HealthController, :show
 
-    resources "/stations", StationController
+    resources "/stations", StationController, only: [:index, :show] do
+      resources "/price", StationPriceController, only: [:show], singleton: true
+    end
   end
 end

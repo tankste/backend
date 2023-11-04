@@ -5,8 +5,8 @@ defmodule Tankste.Station.Stations.Station do
 
   # TODO: define fields & validations (required fields) independend of the MTS-K schema
 
-
   schema "stations" do
+    has_many :prices, Tankste.Station.Prices.Price
     field :external_id, :string
     field :origin, :string
     field :name, :string

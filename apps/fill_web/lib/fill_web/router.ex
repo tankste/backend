@@ -19,6 +19,6 @@ defmodule Tankste.FillWeb.Router do
     get "/health", HealthController, :show
 
     post "/stations", StationController, :update
-    # resources "/stations", StationController
+    post "/prices", PriceController, :update
   end
 end
