@@ -51,4 +51,50 @@ defmodule Tankste.Station.Prices do
     |> Price.changeset(attrs)
     |> Repo.update()
   end
+
+  def calculate_price_comparisons() do
+    price_changesets = list()
+      |> Enum.map(fn price -> price |> Repo.preload(:station) end)
+      |> Enum.filter(fn price -> price.station != nil end)
+      |> compare_prices()
+
+    IO.inspect Repo.transaction(fn repo ->
+      Enum.each(price_changesets, fn changeset -> repo.update(changeset) end)
+    end)
+  end
+
+  defp compare_prices(prices), do: compare_prices(prices, prices)
+
+  defp compare_prices([], _), do: []
+  defp compare_prices([price|prices], all_prices) do
+    near_prices = all_prices
+      |> Enum.filter(fn p -> Geocalc.within?(20_000, [price.station.location_longitude, price.station.location_latitude], [p.station.location_longitude, p.station.location_latitude]) end)
+
+    [
+      Price.changeset(price, %{
+        :e5_price_comparison => compare_price(:e5_price, price, near_prices),
+        :e10_price_comparison => compare_price(:e10_price, price, near_prices),
+        :diesel_price_comparison => compare_price(:diesel_price, price, near_prices)
+      })
+    ] ++ compare_prices(prices, all_prices)
+  end
+
+  defp compare_price(field, price, near_prices) do
+    IO.inspect(price)
+    case Map.get(price, field) do
+      nil ->
+        nil
+      price_value ->
+        min_price = near_prices
+          |> Enum.map(fn p -> Map.get(p, field) end)
+          |> Enum.filter(fn p -> p != nil end)
+          |> Enum.min()
+
+        cond do
+          min_price + 0.04 >= price_value -> "cheap"
+          min_price + 0.10 >= price_value -> "normal"
+          true -> "expensive"
+        end
+    end
+  end
 end

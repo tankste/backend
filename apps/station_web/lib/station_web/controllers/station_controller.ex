@@ -3,6 +3,7 @@ defmodule Tankste.StationWeb.StationController do
 
   alias Tankste.Station.Stations
 
+  # TODO: remove this endpoint
   def index(conn, _params) do
     stations = Stations.list()
     render(conn, "index.json", stations: stations)

@@ -31,6 +31,7 @@ defmodule Tankste.Station.MixProject do
       {:phoenix_pubsub, "~> 2.1.1"},
       {:ecto_sql, "~> 3.9.0"},
       {:myxql, "~> 0.6.3"},
+      {:geocalc, "~> 0.8"}
     ]
   end
 end

@@ -6,8 +6,11 @@ defmodule Tankste.Station.Repo.Migrations.CreateStationPrices do
       add :station_id, references(:stations, on_delete: :delete_all), null: false
       add :origin, :string, null: false
       add :e5_price, :float, null: true
+      add :e5_price_comparison, :string, null: true
       add :e10_price, :float, null: true
+      add :e10_price_comparison, :string, null: true
       add :diesel_price, :float, null: true
+      add :diesel_price_comparison, :string, null: true
       add :last_changes_at, :utc_datetime, null: false
 
       timestamps()

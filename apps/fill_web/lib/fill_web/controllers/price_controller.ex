@@ -16,9 +16,17 @@ defmodule Tankste.FillWeb.PriceController do
   def update(conn, %{"_json" => prices}) when is_list(prices) do
     case upsert_prices(prices) do
       :ok ->
-        conn
-        |> put_status(:no_content)
-        |> send_resp(204, "")
+        case Prices.calculate_price_comparisons() do
+          :ok ->
+            conn
+            |> put_status(:no_content)
+            |> send_resp(204, "")
+          {:error, changeset} ->
+            conn
+            |> put_status(422)
+            |> put_view(ChangesetView)
+            |> render("errors.json", changeset: changeset)
+        end
       {:error, changeset} ->
         conn
         |> put_status(422)
