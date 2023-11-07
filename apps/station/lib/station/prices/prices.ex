@@ -92,7 +92,7 @@ defmodule Tankste.Station.Prices do
 
         cond do
           min_price + 0.04 >= price_value -> "cheap"
-          min_price + 0.10 >= price_value -> "normal"
+          min_price + 0.10 >= price_value -> "medium"
           true -> "expensive"
         end
     end

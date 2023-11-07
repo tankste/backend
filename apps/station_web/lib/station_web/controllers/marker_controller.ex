@@ -7,7 +7,7 @@ defmodule Tankste.StationWeb.MarkerController do
 
   def index(conn, _params) do
     stations = Stations.list()
-      |> Enum.slice(0, 5)
+      |> Enum.slice(0, 50)
 
     prices = Prices.list(station_id: Enum.map(stations, fn s -> s.id end))
 
@@ -16,8 +16,7 @@ defmodule Tankste.StationWeb.MarkerController do
         nil ->
           %Marker{
             id: station.id,
-            name: station.name,
-            brand: station.brand,
+            label: station.brand || station.name,
             latitude: station.location_latitude,
             longitude: station.location_longitude,
             e5_price: nil,
@@ -30,16 +29,15 @@ defmodule Tankste.StationWeb.MarkerController do
         price ->
           %Marker{
             id: station.id,
-            name: station.name,
-            brand: station.brand,
+            label: station.brand || station.name,
             latitude: station.location_latitude,
             longitude: station.location_longitude,
             e5_price: price.e5_price,
             e5_price_state: price.e5_price_comparison,
             e10_price: price.e10_price,
-            e10_price_state: :e10_price_comparison,
+            e10_price_state: price.e10_price_comparison,
             diesel_price: price.diesel_price,
-            diesel_price_state: :diesel_price_comparison
+            diesel_price_state: price.diesel_price_comparison
           }
       end
     end)

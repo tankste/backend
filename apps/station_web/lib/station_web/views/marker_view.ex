@@ -8,8 +8,7 @@ defmodule Tankste.StationWeb.MarkerView do
   def render("marker.json", %{marker: marker}) do
     %{
       "id" => marker.id,
-      "name" => marker.name,
-      "brand" => marker.brand,
+      "label" => marker.label,
       "latitude" => marker.latitude,
       "longitude" => marker.longitude,
       "e5Price" => marker.e5_price,
