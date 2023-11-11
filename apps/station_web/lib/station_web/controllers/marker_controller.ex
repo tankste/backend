@@ -5,9 +5,14 @@ defmodule Tankste.StationWeb.MarkerController do
   alias Tankste.Station.Prices
   alias Tankste.StationWeb.Marker
 
-  def index(conn, _params) do
-    stations = Stations.list()
-      |> Enum.slice(0, 50)
+  # TODO: limit requests to max ~0.2 degree
+  # TODO: fall back request
+  def index(conn, %{"boundary" => boundary_param}) do
+    boundary = boundary_param
+      |> Enum.map(fn b -> b |> String.split(",") |> Enum.map(&String.to_float/1) end)
+      |> Enum.map(fn b -> List.to_tuple(b) end)
+
+    stations = Stations.list(boundary: boundary)
 
     prices = Prices.list(station_id: Enum.map(stations, fn s -> s.id end))
 

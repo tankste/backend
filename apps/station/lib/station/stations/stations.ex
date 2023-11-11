@@ -17,10 +17,12 @@ defmodule Tankste.Station.Stations do
 
   defp query(opts) do
     external_id = Keyword.get(opts, :external_id, nil)
+    boundary = Keyword.get(opts, :boundary, nil)
 
     from(s in Station,
       select: s)
     |> query_where_external_id(external_id)
+    |> query_where_in_boundary(boundary)
   end
 
   defp query_where_external_id(query, nil), do: query
@@ -33,6 +35,24 @@ defmodule Tankste.Station.Stations do
     query
     |> where([s], s.external_id == ^external_id)
   end
+
+  defp query_where_in_boundary(query, nil), do: query
+  defp query_where_in_boundary(query, []), do: query
+  defp query_where_in_boundary(query, boundary) when is_list(boundary) do
+    min_lat = boundary |> Enum.map(fn c -> latitude(c) end) |> Enum.min()
+    max_lat = boundary |> Enum.map(fn c -> latitude(c) end) |> Enum.max()
+    min_lng = boundary |> Enum.map(fn c -> longitude(c) end) |> Enum.min()
+    max_lng = boundary |> Enum.map(fn c -> longitude(c) end) |> Enum.max()
+
+    query
+    |> where([s], s.location_latitude >= ^min_lat)
+    |> where([s], s.location_latitude <= ^max_lat)
+    |> where([s], s.location_longitude >= ^min_lng)
+    |> where([s], s.location_longitude <= ^max_lng)
+  end
+
+  defp latitude({latitude, _}), do: latitude
+  defp longitude({_, longitude}), do: longitude
 
   def insert(attrs \\ %{}) do
     %Station{}
