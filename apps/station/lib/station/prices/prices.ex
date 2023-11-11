@@ -58,7 +58,7 @@ defmodule Tankste.Station.Prices do
       |> Enum.filter(fn price -> price.station != nil end)
       |> compare_prices()
 
-    IO.inspect Repo.transaction(fn repo ->
+    Repo.transaction(fn repo ->
       Enum.each(price_changesets, fn changeset -> repo.update(changeset) end)
     end)
   end
@@ -80,7 +80,6 @@ defmodule Tankste.Station.Prices do
   end
 
   defp compare_price(field, price, near_prices) do
-    IO.inspect(price)
     case Map.get(price, field) do
       nil ->
         nil
