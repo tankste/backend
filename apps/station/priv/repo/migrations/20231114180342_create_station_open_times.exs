@@ -1,4 +1,4 @@
-defmodule Tankste.Station.Repo.Migrations.CreateStationPrices do
+defmodule Tankste.Station.Repo.Migrations.CreateStationOpenTimes do
   use Ecto.Migration
 
   def up do
