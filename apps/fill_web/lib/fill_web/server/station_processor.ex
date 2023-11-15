@@ -2,6 +2,7 @@ defmodule Tankste.FillWeb.StationProcessor do
   use GenServer
 
   alias Tankste.Station.Stations
+  alias Tankste.Station.OpenTimes
 
   # Client
 
@@ -67,8 +68,49 @@ defmodule Tankste.FillWeb.StationProcessor do
     end
 
     case result do
-      {:ok, _station} ->
-        upsert_stations(new_stations, existing_stations)
+      {:ok, station} ->
+        case upsert_open_times(station.id, new_station["openTimes"]) do
+          :ok ->
+            upsert_stations(new_stations, existing_stations)
+          {:error, changeset} ->
+            IO.inspect(changeset)
+            {:error, changeset}
+        end
+      {:error, changeset} ->
+        IO.inspect(changeset)
+        {:error, changeset}
+    end
+  end
+
+  defp upsert_open_times(station_id, new_open_times, existing_open_times \\ nil)
+  defp upsert_open_times(_, [], _), do: :ok
+  defp upsert_open_times(station_id, new_open_times, nil) do
+    existing_open_times = OpenTimes.list(station_id: station_id)
+    upsert_open_times(station_id, new_open_times, existing_open_times)
+  end
+  defp upsert_open_times(station_id, [new_open_time|new_open_times], existing_open_times) do
+    result = case Enum.find(existing_open_times, fn ot -> ot.day == new_open_time["day"] end) do
+        nil ->
+          OpenTimes.insert(%{
+            station_id: station_id,
+            origin: "mtk-s",
+            day: new_open_time["day"],
+            start_time: new_open_time["startTime"],
+            end_time: new_open_time["endTime"]
+          })
+        open_time ->
+          OpenTimes.update(open_time, %{
+            station_id: station_id,
+            origin: "mtk-s",
+            day: new_open_time["day"],
+            start_time: new_open_time["startTime"],
+            end_time: new_open_time["endTime"]
+          })
+      end
+
+    case result do
+      {:ok, _open_time} ->
+        upsert_open_times(station_id, new_open_times, existing_open_times)
       {:error, changeset} ->
         {:error, changeset}
     end
