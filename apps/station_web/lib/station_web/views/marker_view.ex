@@ -17,8 +17,8 @@ defmodule Tankste.StationWeb.MarkerView do
       "e10PriceState" => to_string(marker.e10_price_state),
       "dieselPrice" => marker.diesel_price,
       "dieselPriceState" => to_string(marker.diesel_price_state),
-      "createdAt" => marker.inserted_at,
-      "updatedAt" => marker.updated_at
+      # "createdAt" => marker.inserted_at,
+      # "updatedAt" => marker.updated_at
     }
 	end
 end

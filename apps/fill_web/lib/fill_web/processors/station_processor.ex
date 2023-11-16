@@ -7,11 +7,21 @@ defmodule Tankste.FillWeb.StationProcessor do
   # Client
 
   def start_link(_) do
-    GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
+    GenServer.start_link(__MODULE__, %{stations: [], processing: false}, name: __MODULE__)
   end
 
-  def update(stations) do
-    GenServer.cast(__MODULE__, {:update, stations})
+  def add(stations) do
+    GenServer.cast(__MODULE__, {:add, stations})
+    process()
+  end
+
+  defp process() do
+    case GenServer.call(__MODULE__, :get_processing) do
+      false ->
+        GenServer.cast(__MODULE__, :process)
+      true ->
+        :ok
+    end
   end
 
   # Server (callbacks)
@@ -22,9 +32,68 @@ defmodule Tankste.FillWeb.StationProcessor do
   end
 
   @impl true
-  def handle_cast({:update, stations}, state) do
-    upsert_stations(stations)
-    {:noreply, state}
+  def handle_call(:get_processing, _from, %{:processing => processing} = state) do
+    {:reply, processing, state}
+  end
+
+  @impl true
+  def handle_cast({:add, add_stations}, %{:stations => stations, :processing => processing}) do
+    {:noreply, %{stations: stations ++ add_stations, processing: processing}}
+  end
+  def handle_cast(:process, %{:stations => []}), do: {:noreply, %{stations: [], processing: false}}
+  def handle_cast(:process, %{:stations => [station|stations]}) do
+    upsert_station(station)
+    GenServer.cast(__MODULE__, :process) # Process next item
+    {:noreply, %{stations: stations, processing: true}}
+  end
+
+  defp upsert_station(new_station) do
+    result = case Stations.get_by_external_id(new_station["externalId"]) do
+        nil ->
+          Stations.insert(%{
+            external_id: new_station["externalId"],
+            origin: "mtk-s",
+            name: new_station["name"],
+            brand: new_station["brand"],
+            location_latitude: new_station["locationLatitude"],
+            location_longitude: new_station["locationLongitude"],
+            address_street: new_station["addressStreet"],
+            address_house_number: new_station["addressHouseNumber"],
+            address_post_code: new_station["addressPostCode"],
+            address_city: new_station["addressCity"],
+            address_country: new_station["addressCountry"],
+            last_changes_at: new_station["lastChangesDate"]
+          })
+        station ->
+          Stations.update(station, %{
+            external_id: new_station["externalId"],
+            origin: "mtk-s",
+            name: new_station["name"],
+            brand: new_station["brand"],
+            location_latitude: new_station["locationLatitude"],
+            location_longitude: new_station["locationLongitude"],
+            address_street: new_station["addressStreet"],
+            address_house_number: new_station["addressHouseNumber"],
+            address_post_code: new_station["addressPostCode"],
+            address_city: new_station["addressCity"],
+            address_country: new_station["addressCountry"],
+            last_changes_at: new_station["lastChangesDate"]
+          })
+      end
+
+    case result do
+      {:ok, station} ->
+        case upsert_open_times(station.id, new_station["openTimes"]) do
+          :ok ->
+            :ok
+          {:error, changeset} ->
+            IO.inspect(changeset)
+            {:error, changeset}
+        end
+      {:error, changeset} ->
+        IO.inspect(changeset)
+        {:error, changeset}
+    end
   end
 
   defp upsert_stations(new_stations, existing_stations \\ nil)
@@ -48,7 +117,7 @@ defmodule Tankste.FillWeb.StationProcessor do
           address_post_code: new_station["addressPostCode"],
           address_city: new_station["addressCity"],
           address_country: new_station["addressCountry"],
-          last_changes_at: DateTime.utc_now()
+          last_changes_at: new_station["lastChangesDate"]
         })
       station ->
         Stations.update(station, %{
@@ -63,7 +132,7 @@ defmodule Tankste.FillWeb.StationProcessor do
           address_post_code: new_station["addressPostCode"],
           address_city: new_station["addressCity"],
           address_country: new_station["addressCountry"],
-          last_changes_at: DateTime.utc_now()
+          last_changes_at: new_station["lastChangesDate"]
         })
     end
 

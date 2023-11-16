@@ -13,7 +13,8 @@ defmodule Tankste.FillWeb.StationController do
   # TODO: crawler token
 
   def update(conn, %{"_json" => stations}) when is_list(stations) do
-    StationProcessor.update(stations)
+    StationProcessor.add(stations)
+
     conn
     |> put_status(:no_content)
     |> send_resp(204, "")

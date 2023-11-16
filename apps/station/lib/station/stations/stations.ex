@@ -15,6 +15,12 @@ defmodule Tankste.Station.Stations do
     |> Repo.one()
   end
 
+  def get_by_external_id(external_id, opts \\ []) do
+    query(opts)
+    |> where([s], s.external_id == ^external_id)
+    |> Repo.one()
+  end
+
   defp query(opts) do
     external_id = Keyword.get(opts, :external_id, nil)
     boundary = Keyword.get(opts, :boundary, nil)
