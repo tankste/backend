@@ -3,15 +3,26 @@ defmodule Tankste.FillWeb.PriceProcessor do
 
   alias Tankste.Station.Stations
   alias Tankste.Station.Prices
+  alias Tankste.Station.Repo
 
   # Client
 
   def start_link(_) do
-    GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
+    GenServer.start_link(__MODULE__, %{prices: [], stations: [], current_prices: [], processing: false}, name: __MODULE__)
   end
 
-  def update(prices) do
-    GenServer.cast(__MODULE__, {:update, prices})
+  def add(prices) do
+    GenServer.cast(__MODULE__, {:add, prices})
+    process()
+  end
+
+  defp process() do
+    case GenServer.call(__MODULE__, :get_processing) do
+      false ->
+        GenServer.cast(__MODULE__, :process)
+      true ->
+        :ok
+    end
   end
 
   # Server (callbacks)
@@ -22,56 +33,68 @@ defmodule Tankste.FillWeb.PriceProcessor do
   end
 
   @impl true
-  def handle_cast({:update, prices}, state) do
-    upsert_prices(prices)
-    Prices.calculate_price_comparisons()
-    {:noreply, state}
+  def handle_call(:get_processing, _from, %{:processing => processing} = state) do
+    {:reply, processing, state}
   end
 
-  defp upsert_prices(new_prices, existing_prices \\ nil)
-  defp upsert_prices([], _), do: :ok
-  # TODO: refactore this
-  defp upsert_prices(new_prices, nil) do
-    stations = Stations.list(external_id: Enum.map(new_prices, fn p -> p["externalId"] end))
-    new_prices = Enum.map(new_prices, fn p ->
-      case Enum.find(stations, fn s -> s.external_id == p["externalId"] end) do
-        nil ->
-          nil
-        station ->
-          Map.put(p, "stationId", station.id)
-      end
-    end)
-    |> Enum.filter(fn p -> p != nil end)
-    existing_prices = Prices.list(station_id: Enum.map(new_prices, fn p -> p["stationId"] end))
-    upsert_prices(new_prices, existing_prices)
+  @impl true
+  def handle_cast({:add, add_prices}, %{:prices => prices, :processing => processing}) do
+    # TODO: filter duplicated queue entries by externalId
+    {:noreply, %{prices: prices ++ add_prices, stations: Stations.list(), current_prices: Prices.list(), processing: processing}}
   end
-  defp upsert_prices([new_price|new_prices], existing_prices) do
-    result = case Enum.find(existing_prices, fn p -> p.station_id == new_price["stationId"] end) do
-      nil ->
-        Prices.insert(%{
-          origin: "mtk-s",
-          station_id: new_price["stationId"],
-          e5_price: new_price["e5Price"],
-          e10_price: new_price["e10Price"],
-          diesel_price: new_price["dieselPrice"],
-          last_changes_at: DateTime.utc_now()
-        })
-      price ->
-        Prices.update(price, %{
-          origin: "mtk-s",
-          station_id: new_price["stationId"],
-          e5_price: new_price["e5Price"],
-          e10_price: new_price["e10Price"],
-          diesel_price: new_price["dieselPrice"],
-          last_changes_at: DateTime.utc_now()
-        })
-    end
-
-    case result do
-      {:ok, _price} ->
-        upsert_prices(new_prices, existing_prices)
+  def handle_cast(:process, %{:prices => []}), do: {:noreply, %{prices: [], stations: [], current_prices: [], processing: false}}
+  def handle_cast(:process, %{:prices => [price|prices], :stations => stations, :current_prices => current_prices}) do
+    case upsert_price(price, stations, current_prices) do
+      {:ok, updated_prices} ->
+        GenServer.cast(__MODULE__, :process) # Process next item
+        # TODO: filter duplicated prices
+        {:noreply, %{prices: prices, stations: stations, current_prices: current_prices ++ updated_prices, processing: true}}
+      {:error, :no_station} ->
+        # IO.inspect("No station with external ID #{price["externalId"]}")
+        GenServer.cast(__MODULE__, :process) # Process next item
+        # TODO: filter duplicated prices
+        {:noreply, %{prices: prices, stations: stations, current_prices: current_prices, processing: true}}
       {:error, changeset} ->
-        {:error, changeset}
+        IO.inspect(changeset)
     end
+  end
+
+  defp upsert_price(new_price, stations, current_prices) do
+    case Enum.find(stations, fn station -> station.external_id == new_price["externalId"] end) do
+      nil ->
+        {:error, :no_station}
+      station ->
+        Repo.transaction(fn ->
+          with {:ok, e5Price} <- upsert_price_type(current_prices |> Enum.find(fn p -> p.station_id == station.id and p.type == "e5" end), station.id, "e5", new_price["e5Price"], new_price["e5LastChangeDate"]),
+            {:ok, e10Price} <- upsert_price_type(current_prices |> Enum.find(fn p -> p.station_id == station.id and p.type == "e10" end), station.id, "e10", new_price["10Price"], new_price["e10LastChangeDate"]),
+            {:ok, dieselPrice} <- upsert_price_type(current_prices |> Enum.find(fn p -> p.station_id == station.id and p.type == "diesel" end), station.id, "diesel", new_price["dieselPrice"], new_price["dieselLastChangeDate"]) do
+              [e5Price, e10Price, dieselPrice]
+              |> Enum.filter(fn price -> price != nil end)
+          else
+            {:error, changeset} ->
+              {:error, changeset}
+          end
+        end)
+    end
+  end
+
+  defp upsert_price_type(_existing_price, _station_id, _type, nil, _last_changes_at), do: {:ok, nil}
+  defp upsert_price_type(nil, station_id, type, price_value, last_changes_at) do
+    Prices.insert(%{
+      origin: "mtk-s",
+      station_id: station_id,
+      type: type,
+      price: price_value,
+      last_changes_at: last_changes_at
+    })
+  end
+  defp upsert_price_type(existing_price, station_id, type, price_value, last_changes_at) do
+    Prices.update(existing_price, %{
+      origin: "mtk-s",
+      station_id: station_id,
+      type: type,
+      price: price_value,
+      last_changes_at: last_changes_at
+    })
   end
 end

@@ -13,7 +13,7 @@ defmodule Tankste.FillWeb.PriceController do
   # TODO: crawler token
 
   def update(conn, %{"_json" => prices}) when is_list(prices) do
-    PriceProcessor.update(prices)
+    PriceProcessor.add(prices)
 
     conn
     |> put_status(:no_content)

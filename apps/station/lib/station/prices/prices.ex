@@ -23,10 +23,12 @@ defmodule Tankste.Station.Prices do
 
   defp query(opts) do
     station_id = Keyword.get(opts, :station_id, nil)
+    type = Keyword.get(opts, :type, nil)
 
     from(p in Price,
       select: p)
     |> query_where_station_id(station_id)
+    |> query_where_type(type)
   end
 
   defp query_where_station_id(query, nil), do: query
@@ -38,6 +40,17 @@ defmodule Tankste.Station.Prices do
   defp query_where_station_id(query, station_id) do
     query
     |> where([p], p.station_id == ^station_id)
+  end
+
+  defp query_where_type(query, nil), do: query
+  defp query_where_type(query, []), do: query
+  defp query_where_type(query, types) when is_list(types) do
+    query
+    |> where([p], p.type in ^types)
+  end
+  defp query_where_type(query, type) do
+    query
+    |> where([p], p.type == ^type)
   end
 
   def insert(attrs \\ %{}) do
