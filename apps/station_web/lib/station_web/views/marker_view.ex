@@ -12,13 +12,13 @@ defmodule Tankste.StationWeb.MarkerView do
       "latitude" => marker.latitude,
       "longitude" => marker.longitude,
       "e5Price" => marker.e5_price,
-      "e5PriceState" => to_string(marker.e5_price_state),
+      "e5PriceState" => marker.e5_price_comparison,
       "e10Price" => marker.e10_price,
-      "e10PriceState" => to_string(marker.e10_price_state),
+      "e10PriceState" => marker.e10_price_comparison,
       "dieselPrice" => marker.diesel_price,
-      "dieselPriceState" => to_string(marker.diesel_price_state),
-      # "createdAt" => marker.inserted_at,
-      # "updatedAt" => marker.updated_at
+      "dieselPriceState" => marker.diesel_price_comparison,
+      "createdAt" => marker.inserted_at,
+      "updatedAt" => marker.updated_at
     }
 	end
 end
