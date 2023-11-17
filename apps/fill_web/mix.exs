@@ -42,6 +42,7 @@ defmodule Tankste.FillWeb.MixProject do
       {:phoenix_html, "~> 3.2.0"},
       {:phoenix_live_reload, "~> 1.4.0", only: :dev},
       {:jason, "~> 1.4.0"},
+      {:geocalc, "~> 0.8"}
     ]
   end
 end

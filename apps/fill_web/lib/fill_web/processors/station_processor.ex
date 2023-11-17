@@ -3,6 +3,7 @@ defmodule Tankste.FillWeb.StationProcessor do
 
   alias Tankste.Station.Stations
   alias Tankste.Station.OpenTimes
+  alias Tankste.FillWeb.MarkerProcessor
 
   # Client
 
@@ -41,7 +42,10 @@ defmodule Tankste.FillWeb.StationProcessor do
     # TODO: filter duplicated queue entries by externalId
     {:noreply, %{stations: stations ++ add_stations, processing: processing}}
   end
-  def handle_cast(:process, %{:stations => []}), do: {:noreply, %{stations: [], processing: false}}
+  def handle_cast(:process, %{:stations => []}) do
+    MarkerProcessor.update()
+    {:noreply, %{stations: [], processing: false}}
+  end
   def handle_cast(:process, %{:stations => [station|stations]}) do
     upsert_station(station)
     GenServer.cast(__MODULE__, :process) # Process next item

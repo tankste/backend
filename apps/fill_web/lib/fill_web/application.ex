@@ -5,7 +5,8 @@ defmodule Tankste.FillWeb.Application do
     children = [
       Tankste.FillWeb.Endpoint,
       Tankste.FillWeb.StationProcessor,
-      Tankste.FillWeb.PriceProcessor
+      Tankste.FillWeb.PriceProcessor,
+      Tankste.FillWeb.MarkerProcessor,
     ]
 
     opts = [strategy: :one_for_one, name: Tankste.FillWeb.Supervisor]

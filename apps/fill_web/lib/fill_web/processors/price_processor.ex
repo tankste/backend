@@ -4,6 +4,7 @@ defmodule Tankste.FillWeb.PriceProcessor do
   alias Tankste.Station.Stations
   alias Tankste.Station.Prices
   alias Tankste.Station.Repo
+  alias Tankste.FillWeb.MarkerProcessor
 
   # Client
 
@@ -42,7 +43,10 @@ defmodule Tankste.FillWeb.PriceProcessor do
     add_external_ids = Enum.map(add_prices, fn ap -> ap["externalId"] end)
     {:noreply, %{prices: Enum.filter(prices, fn p -> p["externalId"] not in add_external_ids end) ++ add_prices, stations: Stations.list(), current_prices: Prices.list(), processing: processing}}
   end
-  def handle_cast(:process, %{:prices => []}), do: {:noreply, %{prices: [], stations: [], current_prices: [], processing: false}}
+  def handle_cast(:process, %{:prices => []}) do
+    MarkerProcessor.update()
+    {:noreply, %{prices: [], stations: [], current_prices: [], processing: false}}
+  end
   def handle_cast(:process, %{:prices => [price|prices], :stations => stations, :current_prices => current_prices}) do
     case upsert_price(price, stations, current_prices) do
       {:ok, updated_prices} ->
