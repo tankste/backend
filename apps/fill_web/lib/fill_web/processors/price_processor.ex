@@ -17,7 +17,7 @@ defmodule Tankste.FillWeb.PriceProcessor do
   end
 
   defp process() do
-    case GenServer.call(__MODULE__, :get_processing) do
+    case GenServer.call(__MODULE__, :get_processing, :infinity) do
       false ->
         GenServer.cast(__MODULE__, :process)
       true ->
@@ -39,20 +39,19 @@ defmodule Tankste.FillWeb.PriceProcessor do
 
   @impl true
   def handle_cast({:add, add_prices}, %{:prices => prices, :processing => processing}) do
-    # TODO: filter duplicated queue entries by externalId
-    {:noreply, %{prices: prices ++ add_prices, stations: Stations.list(), current_prices: Prices.list(), processing: processing}}
+    add_external_ids = Enum.map(add_prices, fn ap -> ap["externalId"] end)
+    {:noreply, %{prices: Enum.filter(prices, fn p -> p["externalId"] not in add_external_ids end) ++ add_prices, stations: Stations.list(), current_prices: Prices.list(), processing: processing}}
   end
   def handle_cast(:process, %{:prices => []}), do: {:noreply, %{prices: [], stations: [], current_prices: [], processing: false}}
   def handle_cast(:process, %{:prices => [price|prices], :stations => stations, :current_prices => current_prices}) do
     case upsert_price(price, stations, current_prices) do
       {:ok, updated_prices} ->
+        updated_ids = Enum.map(updated_prices, fn up -> up.id end)
         GenServer.cast(__MODULE__, :process) # Process next item
-        # TODO: filter duplicated prices
-        {:noreply, %{prices: prices, stations: stations, current_prices: current_prices ++ updated_prices, processing: true}}
+        {:noreply, %{prices: prices, stations: stations, current_prices: Enum.filter(current_prices, fn cp -> cp.id not in updated_ids end) ++ updated_prices, processing: true}}
       {:error, :no_station} ->
         # IO.inspect("No station with external ID #{price["externalId"]}")
         GenServer.cast(__MODULE__, :process) # Process next item
-        # TODO: filter duplicated prices
         {:noreply, %{prices: prices, stations: stations, current_prices: current_prices, processing: true}}
       {:error, changeset} ->
         IO.inspect(changeset)
