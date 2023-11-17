@@ -5,15 +5,8 @@ defmodule Tankste.StationWeb.StationPriceController do
 
   # TODO: load station by plug
 
-  def show(conn, %{"station_id" => station_id}) do
-    case Prices.get_by_station_id(station_id) do
-      nil ->
-        conn
-        |> put_status(:not_found)
-        |> put_view(ErrorView)
-        |> render("404.json")
-      station_price ->
-        render(conn, "show.json", station_price: station_price)
-    end
+  def index(conn, %{"station_id" => station_id}) do
+    prices = Prices.list(station_id: station_id)
+    render(conn, "index.json", prices: prices)
   end
 end
