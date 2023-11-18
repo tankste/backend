@@ -69,7 +69,7 @@ defmodule Tankste.FillWeb.PriceProcessor do
       station ->
         Repo.transaction(fn ->
           with {:ok, e5Price} <- upsert_price_type(current_prices |> Enum.find(fn p -> p.station_id == station.id and p.type == "e5" end), station.id, "e5", new_price["e5Price"], new_price["e5LastChangeDate"]),
-            {:ok, e10Price} <- upsert_price_type(current_prices |> Enum.find(fn p -> p.station_id == station.id and p.type == "e10" end), station.id, "e10", new_price["10Price"], new_price["e10LastChangeDate"]),
+            {:ok, e10Price} <- upsert_price_type(current_prices |> Enum.find(fn p -> p.station_id == station.id and p.type == "e10" end), station.id, "e10", new_price["e10Price"], new_price["e10LastChangeDate"]),
             {:ok, dieselPrice} <- upsert_price_type(current_prices |> Enum.find(fn p -> p.station_id == station.id and p.type == "diesel" end), station.id, "diesel", new_price["dieselPrice"], new_price["dieselLastChangeDate"]) do
               [e5Price, e10Price, dieselPrice]
               |> Enum.filter(fn price -> price != nil end)
