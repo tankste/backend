@@ -31,5 +31,5 @@ defmodule Tankste.StationWeb.StationView do
       "createdAt" => station.inserted_at,
       "updatedAt" => station.updated_at
     }
-	end
+  end
 end

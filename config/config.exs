@@ -4,7 +4,7 @@ import Config
 config :station,
   ecto_repos: [Tankste.Station.Repo]
 
-  # Station Web
+# Station Web
 config :station_web, Tankste.StationWeb.Endpoint,
   pubsub_server: Tankste.StationWeb.PubSub,
   render_errors: [view: Tankste.StationWeb.ErrorView, accepts: ~w(html json), layout: false]
@@ -13,6 +13,15 @@ config :station_web, Tankste.StationWeb.Endpoint,
 config :fill_web, Tankste.FillWeb.Endpoint,
   pubsub_server: Tankste.FillWeb.PubSub,
   render_errors: [view: Tankste.FillWeb.ErrorView, accepts: ~w(html json), layout: false]
+
+# Sponsor
+config :sponsor,
+  ecto_repos: [Tankste.Sponsor.Repo]
+
+# Sponsor Web
+config :sponsor_web, Tankste.SponsorWeb.Endpoint,
+  pubsub_server: Tankste.SponsorWeb.PubSub,
+  render_errors: [view: Tankste.SponsorWeb.ErrorView, accepts: ~w(html json), layout: false]
 
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
