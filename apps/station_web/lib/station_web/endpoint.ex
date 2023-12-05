@@ -20,6 +20,10 @@ defmodule Tankste.StationWeb.Endpoint do
     pass: ["*/*"],
     json_decoder: Phoenix.json_library()
 
+  # Log endpoint requests
+  plug Plug.Telemetry,
+    event_prefix: [:phoenix, :endpoint]
+
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options

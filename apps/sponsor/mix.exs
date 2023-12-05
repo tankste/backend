@@ -30,7 +30,11 @@ defmodule Tankste.Sponsor.MixProject do
     [
       {:phoenix_pubsub, "~> 2.1.1"},
       {:ecto_sql, "~> 3.9.0"},
-      {:myxql, "~> 0.6.3"}
+      {:myxql, "~> 0.6.3"},
+      {:goth, "~> 1.4.2"},
+      {:google_api_android_publisher, "~> 0.30.1"},
+      {:jason, "~> 1.4.1"},
+      {:httpoison, "~> 2.1.0"},
     ]
   end
 end
