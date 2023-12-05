@@ -5,7 +5,7 @@ defmodule Tankste.SponsorWeb.PlayPaymentController do
   alias Tankste.Sponsor.Transactions
 
   def notify(conn, params) do
-    IO.inspect data
+    IO.inspect params
     case Map.get(params, "data") do
       nil ->
         conn
