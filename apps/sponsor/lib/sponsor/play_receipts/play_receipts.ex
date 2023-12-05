@@ -11,10 +11,10 @@ defmodule Tankste.Sponsor.PlayReceipts do
     |> Repo.insert()
   end
 
-  def verify_and_acknowledge_and_consume(product_id, secret) do
-    with :ok <- verify_purchase(product_id, secret),
-      :ok <- acknowledge_purchase(product_id, secret),
-      :ok <- consume_purchase(product_id, secret)
+  def verify_and_acknowledge_and_consume_product(product_id, secret) do
+    with :ok <- verify_product(product_id, secret),
+      :ok <- acknowledge_product(product_id, secret),
+      :ok <- consume_product(product_id, secret)
     do
       :ok
     else
@@ -24,7 +24,7 @@ defmodule Tankste.Sponsor.PlayReceipts do
     end
   end
 
-  defp verify_purchase(product_id, secret) do
+  defp verify_product(product_id, secret) do
     result = AndroidPublisher.V3.Api.Purchases.androidpublisher_purchases_products_get(
       android_publisher_connection(),
       "app.tankste",
@@ -40,7 +40,7 @@ defmodule Tankste.Sponsor.PlayReceipts do
     end
   end
 
-  defp acknowledge_purchase(product_id, secret) do
+  defp acknowledge_product(product_id, secret) do
     result = AndroidPublisher.V3.Api.Purchases.androidpublisher_purchases_products_acknowledge(
         android_publisher_connection(),
         "app.tankste",
@@ -56,9 +56,53 @@ defmodule Tankste.Sponsor.PlayReceipts do
     end
   end
 
-  defp consume_purchase(product_id, secret) do
+  defp consume_product(product_id, secret) do
     result = android_publisher_connection()
     |> GoogleApi.AndroidPublisher.V3.Connection.post("/androidpublisher/v3/applications/app.tankste/purchases/products/#{product_id}/tokens/#{secret}:consume", %{})
+
+    case result do
+      {:ok, _} ->
+        :ok
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
+  def verify_and_acknowledge_subscription(product_id, secret) do
+    with :ok <- verify_subscription(product_id, secret),
+      :ok <- acknowledge_subscription(product_id, secret)
+    do
+      :ok
+    else
+      error ->
+        IO.inspect(error)
+        {:error, :failed}
+    end
+  end
+
+  defp verify_subscription(product_id, secret) do
+    result = AndroidPublisher.V3.Api.Purchases.androidpublisher_purchases_subscriptions_get(
+      android_publisher_connection(),
+      "app.tankste",
+      product_id,
+      secret
+    )
+
+    case result do
+      {:ok, _} ->
+        :ok
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
+  defp acknowledge_subscription(product_id, secret) do
+    result = AndroidPublisher.V3.Api.Purchases.androidpublisher_purchases_subscriptions_acknowledge(
+        android_publisher_connection(),
+        "app.tankste",
+        product_id,
+        secret
+      )
 
     case result do
       {:ok, _} ->

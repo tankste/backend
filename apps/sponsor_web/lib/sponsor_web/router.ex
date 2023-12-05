@@ -19,5 +19,7 @@ defmodule Tankste.SponsorWeb.Router do
     get "/health", HealthController, :show
     resources "/balance", BalanceController, singleton: true, only: [:show]
     resources "/purchases", PurchaseController, only: [:create]
+
+    post "/play-payments", PlayPaymentController, :notify
   end
 end
