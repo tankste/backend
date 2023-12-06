@@ -31,7 +31,7 @@ defmodule Tankste.Sponsor.PlayReceipts do
       product_id,
       secret
     )
-
+    IO.inspect result
     case result do
       {:ok, _} ->
         :ok
@@ -49,8 +49,8 @@ defmodule Tankste.Sponsor.PlayReceipts do
       )
 
     case result do
-      {:ok, _} ->
-        :ok
+      {:ok, product} ->
+        {:ok, [order_id: product["orderId"], external_id: product["obfuscatedExternalAccountId"]]}
       {:error, reason} ->
         {:error, reason}
     end
@@ -87,10 +87,10 @@ defmodule Tankste.Sponsor.PlayReceipts do
       product_id,
       secret
     )
-
+    IO.inspect result
     case result do
-      {:ok, _} ->
-        :ok
+      {:ok, subscription} ->
+        {:ok, [order_id: subscription["orderId"], external_id: subscription["obfuscatedExternalAccountId"]]}
       {:error, reason} ->
         {:error, reason}
     end

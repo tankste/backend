@@ -64,7 +64,8 @@ defmodule Tankste.SponsorWeb.PurchaseController do
       :ok ->
         conn
         |> create_play_purchase(purchase_params)
-      _ ->
+      error ->
+        IO.inspect(error)
         conn
         |> put_status(422)
         |> put_view(ChangesetView)
@@ -77,7 +78,8 @@ defmodule Tankste.SponsorWeb.PurchaseController do
       :ok ->
         conn
         |> create_play_purchase(purchase_params)
-      _ ->
+      error ->
+        IO.inspect(error)
         conn
         |> put_status(422)
         |> put_view(ChangesetView)
@@ -86,7 +88,7 @@ defmodule Tankste.SponsorWeb.PurchaseController do
   end
 
   defp create_play_purchase(conn, purchase_params) do
-    with {:ok, purchase} <- Purchases.create(%{"secret" => gen_secret(), "product" => product_from_google_id(purchase_params["productId"]), "provider" => "play_store", "type" => type_from_product(product_from_google_id(purchase_params["productId"]))}),
+    with {:ok, purchase} <- Purchases.create(%{"product" => product_from_google_id(purchase_params["productId"]), "provider" => "play_store", "type" => type_from_product(product_from_google_id(purchase_params["productId"]))}),
       {:ok, _receipt} <- PlayReceipts.create(%{"purchase_id" => purchase.id, "product_id" => purchase_params["productId"], "token" => purchase_params["token"], "secret" => purchase_params["secret"]}),
       {:ok, _transaction} <- Transactions.create(%{"type" => "sponsor", "category" => "google", "value" => value_from_product(purchase.product)})
     do
@@ -94,6 +96,7 @@ defmodule Tankste.SponsorWeb.PurchaseController do
       |> render("show.json", purchase: purchase)
     else
       {:error, changeset} ->
+        IO.inspect(changeset)
         conn
         |> put_status(422)
         |> put_view(ChangesetView)
@@ -115,9 +118,4 @@ defmodule Tankste.SponsorWeb.PurchaseController do
   defp type_from_product("sponsor_subscription_monthly_2"), do: "subscription"
   defp type_from_product("sponsor_single_10"), do: "single"
   defp type_from_product(_), do: nil
-
-  defp gen_secret() do
-    Enum.take_random('0123456789abcdefghijklmopqrstvwxyzABCDEFGHIJKLMNOPQRSTVWXYZ', 32)
-    |> List.to_string()
-  end
 end
