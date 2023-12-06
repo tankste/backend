@@ -61,7 +61,7 @@ defmodule Tankste.SponsorWeb.PurchaseController do
 
   defp verify_play_product(conn, purchase_params) do
     case PlayReceipts.verify_and_acknowledge_and_consume_product(purchase_params["productId"], purchase_params["secret"]) do
-      :ok ->
+      {:ok, _} ->
         conn
         |> create_play_purchase(purchase_params)
       error ->
@@ -75,7 +75,7 @@ defmodule Tankste.SponsorWeb.PurchaseController do
 
   defp verify_play_subscription(conn, purchase_params) do
     case PlayReceipts.verify_and_acknowledge_subscription(purchase_params["productId"], purchase_params["secret"]) do
-      :ok ->
+      {:ok, _} ->
         conn
         |> create_play_purchase(purchase_params)
       error ->
