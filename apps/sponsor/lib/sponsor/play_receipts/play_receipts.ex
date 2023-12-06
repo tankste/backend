@@ -12,11 +12,11 @@ defmodule Tankste.Sponsor.PlayReceipts do
   end
 
   def verify_and_acknowledge_and_consume_product(product_id, secret) do
-    with :ok <- verify_product(product_id, secret),
+    with {:ok, product} <- verify_product(product_id, secret),
       :ok <- acknowledge_product(product_id, secret),
       :ok <- consume_product(product_id, secret)
     do
-      :ok
+      {:ok, product}
     else
       error ->
         IO.inspect(error)
@@ -33,8 +33,8 @@ defmodule Tankste.Sponsor.PlayReceipts do
     )
     IO.inspect result
     case result do
-      {:ok, _} ->
-        :ok
+      {:ok, product} ->
+        {:ok, [order_id: Map.get(product, :orderId), external_id: Map.get(product, :obfuscatedExternalAccountId)]}
       {:error, reason} ->
         {:error, reason}
     end
@@ -49,8 +49,8 @@ defmodule Tankste.Sponsor.PlayReceipts do
       )
 
     case result do
-      {:ok, product} ->
-        {:ok, [order_id: Map.get(product, :orderId), external_id: Map.get(product, :obfuscatedExternalAccountId)]}
+      {:ok, _} ->
+        :ok
       {:error, reason} ->
         {:error, reason}
     end
@@ -69,10 +69,10 @@ defmodule Tankste.Sponsor.PlayReceipts do
   end
 
   def verify_and_acknowledge_subscription(product_id, secret) do
-    with :ok <- verify_subscription(product_id, secret),
+    with {:ok, subscription} <- verify_subscription(product_id, secret),
       :ok <- acknowledge_subscription(product_id, secret)
     do
-      :ok
+      {:ok, subscription}
     else
       error ->
         IO.inspect(error)
