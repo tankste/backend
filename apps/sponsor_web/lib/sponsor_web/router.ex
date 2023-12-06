@@ -17,9 +17,11 @@ defmodule Tankste.SponsorWeb.Router do
     pipe_through :api
 
     get "/health", HealthController, :show
+    post "/play-payments", PlayPaymentController, :notify
+
     resources "/balance", BalanceController, singleton: true, only: [:show]
     resources "/purchases", PurchaseController, only: [:create]
+    resources "/comments", CommentController, only: [:index, :show, :update]
 
-    post "/play-payments", PlayPaymentController, :notify
   end
 end

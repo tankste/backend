@@ -5,6 +5,7 @@ defmodule Tankste.SponsorWeb.PurchaseController do
   alias Tankste.Sponsor.AppleReceipts
   alias Tankste.Sponsor.PlayReceipts
   alias Tankste.Sponsor.Transactions
+  alias Tankste.Sponsor.Comments
 
   def create(conn, %{"provider" => "apple_store"} = purchase_params) do
     case AppleReceipts.verify(purchase_params["data"]) do
@@ -90,7 +91,8 @@ defmodule Tankste.SponsorWeb.PurchaseController do
   defp create_play_purchase(conn, purchase_params) do
     with {:ok, purchase} <- Purchases.create(%{"product" => product_from_google_id(purchase_params["productId"]), "provider" => "play_store", "type" => type_from_product(product_from_google_id(purchase_params["productId"]))}),
       {:ok, _receipt} <- PlayReceipts.create(%{"purchase_id" => purchase.id, "product_id" => purchase_params["productId"], "token" => purchase_params["token"], "secret" => purchase_params["secret"]}),
-      {:ok, _transaction} <- Transactions.create(%{"type" => "sponsor", "category" => "google", "value" => value_from_product(purchase.product)})
+      {:ok, _transaction} <- Transactions.create(%{"type" => "sponsor", "category" => "google", "value" => value_from_product(purchase.product)}),
+      {:ok, _comment} <- create_comment(purchase_params["deviceId"], value_from_product(purchase.product))
     do
       conn
       |> render("show.json", purchase: purchase)
@@ -101,6 +103,15 @@ defmodule Tankste.SponsorWeb.PurchaseController do
         |> put_status(422)
         |> put_view(ChangesetView)
         |> render("errors.json", changeset: changeset)
+    end
+  end
+
+  defp create_comment(device_id, value) do
+    case Comments.get_by_device_id(device_id) do
+      nil ->
+        Comments.create(%{"device_id" => device_id, "value" => value})
+      comment ->
+        Comments.update(comment, %{"value" => comment.value + value})
     end
   end
 

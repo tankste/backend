@@ -12,9 +12,9 @@ defmodule Tankste.SponsorWeb.PurchaseView do
   def render("purchase.json", %{purchase: purchase}) do
     %{
       "id" => purchase.id,
-      "secret" => purchase.secret,
       "product" => purchase.product,
-      "provider" => purchase.provider
+      "provider" => purchase.provider,
+      "type" => purchase.type
     }
 	end
 end

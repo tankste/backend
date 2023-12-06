@@ -11,7 +11,7 @@ defmodule Tankste.Sponsor.Transactions do
 
   def get(id, opts \\ []) do
     query(opts)
-    |> where([s], s.id == ^id)
+    |> where([t], t.id == ^id)
     |> Repo.one()
   end
 
