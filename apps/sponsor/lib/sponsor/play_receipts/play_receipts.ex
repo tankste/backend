@@ -50,7 +50,7 @@ defmodule Tankste.Sponsor.PlayReceipts do
 
     case result do
       {:ok, product} ->
-        {:ok, [order_id: Map.get(product, :orderId), external_id: Map.get(product, :obfuscatedExternalAccountId)]]}
+        {:ok, [order_id: Map.get(product, :orderId), external_id: Map.get(product, :obfuscatedExternalAccountId)]}
       {:error, reason} ->
         {:error, reason}
     end
@@ -90,7 +90,7 @@ defmodule Tankste.Sponsor.PlayReceipts do
     IO.inspect result
     case result do
       {:ok, subscription} ->
-        {:ok, [order_id: Map.get(subscription, :orderId), external_id: Map.get(subscription, :obfuscatedExternalAccountId)]]}
+        {:ok, [order_id: Map.get(subscription, :orderId), external_id: Map.get(subscription, :obfuscatedExternalAccountId)]}
       {:error, reason} ->
         {:error, reason}
     end
