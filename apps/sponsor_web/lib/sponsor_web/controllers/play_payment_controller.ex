@@ -3,11 +3,10 @@ defmodule Tankste.SponsorWeb.PlayPaymentController do
 
   alias Tankste.Sponsor.PlayReceipts
   alias Tankste.Sponsor.Transactions
+  alias Tankste.SponsorWeb.ChangesetView
 
-  def notify(conn, params) do
-    IO.inspect conn
-    IO.inspect params
-    case Map.get(params, "data") do
+  def notify(conn, %{"message" => message_params}) do
+    case Map.get(message_params, "data") do
       nil ->
         conn
         |> send_resp(204, "")
@@ -24,6 +23,12 @@ defmodule Tankste.SponsorWeb.PlayPaymentController do
         conn
         |> send_resp(204, "")
     end
+  end
+  def notify(conn, _) do
+    conn
+    |> put_status(422)
+    |> put_view(ChangesetView)
+    |> render("errors.json", validations: [message: {"invalid value", [validation: :invalid]}])
   end
 
   # (2) SUBSCRIPTION_RENEWED - An active subscription was renewed.
