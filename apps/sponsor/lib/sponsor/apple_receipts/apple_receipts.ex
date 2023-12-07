@@ -12,6 +12,8 @@ defmodule Tankste.Sponsor.AppleReceipts do
 
   def verify(receipt_data, environment \\ :production) do
     body = %{
+        "exclude-old-transactions" => true,
+        "password" => password(),
         "receipt-data" => receipt_data
       }
       |> Jason.encode!()
@@ -23,6 +25,7 @@ defmodule Tankste.Sponsor.AppleReceipts do
           0 ->
             :ok
           21007 ->
+            IO.puts("Use sandbox environment to verify receipt!")
             verify(receipt_data, :sandbox)
           status ->
             IO.puts("Receipt status is invalid! Status: #{status}.")
@@ -36,4 +39,8 @@ defmodule Tankste.Sponsor.AppleReceipts do
 
   defp store_url(:production), do: "https://buy.itunes.apple.com/"
   defp store_url(:sandbox), do: "https://sandbox.itunes.apple.com/"
+
+  defp password(), do: apple_config() |> Keyword.fetch!(:password)
+
+  defp apple_config(), do: Application.get_env(:sponsor, :apple)
 end
