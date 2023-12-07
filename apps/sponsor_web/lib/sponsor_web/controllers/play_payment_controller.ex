@@ -56,9 +56,11 @@ defmodule Tankste.SponsorWeb.PlayPaymentController do
 
   defp product_from_google_id("app.tankste.sponsor.sub.monthly.1"), do: "sponsor_subscription_monthly_1"
   defp product_from_google_id("app.tankste.sponsor.sub.monthly.2"), do: "sponsor_subscription_monthly_2"
+  defp product_from_google_id("app.tankste.sponsor.sub.yearly.12"), do: "sponsor_subscription_yearly_12"
   defp product_from_google_id(_), do: nil
 
   defp value_from_product("sponsor_subscription_monthly_1"), do: 1
   defp value_from_product("sponsor_subscription_monthly_2"), do: 2
+  defp value_from_product("sponsor_subscription_yearly_12"), do: 12
   defp value_from_product(_), do: 0
 end
