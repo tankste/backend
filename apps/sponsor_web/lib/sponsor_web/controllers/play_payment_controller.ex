@@ -43,12 +43,9 @@ defmodule Tankste.SponsorWeb.PlayPaymentController do
     with {:ok, subscription} <- PlayReceipts.verify_and_acknowledge_subscription(product_id, secret),
       {:ok, purchase} <- Purchases.create(%{"product" => product_from_google_id(product_id), "provider" => "play_store", "type" => "subscription"}),
       {:ok, _receipt} <- PlayReceipts.create(%{"purchase_id" => purchase.id, "product_id" => product_from_google_id(product_id), "token" => subscription[:order_id], "secret" => secret}),
-      sponsorship <- Sponsorships.get_by_device_id(subscription[:external_id]),
-      # TODO: set updated subscription expiration date
-      {:ok, _sponsorship} <- Sponsorships.update(sponsorship, %{"value" => sponsorship.value + value_from_product(purchase.product)}),
+      {:ok, _sponsorship} <- update_sponsorship(subscription[:external_id], product_from_google_id(product_id)),
       {:ok, _transaction} <- Transactions.create(%{"type" => "sponsor", "category" => "google", "value" => value_from_product(purchase.product)}),
-      comment <- Comments.get_by_device_id(subscription[:external_id]),
-      {:ok, _comment} <- Comments.update(comment, %{"value" => comment.value + value_from_product(purchase.product)})
+      {:ok, _comment} <- update_comment(subscription[:external_id], product_from_google_id(product_id))
     do
       :ok
     else
@@ -57,6 +54,25 @@ defmodule Tankste.SponsorWeb.PlayPaymentController do
     end
   end
   defp handle_subscription_notification(_), do: :ok
+
+  defp update_sponsorship(device_id, product) do
+    case Sponsorships.get_by_device_id(device_id) do
+      nil ->
+        {:ok, nil}
+      sponsorship ->
+        # TODO: set updated subscription expiration date
+        Sponsorships.update(sponsorship, %{"value" => sponsorship.value + value_from_product(product)})
+    end
+  end
+
+  defp update_comment(device_id, product) do
+    case Comments.get_by_device_id(device_id) do
+      nil ->
+        {:ok, nil}
+      comment ->
+        Comments.update(comment, %{"value" => comment.value + value_from_product(product)})
+    end
+  end
 
   defp product_from_google_id("app.tankste.sponsor.sub.monthly.1"), do: "sponsor_subscription_monthly_1"
   defp product_from_google_id("app.tankste.sponsor.sub.monthly.2"), do: "sponsor_subscription_monthly_2"
