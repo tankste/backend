@@ -23,6 +23,7 @@ defmodule Tankste.SponsorWeb.Router do
     resources "/balance", BalanceController, singleton: true, only: [:show]
     resources "/purchases", PurchaseController, only: [:create]
     resources "/comments", CommentController, only: [:index, :show, :update]
+    resources "/sponsorships", SponsorshipController, only: [:show]
 
   end
 end

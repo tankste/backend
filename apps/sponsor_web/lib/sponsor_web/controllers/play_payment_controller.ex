@@ -5,6 +5,7 @@ defmodule Tankste.SponsorWeb.PlayPaymentController do
   alias Tankste.Sponsor.Purchases
   alias Tankste.Sponsor.Transactions
   alias Tankste.Sponsor.Comments
+  alias Tankste.Sponsor.Sponsorships
   alias Tankste.SponsorWeb.ChangesetView
 
   def notify(conn, %{"message" => message_params}) do
@@ -42,6 +43,9 @@ defmodule Tankste.SponsorWeb.PlayPaymentController do
     with {:ok, subscription} <- PlayReceipts.verify_and_acknowledge_subscription(product_id, secret),
       {:ok, purchase} <- Purchases.create(%{"product" => product_from_google_id(product_id), "provider" => "play_store", "type" => "subscription"}),
       {:ok, _receipt} <- PlayReceipts.create(%{"purchase_id" => purchase.id, "product_id" => product_from_google_id(product_id), "token" => subscription[:order_id], "secret" => secret}),
+      sponsorship <- Sponsorships.get_by_device_id(subscription[:external_id]),
+      # TODO: set updated subscription expiration date
+      {:ok, _sponsorship} <- Sponsorships.update(sponsorship, %{"value" => sponsorship.value + value_from_product(purchase.product)}),
       {:ok, _transaction} <- Transactions.create(%{"type" => "sponsor", "category" => "google", "value" => value_from_product(purchase.product)}),
       comment <- Comments.get_by_device_id(subscription[:external_id]),
       {:ok, _comment} <- Comments.update(comment, %{"value" => comment.value + value_from_product(purchase.product)})
