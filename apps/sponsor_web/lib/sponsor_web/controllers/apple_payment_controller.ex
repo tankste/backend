@@ -3,6 +3,8 @@ defmodule Tankste.SponsorWeb.ApplePaymentController do
 
   def notify(conn, %{"signedPayload" => payload}) do
     payload
+    |> String.split(".")
+    |> Enum.at(1)
     |> Base.decode64!()
     |> Poison.decode!()
     |> IO.inspect
