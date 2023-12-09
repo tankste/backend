@@ -2,10 +2,12 @@ defmodule Tankste.SponsorWeb.ApplePaymentController do
   use Tankste.SponsorWeb, :controller
 
   def notify(conn, %{"signedPayload" => payload}) do
+    File.write("/tmp/apple-payment.txt", payload)
+
     payload
     |> String.split(".")
     |> Enum.at(1)
-    |> Base.decode64!()
+    |> Base.url_decode64!(padding: false)
     |> Poison.decode!()
     |> IO.inspect
 
