@@ -18,6 +18,7 @@ defmodule Tankste.SponsorWeb.ApplePaymentController do
       |> Poison.decode!()
 
     transaction = notification
+      |> Map.get("data")
       |> Map.get("signedTransactionInfo")
       |> String.split(".")
       |> Enum.at(1)
