@@ -88,7 +88,7 @@ defmodule Tankste.FillWeb.PriceProcessor do
       station_id: station_id,
       type: type,
       price: price_value,
-      last_changes_at: last_changes_at
+      last_changes_at: last_changes_at || DateTime.utc_now()
     })
   end
   defp upsert_price_type(existing_price, station_id, type, price_value, last_changes_at) do
@@ -97,7 +97,17 @@ defmodule Tankste.FillWeb.PriceProcessor do
       station_id: station_id,
       type: type,
       price: price_value,
-      last_changes_at: last_changes_at
+      last_changes_at: last_price_change(existing_price, price_value, last_changes_at)
     })
   end
+
+  defp last_price_change(existing_price, price_value, nil) do
+    case existing_price.value do
+      ^price_value ->
+        existing_price.last_changes_at
+      _ ->
+        DateTime.utc_now()
+    end
+  end
+  defp last_price_change(_, _, last_changes_at), do: last_changes_at
 end
