@@ -62,7 +62,7 @@ defmodule Tankste.FillWeb.MarkerProcessor do
       nil ->
         Markers.insert(%{
           station_id: station.id,
-          label: station.name,
+          label: station.brand,
           latitude: station.location_latitude,
           longitude: station.location_longitude,
           e5_price: get_price(station, "e5"),
@@ -75,7 +75,7 @@ defmodule Tankste.FillWeb.MarkerProcessor do
       marker ->
         Markers.update(marker, %{
           station_id: station.id,
-          label: station.name,
+          label: station.brand,
           latitude: station.location_latitude,
           longitude: station.location_longitude,
           e5_price: get_price(station, "e5"),

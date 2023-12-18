@@ -56,32 +56,32 @@ defmodule Tankste.FillWeb.StationProcessor do
     result = case Stations.get_by_external_id(new_station["externalId"]) do
         nil ->
           Stations.insert(%{
-            external_id: new_station["externalId"],
+            external_id: new_station["externalId"] |> trim(),
             origin: "mtk-s",
-            name: new_station["name"],
-            brand: new_station["brand"],
+            name: new_station["name"] |> trim(),
+            brand: new_station["brand"] |> trim(),
             location_latitude: new_station["locationLatitude"],
             location_longitude: new_station["locationLongitude"],
-            address_street: new_station["addressStreet"],
-            address_house_number: new_station["addressHouseNumber"],
-            address_post_code: new_station["addressPostCode"],
-            address_city: new_station["addressCity"],
-            address_country: new_station["addressCountry"],
+            address_street: new_station["addressStreet"] |> trim(),
+            address_house_number: new_station["addressHouseNumber"] |> trim(),
+            address_post_code: new_station["addressPostCode"] |> trim(),
+            address_city: new_station["addressCity"] |> trim(),
+            address_country: new_station["addressCountry"] |> trim(),
             last_changes_at: new_station["lastChangesDate"]
           })
         station ->
           Stations.update(station, %{
-            external_id: new_station["externalId"],
+            external_id: new_station["externalId"] |> trim(),
             origin: "mtk-s",
-            name: new_station["name"],
-            brand: new_station["brand"],
+            name: new_station["name"] |> trim(),
+            brand: new_station["brand"] |> trim(),
             location_latitude: new_station["locationLatitude"],
             location_longitude: new_station["locationLongitude"],
-            address_street: new_station["addressStreet"],
-            address_house_number: new_station["addressHouseNumber"],
-            address_post_code: new_station["addressPostCode"],
-            address_city: new_station["addressCity"],
-            address_country: new_station["addressCountry"],
+            address_street: new_station["addressStreet"] |> trim(),
+            address_house_number: new_station["addressHouseNumber"] |> trim(),
+            address_post_code: new_station["addressPostCode"] |> trim(),
+            address_city: new_station["addressCity"] |> trim(),
+            address_country: new_station["addressCountry"] |> trim(),
             last_changes_at: new_station["lastChangesDate"]
           })
       end
@@ -113,17 +113,17 @@ defmodule Tankste.FillWeb.StationProcessor do
           OpenTimes.insert(%{
             station_id: station_id,
             origin: "mtk-s",
-            day: new_open_time["day"],
-            start_time: new_open_time["startTime"],
-            end_time: new_open_time["endTime"]
+            day: new_open_time["day"] |> trim(),
+            start_time: new_open_time["startTime"] |> trim(),
+            end_time: new_open_time["endTime"] |> trim()
           })
         open_time ->
           OpenTimes.update(open_time, %{
             station_id: station_id,
             origin: "mtk-s",
-            day: new_open_time["day"],
-            start_time: new_open_time["startTime"],
-            end_time: new_open_time["endTime"]
+            day: new_open_time["day"] |> trim(),
+            start_time: new_open_time["startTime"] |> trim(),
+            end_time: new_open_time["endTime"] |> trim()
           })
       end
 
@@ -133,5 +133,10 @@ defmodule Tankste.FillWeb.StationProcessor do
       {:error, changeset} ->
         {:error, changeset}
     end
+  end
+
+  defp trim(nil), do: nil
+  defp trim(string) do
+    String.trim(string)
   end
 end
