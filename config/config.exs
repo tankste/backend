@@ -23,6 +23,15 @@ config :sponsor_web, Tankste.SponsorWeb.Endpoint,
   pubsub_server: Tankste.SponsorWeb.PubSub,
   render_errors: [view: Tankste.SponsorWeb.ErrorView, accepts: ~w(html json), layout: false]
 
+# Report
+config :report,
+  ecto_repos: [Tankste.Report.Repo]
+
+# Report Web
+config :report_web, Tankste.ReportWeb.Endpoint,
+  pubsub_server: Tankste.ReportWeb.PubSub,
+  render_errors: [view: Tankste.ReportWeb.ErrorView, accepts: ~w(html json), layout: false]
+
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
