@@ -102,7 +102,7 @@ defmodule Tankste.FillWeb.PriceProcessor do
   end
 
   defp last_price_change(existing_price, price_value, nil) do
-    case existing_price.value do
+    case existing_price.price do
       ^price_value ->
         existing_price.last_changes_at
       _ ->
