@@ -13,7 +13,7 @@ defmodule Tankste.StationWeb.StationView do
     %{
       "id" => station.id,
       "externalId" => station.external_id,
-      "origin" => station.origin,
+      "originId" => station.origin_id,
       "name" => station.name,
       "brand" => station.brand,
       "address" => %{

@@ -15,7 +15,7 @@ defmodule Tankste.Report.Reports do
     |> Repo.one()
   end
 
-  defp query(opts) do
+  defp query(_opts) do
     from(r in Report,
       select: r)
   end

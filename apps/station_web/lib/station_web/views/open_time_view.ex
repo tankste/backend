@@ -5,7 +5,7 @@ defmodule Tankste.StationWeb.OpenTimeView do
     %{
       "id" => open_time.id,
       "stationId" => open_time.station_id,
-      "origin" => open_time.origin,
+      "originId" => open_time.origin_id,
       "day" => open_time.day,
       "startTime" => open_time.start_time,
       "endTime" => open_time.end_time,

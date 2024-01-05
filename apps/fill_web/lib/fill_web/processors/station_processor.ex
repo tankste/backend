@@ -57,7 +57,7 @@ defmodule Tankste.FillWeb.StationProcessor do
         nil ->
           Stations.insert(%{
             external_id: new_station["externalId"] |> trim(),
-            origin: "mtk-s",
+            origin: 1,
             name: new_station["name"] |> trim(),
             brand: new_station["brand"] |> trim(),
             location_latitude: new_station["locationLatitude"],
@@ -72,7 +72,7 @@ defmodule Tankste.FillWeb.StationProcessor do
         station ->
           Stations.update(station, %{
             external_id: new_station["externalId"] |> trim(),
-            origin: "mtk-s",
+            origin: 1,
             name: new_station["name"] |> trim(),
             brand: new_station["brand"] |> trim(),
             location_latitude: new_station["locationLatitude"],
@@ -112,7 +112,7 @@ defmodule Tankste.FillWeb.StationProcessor do
         nil ->
           OpenTimes.insert(%{
             station_id: station_id,
-            origin: "mtk-s",
+            origin: 1,
             day: new_open_time["day"] |> trim(),
             start_time: new_open_time["startTime"] |> trim(),
             end_time: new_open_time["endTime"] |> trim()
@@ -120,7 +120,7 @@ defmodule Tankste.FillWeb.StationProcessor do
         open_time ->
           OpenTimes.update(open_time, %{
             station_id: station_id,
-            origin: "mtk-s",
+            origin: 1,
             day: new_open_time["day"] |> trim(),
             start_time: new_open_time["startTime"] |> trim(),
             end_time: new_open_time["endTime"] |> trim()

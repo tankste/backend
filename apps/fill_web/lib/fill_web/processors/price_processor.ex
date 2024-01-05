@@ -84,7 +84,7 @@ defmodule Tankste.FillWeb.PriceProcessor do
   defp upsert_price_type(_existing_price, _station_id, _type, nil, _last_changes_at), do: {:ok, nil}
   defp upsert_price_type(nil, station_id, type, price_value, last_changes_at) do
     Prices.insert(%{
-      origin: "mtk-s",
+      origin_id: 1,
       station_id: station_id,
       type: type,
       price: price_value,
@@ -93,7 +93,7 @@ defmodule Tankste.FillWeb.PriceProcessor do
   end
   defp upsert_price_type(existing_price, station_id, type, price_value, last_changes_at) do
     Prices.update(existing_price, %{
-      origin: "mtk-s",
+      origin_id: 1,
       station_id: station_id,
       type: type,
       price: price_value,

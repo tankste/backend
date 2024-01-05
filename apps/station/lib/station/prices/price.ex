@@ -7,7 +7,7 @@ defmodule Tankste.Station.Prices.Price do
 
   schema "station_prices" do
     belongs_to :station, Tankste.Station.Stations.Station
-    field :origin, :string
+    belongs_to :origin, Tankste.Station.Origins.Origin
     field :type, :string
     field :price, :float
     field :last_changes_at, :utc_datetime
@@ -17,8 +17,8 @@ defmodule Tankste.Station.Prices.Price do
 
   def changeset(station, attrs) do
     station
-    |> cast(attrs, [:station_id, :origin, :type, :price, :last_changes_at])
-    |> validate_required([:station_id, :origin, :type, :price])
+    |> cast(attrs, [:station_id, :origin_id, :type, :price, :last_changes_at])
+    |> validate_required([:station_id, :origin_id, :type, :price])
     |> validate_inclusion(:type, ~w(e5 e10 diesel))
   end
 end

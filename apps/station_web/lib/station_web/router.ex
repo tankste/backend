@@ -18,10 +18,12 @@ defmodule Tankste.StationWeb.Router do
 
     get "/health", HealthController, :show
 
+    resources "/origins", OriginController, only: [:index, :show]
     resources "/stations", StationController, only: [:index, :show] do
       resources "/prices", StationPriceController, only: [:index]
       resources "/open-times", StationOpenTimeController, only: [:index]
     end
     resources "/markers", MarkerController, only: [:index]
+
   end
 end

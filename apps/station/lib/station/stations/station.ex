@@ -7,8 +7,8 @@ defmodule Tankste.Station.Stations.Station do
 
   schema "stations" do
     has_many :prices, Tankste.Station.Prices.Price
+    belongs_to :origin, Tankste.Station.Origins.Origin
     field :external_id, :string
-    field :origin, :string
     field :name, :string
     field :brand, :string
     field :location_latitude, :float
@@ -25,7 +25,7 @@ defmodule Tankste.Station.Stations.Station do
 
   def changeset(station, attrs) do
     station
-    |> cast(attrs, [:external_id, :origin, :name, :brand, :location_latitude, :location_longitude, :address_street, :address_house_number, :address_post_code, :address_city, :address_country, :last_changes_at])
-    |> validate_required([:external_id, :origin, :name, :location_latitude, :location_longitude, :last_changes_at])
+    |> cast(attrs, [:external_id, :origin_id, :name, :brand, :location_latitude, :location_longitude, :address_street, :address_house_number, :address_post_code, :address_city, :address_country, :last_changes_at])
+    |> validate_required([:external_id, :origin_id, :name, :location_latitude, :location_longitude, :last_changes_at])
   end
 end
