@@ -25,7 +25,7 @@ defmodule Tankste.ReportWeb.ReportController do
   def create(conn, params) do
     # TODO: origin from station
     # TODO: wrong_value from station
-    case Reports.create(%{"device_id" => params["deviceId"], "station_id" => params["stationId"], "origin" => origin_of_station(params["stationId"]), "field" => params["field"], "wrong_value" => value_of_station_field(params["stationId"], params["field"]), "correct_value" => params["correctValue"], "status" => "open"}) do
+    case Reports.create(%{"device_id" => params["deviceId"], "station_id" => params["stationId"], "origin" => origin_of_station_field(params["stationId"], params["field"]), "field" => params["field"], "wrong_value" => value_of_station_field(params["stationId"], params["field"]), "correct_value" => params["correctValue"], "status" => "open"}) do
       {:ok, report} ->
         conn
         |> put_status(:created)
@@ -38,12 +38,56 @@ defmodule Tankste.ReportWeb.ReportController do
     end
   end
 
-  defp origin_of_station(station_id) do
+  defp origin_of_station_field(station_id, "name"), do: station_origin(station_id)
+  defp origin_of_station_field(station_id, "brand"), do: station_origin(station_id)
+  defp origin_of_station_field(station_id, "location_latitude"), do: station_origin(station_id)
+  defp origin_of_station_field(station_id, "location_longitude"), do: station_origin(station_id)
+  defp origin_of_station_field(station_id, "address_street"), do: station_origin(station_id)
+  defp origin_of_station_field(station_id, "address_house_number"), do: station_origin(station_id)
+  defp origin_of_station_field(station_id, "address_post_code"), do: station_origin(station_id)
+  defp origin_of_station_field(station_id, "address_city"), do: station_origin(station_id)
+  defp origin_of_station_field(station_id, "address_country"), do: station_origin(station_id)
+  defp origin_of_station_field(station_id, "open_times"), do: open_times_origin(station_id)
+  defp origin_of_station_field(station_id, "open_times_state"), do: open_times_origin(station_id)
+  defp origin_of_station_field(station_id, "price_e5"), do: price_origin(station_id, "e5")
+  defp origin_of_station_field(station_id, "price_e10"), do: price_origin(station_id, "e10")
+  defp origin_of_station_field(station_id, "price_diesel"), do: price_origin(station_id, "diesel")
+
+  defp station_origin(station_id) do
     case Stations.get(station_id) do
       nil ->
         nil
       station ->
-        station.origin
+        station.origin_id
+    end
+  end
+
+  defp open_times_origin(station_id) do
+    case OpenTimes.list(station_id: station_id) do
+      nil ->
+        nil
+      [] ->
+        nil
+      open_times ->
+        open_times
+        |> Enum.map(fn ot -> ot.origin_id end)
+        |> Enum.at(0)
+    end
+  end
+
+  defp price_origin(station_id, type) do
+    case Prices.list(station_id: station_id) do
+      nil ->
+        nil
+      [] ->
+        nil
+      prices ->
+        case prices |> Enum.find(fn p -> p.type == type end) do
+          nil ->
+            nil
+          price ->
+            price.origin_id
+        end
     end
   end
 
