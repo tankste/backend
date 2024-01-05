@@ -68,6 +68,9 @@ config :report_web, Tankste.ReportWeb.Endpoint,
   check_origin: false
 config :logger, :console, format: "[$level] $message\n"
 
+config :sponsor, :goth,
+  source: %{}
+
 config :phoenix, :plug_init_mode, :runtime
 
 config :phoenix, :stacktrace_depth, 20

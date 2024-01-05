@@ -3,6 +3,8 @@ defmodule Tankste.ReportWeb.ReportController do
 
   alias Tankste.Report.Reports
   alias Tankste.Station.Stations
+  alias Tankste.Station.OpenTimes
+  alias Tankste.Station.Prices
   alias Tankste.ReportWeb.ChangesetView
 
   plug :load_report when action in [:show, :update, :delete]
@@ -66,7 +68,7 @@ defmodule Tankste.ReportWeb.ReportController do
       nil ->
         nil
       station ->
-        station.location_latitude
+        Float.to_string(station.location_latitude)
     end
   end
   defp value_of_station_field(station_id, "location_longitude") do
@@ -74,7 +76,7 @@ defmodule Tankste.ReportWeb.ReportController do
       nil ->
         nil
       station ->
-        station.location_longitude
+        Float.to_string(station.location_longitude)
     end
   end
   defp value_of_station_field(station_id, "address_street") do
@@ -115,6 +117,72 @@ defmodule Tankste.ReportWeb.ReportController do
         nil
       station ->
         station.address_country
+    end
+  end
+  defp value_of_station_field(station_id, "open_times_state") do
+    case Stations.get(station_id) do
+      nil ->
+        nil
+      station ->
+        # TODO: calculate current open state
+        true
+    end
+  end
+  defp value_of_station_field(station_id, "open_times") do
+    case OpenTimes.list(station_id: station_id) do
+      nil ->
+        nil
+      [] ->
+        nil
+      open_times ->
+        open_times
+        |> Enum.map(fn ot -> "#{ot.day}: #{ot.start_time} - #{ot.end_time}" end)
+        |> Enum.join(", ")
+    end
+  end
+  defp value_of_station_field(station_id, "price_e5") do
+    case Prices.list(station_id: station_id) do
+      nil ->
+        nil
+      [] ->
+        nil
+      prices ->
+        case prices |> Enum.find(fn p -> p.type == "e5" end) do
+          nil ->
+            nil
+          price ->
+            Float.to_string(price |> Map.get(:price))
+        end
+    end
+  end
+  defp value_of_station_field(station_id, "price_e10") do
+    case Prices.list(station_id: station_id) do
+      nil ->
+        nil
+      [] ->
+        nil
+      prices ->
+        case prices |> Enum.find(fn p -> p.type == "e10" end) do
+          nil ->
+            nil
+          price ->
+            Float.to_string(price |> Map.get(:price))
+        end
+    end
+  end
+  defp value_of_station_field(station_id, "price_diesel") do
+    case Prices.list(station_id: station_id) do
+      nil ->
+        nil
+      [] ->
+        nil
+      prices ->
+        case prices |> Enum.find(fn p -> p.type == "diesel" end) do
+          nil ->
+            nil
+          price ->
+            Float.to_string(price |> Map.get(:price))
+        end
     end
   end
   defp value_of_station_field(_, _), do: nil

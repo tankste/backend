@@ -15,12 +15,6 @@ defmodule Tankste.Station.OpenTimes do
     |> Repo.one()
   end
 
-  def get_by_station_id(station_id, opts \\ []) do
-    query(opts)
-    |> where([ot], ot.station_id == ^station_id)
-    |> Repo.one()
-  end
-
   defp query(opts) do
     station_id = Keyword.get(opts, :station_id, nil)
 
