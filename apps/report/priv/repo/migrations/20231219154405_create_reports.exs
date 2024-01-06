@@ -5,7 +5,7 @@ defmodule Tankste.Report.Repo.Migrations.CreateReports do
     create table(:reports) do
       add :station_id, :integer, null: false
       add :device_id, :string, null: false
-      add :origin_id, :integer, null: false
+      add :origin, :string, null: false
       add :field, :string, null: false
       add :wrong_value, :string, null: false
       add :correct_value, :string, null: false
