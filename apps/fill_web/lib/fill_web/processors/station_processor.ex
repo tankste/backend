@@ -47,42 +47,47 @@ defmodule Tankste.FillWeb.StationProcessor do
     {:noreply, %{stations: [], processing: false}}
   end
   def handle_cast(:process, %{:stations => [station|stations]}) do
-    upsert_station(station)
-    GenServer.cast(__MODULE__, :process) # Process next item
-    {:noreply, %{stations: stations, processing: true}}
+    case upsert_station(station) do
+      :ok ->
+        GenServer.cast(__MODULE__, :process) # Process next item
+        {:noreply, %{stations: stations, processing: true}}
+      {:error, changeset} ->
+        IO.inspect(changeset)
+        IO.inspect(station)
+        {:noreply, %{stations: [], processing: false}}
+    end
   end
 
   defp upsert_station(new_station) do
     result = case Stations.get_by_external_id(new_station["externalId"]) do
         nil ->
           Stations.insert(%{
-            external_id: new_station["externalId"] |> trim(),
-            origin: 1,
-            name: new_station["name"] |> trim(),
-            brand: new_station["brand"] |> trim(),
+            external_id: new_station["externalId"],
+            origin_id: 1,
+            name: new_station["name"],
+            brand: new_station["brand"],
             location_latitude: new_station["locationLatitude"],
             location_longitude: new_station["locationLongitude"],
-            address_street: new_station["addressStreet"] |> trim(),
-            address_house_number: new_station["addressHouseNumber"] |> trim(),
-            address_post_code: new_station["addressPostCode"] |> trim(),
-            address_city: new_station["addressCity"] |> trim(),
-            address_country: new_station["addressCountry"] |> trim(),
-            last_changes_at: new_station["lastChangesDate"]
+            address_street: new_station["addressStreet"],
+            address_house_number: new_station["addressHouseNumber"],
+            address_post_code: new_station["addressPostCode"],
+            address_city: new_station["addressCity"],
+            address_country: new_station["addressCountry"],
+            last_changes_at: new_station["lastChangesDate"] || DateTime.utc_now()
           })
         station ->
           Stations.update(station, %{
-            external_id: new_station["externalId"] |> trim(),
-            origin: 1,
-            name: new_station["name"] |> trim(),
-            brand: new_station["brand"] |> trim(),
+            origin_id: 1,
+            name: new_station["name"],
+            brand: new_station["brand"],
             location_latitude: new_station["locationLatitude"],
             location_longitude: new_station["locationLongitude"],
-            address_street: new_station["addressStreet"] |> trim(),
-            address_house_number: new_station["addressHouseNumber"] |> trim(),
-            address_post_code: new_station["addressPostCode"] |> trim(),
-            address_city: new_station["addressCity"] |> trim(),
-            address_country: new_station["addressCountry"] |> trim(),
-            last_changes_at: new_station["lastChangesDate"]
+            address_street: new_station["addressStreet"],
+            address_house_number: new_station["addressHouseNumber"],
+            address_post_code: new_station["addressPostCode"],
+            address_city: new_station["addressCity"],
+            address_country: new_station["addressCountry"],
+            last_changes_at: new_station["lastChangesDate"] || DateTime.utc_now() # TODO: change only by changes
           })
       end
 
@@ -93,10 +98,12 @@ defmodule Tankste.FillWeb.StationProcessor do
             :ok
           {:error, changeset} ->
             IO.inspect(changeset)
+            IO.inspect(new_station["openTimes"])
             {:error, changeset}
         end
       {:error, changeset} ->
         IO.inspect(changeset)
+        IO.inspect(new_station)
         {:error, changeset}
     end
   end
@@ -112,18 +119,18 @@ defmodule Tankste.FillWeb.StationProcessor do
         nil ->
           OpenTimes.insert(%{
             station_id: station_id,
-            origin: 1,
-            day: new_open_time["day"] |> trim(),
-            start_time: new_open_time["startTime"] |> trim(),
-            end_time: new_open_time["endTime"] |> trim()
+            origin_id: 1,
+            day: new_open_time["day"],
+            start_time: new_open_time["startTime"],
+            end_time: new_open_time["endTime"]
           })
         open_time ->
           OpenTimes.update(open_time, %{
             station_id: station_id,
-            origin: 1,
-            day: new_open_time["day"] |> trim(),
-            start_time: new_open_time["startTime"] |> trim(),
-            end_time: new_open_time["endTime"] |> trim()
+            origin_id: 1,
+            day: new_open_time["day"],
+            start_time: new_open_time["startTime"],
+            end_time: new_open_time["endTime"]
           })
       end
 
@@ -131,12 +138,8 @@ defmodule Tankste.FillWeb.StationProcessor do
       {:ok, _open_time} ->
         upsert_open_times(station_id, new_open_times, existing_open_times)
       {:error, changeset} ->
+        IO.inspect(new_open_time)
         {:error, changeset}
     end
-  end
-
-  defp trim(nil), do: nil
-  defp trim(string) do
-    String.trim(string)
   end
 end

@@ -59,6 +59,8 @@ defmodule Tankste.FillWeb.PriceProcessor do
         {:noreply, %{prices: prices, stations: stations, current_prices: current_prices, processing: true}}
       {:error, changeset} ->
         IO.inspect(changeset)
+        IO.inspect(price)
+        {:noreply, %{prices: [], stations: [], current_prices: [], processing: false}}
     end
   end
 
