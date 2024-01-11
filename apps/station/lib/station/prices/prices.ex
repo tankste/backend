@@ -64,4 +64,8 @@ defmodule Tankste.Station.Prices do
     |> Price.changeset(attrs)
     |> Repo.update()
   end
+
+  def delete(%Price{} = price) do
+    Repo.delete(price)
+  end
 end

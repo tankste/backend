@@ -65,8 +65,10 @@ defmodule Tankste.FillWeb.PriceProcessor do
     end
   end
 
-  # TODO: why price is NULL. Delete price, or fix wrong value?!
-  defp upsert_price_type(_existing_price, _station_id, _type, nil, _last_changes_at), do: {:ok, nil}
+  defp upsert_price_type(nil, _station_id, _type, nil, _last_changes_at), do: {:ok, nil}
+  defp upsert_price_type(existing_price, _station_id, _type, nil, _last_changes_at) when not is_nil(existing_price) do
+    Prices.delete(existing_price)
+  end
   defp upsert_price_type(nil, station_id, type, price_value, last_changes_at) do
     Prices.insert(%{
       origin_id: 1,
