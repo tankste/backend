@@ -15,6 +15,12 @@ defmodule Tankste.Station.Markers do
     |> Repo.one()
   end
 
+  def get_by_station_id(station_id, opts \\ []) do
+    query(opts)
+    |> where([m], m.station_id == ^station_id)
+    |> Repo.one()
+  end
+
   defp query(opts) do
     boundary = Keyword.get(opts, :boundary, nil)
 

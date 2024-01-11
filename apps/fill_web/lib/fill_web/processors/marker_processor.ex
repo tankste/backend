@@ -1,64 +1,43 @@
 defmodule Tankste.FillWeb.MarkerProcessor do
-  use GenServer
+  use GenStage
 
   alias Tankste.Station.Stations
   alias Tankste.Station.Markers
   alias Tankste.Station.Repo
 
-  # Client
-
-  def start_link(_) do
-    GenServer.start_link(__MODULE__, %{stations: [], all_stations: [], current_markers: [], processing: false}, name: __MODULE__)
+  def start_link(_opts) do
+    GenStage.start_link(__MODULE__, [])
   end
 
-  def update() do
-    GenServer.cast(__MODULE__, :update)
-    process()
+  def init(_args) do
+    {:consumer, [], subscribe_to: [{Tankste.FillWeb.MarkerQueue, [max_demand: 100]}]}
   end
 
-  defp process() do
-    case GenServer.call(__MODULE__, :get_processing, :infinity) do
-      false ->
-        GenServer.cast(__MODULE__, :process)
-      true ->
-        :ok
-    end
-  end
-
-  # Server (callbacks)
-
-  @impl true
-  def init(state) do
-    {:ok, state}
-  end
-
-  @impl true
-  def handle_call(:get_processing, _from, %{:processing => processing} = state) do
-    {:reply, processing, state}
-  end
-
-  @impl true
-  def handle_cast(:update, %{:processing => processing}) do
-    stations = Stations.list()
+  def handle_events(stations, _from, state) do
+    stations = stations
+    |> Repo.preload(:prices)
+    all_stations = Stations.list()
       |> Repo.preload(:prices)
-    {:noreply, %{stations: stations, all_stations: stations, current_markers: Markers.list(), processing: processing}}
+
+    process_stations(stations, all_stations)
   end
-  def handle_cast(:process, %{:stations => []}), do: {:noreply, %{stations: [], all_stations: [], current_markers: [], processing: false}}
-  def handle_cast(:process, %{:stations => [station|stations], :all_stations => all_stations, :current_markers => current_markers}) do
-    case upsert_marker(station, all_stations, current_markers) do
+
+  defp process_stations([], _), do: {:noreply, [], []}
+  defp process_stations([station|stations], all_stations) do
+    case upsert_marker(station, all_stations) do
       {:ok, updated_marker} ->
-        GenServer.cast(__MODULE__, :process) # Process next item
-        {:noreply, %{stations: stations, all_stations: all_stations, current_markers: Enum.filter(current_markers, fn cm -> cm.id != updated_marker.id end) ++ [updated_marker], processing: true}}
+        process_stations(stations, all_stations)
       {:error, changeset} ->
         IO.inspect(changeset)
+        {:stop, :failed, []}
     end
   end
 
-  defp upsert_marker(station, all_stations, current_markers) do
+  defp upsert_marker(station, all_stations) do
     near_stations = all_stations
-      |> Enum.filter(fn s -> Geocalc.within?(20_000, [s.location_longitude, s.location_latitude], [station.location_longitude, station.location_latitude]) end)
+    |> Enum.filter(fn s -> Geocalc.within?(20_000, [s.location_longitude, s.location_latitude], [station.location_longitude, station.location_latitude]) end)
 
-    case Enum.find(current_markers, fn m -> m.station_id == station.id end) do
+    case Markers.get_by_station_id(station.id) do
       nil ->
         Markers.insert(%{
           station_id: station.id,

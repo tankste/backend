@@ -7,7 +7,7 @@ config :station, Tankste.Station.Repo,
   database: "tankste_station_dev",
   hostname: "localhost",
   show_sensitive_data_on_connection_error: true,
-  pool_size: 10
+  pool_size: 50
 
 # Sponsor
 config :sponsor, Tankste.Sponsor.Repo,
@@ -66,6 +66,7 @@ config :report_web, Tankste.ReportWeb.Endpoint,
   debug_errors: true,
   code_reloader: true,
   check_origin: false
+
 config :logger, :console, format: "[$level] $message\n"
 
 config :sponsor, :goth,

@@ -1,60 +1,35 @@
 defmodule Tankste.FillWeb.StationProcessor do
-  use GenServer
+  use GenStage
 
+  alias Tankste.FillWeb.MarkerQueue
   alias Tankste.Station.Stations
+  alias Tankste.Station.Stations.Station
   alias Tankste.Station.OpenTimes
-  alias Tankste.FillWeb.MarkerProcessor
+  alias Tankste.Station.Repo
 
-  # Client
-
-  def start_link(_) do
-    GenServer.start_link(__MODULE__, %{stations: [], processing: false}, name: __MODULE__)
+  def start_link(_opts) do
+    GenStage.start_link(__MODULE__, [])
   end
 
-  def add(stations) do
-    GenServer.cast(__MODULE__, {:add, stations})
-    process()
+  def init(_args) do
+    {:consumer, [], subscribe_to: [{Tankste.FillWeb.StationQueue, [max_demand: 100]}]}
   end
 
-  defp process() do
-    case GenServer.call(__MODULE__, :get_processing) do
-      false ->
-        GenServer.cast(__MODULE__, :process)
-      true ->
-        :ok
-    end
+  def handle_events(stations, _from, state) do
+    process_stations(stations)
   end
 
-  # Server (callbacks)
-
-  @impl true
-  def init(state) do
-    {:ok, state}
+  defp process_stations([]) do
+    {:noreply, [], []}
   end
-
-  @impl true
-  def handle_call(:get_processing, _from, %{:processing => processing} = state) do
-    {:reply, processing, state}
-  end
-
-  @impl true
-  def handle_cast({:add, add_stations}, %{:stations => stations, :processing => processing}) do
-    # TODO: filter duplicated queue entries by externalId
-    {:noreply, %{stations: stations ++ add_stations, processing: processing}}
-  end
-  def handle_cast(:process, %{:stations => []}) do
-    MarkerProcessor.update()
-    {:noreply, %{stations: [], processing: false}}
-  end
-  def handle_cast(:process, %{:stations => [station|stations]}) do
+  defp process_stations([station|stations]) do
     case upsert_station(station) do
-      :ok ->
-        GenServer.cast(__MODULE__, :process) # Process next item
-        {:noreply, %{stations: stations, processing: true}}
+      {:ok, updated_station} ->
+        MarkerQueue.add(updated_station)
+        process_stations(stations)
       {:error, changeset} ->
         IO.inspect(changeset)
-        IO.inspect(station)
-        {:noreply, %{stations: [], processing: false}}
+        {:stop, :failed, []}
     end
   end
 
@@ -77,7 +52,6 @@ defmodule Tankste.FillWeb.StationProcessor do
           })
         station ->
           Stations.update(station, %{
-            origin_id: 1,
             name: new_station["name"],
             brand: new_station["brand"],
             location_latitude: new_station["locationLatitude"],
@@ -87,7 +61,7 @@ defmodule Tankste.FillWeb.StationProcessor do
             address_post_code: new_station["addressPostCode"],
             address_city: new_station["addressCity"],
             address_country: new_station["addressCountry"],
-            last_changes_at: new_station["lastChangesDate"] || DateTime.utc_now() # TODO: change only by changes
+            last_changes_at: last_changes_date(station, new_station)
           })
       end
 
@@ -95,17 +69,37 @@ defmodule Tankste.FillWeb.StationProcessor do
       {:ok, station} ->
         case upsert_open_times(station.id, new_station["openTimes"]) do
           :ok ->
-            :ok
+            {:ok, station}
           {:error, changeset} ->
-            IO.inspect(changeset)
-            IO.inspect(new_station["openTimes"])
             {:error, changeset}
         end
       {:error, changeset} ->
-        IO.inspect(changeset)
-        IO.inspect(new_station)
         {:error, changeset}
     end
+  end
+
+  defp last_changes_date(station, %{"lastChangesDate" => nil} = new_station) do
+    changeset = Station.changeset(station, %{
+      name: new_station["name"],
+      brand: new_station["brand"],
+      location_latitude: new_station["locationLatitude"],
+      location_longitude: new_station["locationLongitude"],
+      address_street: new_station["addressStreet"],
+      address_house_number: new_station["addressHouseNumber"],
+      address_post_code: new_station["addressPostCode"],
+      address_city: new_station["addressCity"],
+      address_country: new_station["addressCountry"],
+    })
+
+  case changeset do
+    %Ecto.Changeset{changes: %{}} ->
+      station.last_changes_at
+    _ ->
+      DateTime.utc_now()
+  end
+  end
+  defp last_changes_date(station, %{"lastChangesDate" => last_changes}) do
+    last_changes
   end
 
   defp upsert_open_times(station_id, new_open_times, existing_open_times \\ nil)
@@ -138,7 +132,6 @@ defmodule Tankste.FillWeb.StationProcessor do
       {:ok, _open_time} ->
         upsert_open_times(station_id, new_open_times, existing_open_times)
       {:error, changeset} ->
-        IO.inspect(new_open_time)
         {:error, changeset}
     end
   end

@@ -1,19 +1,14 @@
 defmodule Tankste.FillWeb.PriceController do
   use Tankste.FillWeb, :controller
 
-  alias Tankste.FillWeb.PriceProcessor
-
-  # def index(conn, _params) do
-  #   stations = Tankste.Station.Stations.list()
-  #   render(conn, "index.json", stations: stations)
-  # end
+  alias Tankste.FillWeb.PriceQueue
 
   # TODO: auth + param validating
   # TODO: crawler header for origin
   # TODO: crawler token
 
   def update(conn, %{"_json" => prices}) when is_list(prices) do
-    PriceProcessor.add(prices)
+    PriceQueue.add(prices)
 
     conn
     |> put_status(:no_content)

@@ -15,6 +15,12 @@ defmodule Tankste.Station.Prices do
     |> Repo.one()
   end
 
+  def get_by_station_id_and_type(station_id, type, opts \\ []) do
+    query(opts)
+    |> where([p], p.station_id == ^station_id and p.type == ^type)
+    |> Repo.one()
+  end
+
   defp query(opts) do
     station_id = Keyword.get(opts, :station_id, nil)
     type = Keyword.get(opts, :type, nil)

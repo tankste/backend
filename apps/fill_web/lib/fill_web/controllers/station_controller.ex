@@ -1,7 +1,7 @@
 defmodule Tankste.FillWeb.StationController do
   use Tankste.FillWeb, :controller
 
-  alias Tankste.FillWeb.StationProcessor
+  alias Tankste.FillWeb.StationQueue
 
   # def index(conn, _params) do
   #   stations = Tankste.Station.Stations.list()
@@ -13,7 +13,7 @@ defmodule Tankste.FillWeb.StationController do
   # TODO: crawler token
 
   def update(conn, %{"_json" => stations}) when is_list(stations) do
-    StationProcessor.add(stations)
+    StationQueue.add(stations)
 
     conn
     |> put_status(:no_content)

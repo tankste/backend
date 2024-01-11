@@ -14,6 +14,8 @@ config :fill_web, Tankste.FillWeb.Endpoint,
   pubsub_server: Tankste.FillWeb.PubSub,
   render_errors: [view: Tankste.FillWeb.ErrorView, accepts: ~w(html json), layout: false]
 
+config :fill_web, :processor, []
+
 # Sponsor
 config :sponsor,
   ecto_repos: [Tankste.Sponsor.Repo]
