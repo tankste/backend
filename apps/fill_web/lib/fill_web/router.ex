@@ -20,5 +20,6 @@ defmodule Tankste.FillWeb.Router do
 
     post "/stations", StationController, :update
     post "/prices", PriceController, :update
+    post "/holidays", HolidayController, :update
   end
 end

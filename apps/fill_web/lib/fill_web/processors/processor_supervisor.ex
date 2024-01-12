@@ -11,9 +11,11 @@ defmodule Tankste.FillWeb.ProcessorSupervisor do
       {Tankste.FillWeb.StationQueue, []},
       {Tankste.FillWeb.PriceQueue, []},
       {Tankste.FillWeb.MarkerQueue, []},
+      {Tankste.FillWeb.HolidayQueue, []},
       station_processors(processor_instances(:station)),
       price_processors(processor_instances(:price)),
       marker_processors(processor_instances(:marker)),
+      holiday_processors(processor_instances(:holiday))
     ]
     |> List.flatten()
 
@@ -44,9 +46,21 @@ defmodule Tankste.FillWeb.ProcessorSupervisor do
       end)
   end
 
-  defp processor_instances(:station), do: processor_config() |> Keyword.get(:password, 5)
-  defp processor_instances(:price), do: processor_config() |> Keyword.get(:password, 10)
-  defp processor_instances(:marker), do: processor_config() |> Keyword.get(:marker, 10)
+  defp holiday_processors(instances) do
+    0..instances
+    |> Enum.map(fn i ->
+        id = "holiday_processor_#{i}" |> String.to_atom()
+        Supervisor.child_spec({Tankste.FillWeb.HolidayProcessor, []}, id: id)
+      end)
+  end
+
+  defp processor_instances(key), do: processor_config() |> Keyword.get(key, instances_default(key))
+
+  defp instances_default(:station), do: 5
+  defp instances_default(:price), do: 10
+  defp instances_default(:marker), do: 10
+  defp instances_default(:holiday), do: 1
+  defp instances_default(_), do: 5
 
   defp processor_config(), do: Application.get_env(:fill_web, :processor)
 end
