@@ -14,18 +14,22 @@ defmodule Tankste.FillWeb.MarkerQueue do
     {:producer, [], [buffer_size: :infinity]}
   end
 
+  @impl true
   def handle_info(_, state) do
     {:noreply, [], state}
   end
 
+  @impl true
   def handle_cast({:add, stations}, state) when is_list(stations) do
     {:noreply, stations, state}
   end
 
+  @impl true
   def handle_cast({:add, station}, state) do
     {:noreply, [station], state}
   end
 
+  @impl true
   def handle_demand(demand, state) do
     stations = Enum.take(state, demand)
     state = Enum.drop(state, demand)

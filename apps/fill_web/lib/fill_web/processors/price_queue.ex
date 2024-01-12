@@ -14,14 +14,17 @@ defmodule Tankste.FillWeb.PriceQueue do
     {:producer, [], [buffer_size: :infinity]}
   end
 
+  @impl true
   def handle_info(_, state) do
     {:noreply, [], state}
   end
 
+  @impl true
   def handle_cast({:add, prices}, state) when is_list(prices) do
     {:noreply, prices, state}
   end
 
+  @impl true
   def handle_demand(demand, state) do
     prices = Enum.take(state, demand)
     state = Enum.drop(state, demand)

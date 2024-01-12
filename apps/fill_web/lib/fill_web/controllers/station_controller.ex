@@ -1,19 +1,16 @@
 defmodule Tankste.FillWeb.StationController do
   use Tankste.FillWeb, :controller
 
+  import Tankste.FillWeb.OriginTokenPlug
+
   alias Tankste.FillWeb.StationQueue
 
-  # def index(conn, _params) do
-  #   stations = Tankste.Station.Stations.list()
-  #   render(conn, "index.json", stations: stations)
-  # end
-
-  # TODO: auth + param validating
-  # TODO: crawler header for origin
-  # TODO: crawler token
+  plug :load_origin
+  plug :require_current_origin
 
   def update(conn, %{"_json" => stations}) when is_list(stations) do
-    StationQueue.add(stations)
+    origin_id = current_origin(conn).id
+    StationQueue.add(stations |> Enum.map(fn s -> Map.put(s, "originId", origin_id) end))
 
     conn
     |> put_status(:no_content)
@@ -24,10 +21,5 @@ defmodule Tankste.FillWeb.StationController do
     |> put_status(:bad_request)
     |> put_view(ErrorView)
     |> render("400.json")
-  end
-
-  def delete(conn, _params) do
-    # externalIds = []
-    conn
   end
 end

@@ -16,6 +16,9 @@ config :fill_web, Tankste.FillWeb.Endpoint,
 
 config :fill_web, :processor, []
 
+config :fill_web, :origin,
+  tokens: []
+
 # Sponsor
 config :sponsor,
   ecto_repos: [Tankste.Sponsor.Repo]

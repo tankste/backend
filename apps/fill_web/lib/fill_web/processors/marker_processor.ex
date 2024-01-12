@@ -13,7 +13,7 @@ defmodule Tankste.FillWeb.MarkerProcessor do
     {:consumer, [], subscribe_to: [{Tankste.FillWeb.MarkerQueue, [max_demand: 100]}]}
   end
 
-  def handle_events(stations, _from, state) do
+  def handle_events(stations, _from, _state) do
     stations = stations
     |> Repo.preload(:prices)
     all_stations = Stations.list()
@@ -27,7 +27,7 @@ defmodule Tankste.FillWeb.MarkerProcessor do
     case upsert_marker(station, all_stations) do
       {:ok, nil} ->
         process_stations(stations, all_stations)
-      {:ok, updated_marker} ->
+      {:ok, _updated_marker} ->
         process_stations(stations, all_stations)
       {:error, changeset} ->
         IO.inspect(changeset)

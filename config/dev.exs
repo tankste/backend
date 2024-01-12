@@ -72,6 +72,13 @@ config :logger, :console, format: "[$level] $message\n"
 config :sponsor, :goth,
   source: %{}
 
+config :fill_web, :origin,
+  tokens: %{
+    "1" => 1,
+    "2" => 2,
+    "3" => 3
+  }
+
 config :phoenix, :plug_init_mode, :runtime
 
 config :phoenix, :stacktrace_depth, 20

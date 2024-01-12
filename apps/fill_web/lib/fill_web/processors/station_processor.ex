@@ -5,17 +5,18 @@ defmodule Tankste.FillWeb.StationProcessor do
   alias Tankste.Station.Stations
   alias Tankste.Station.Stations.Station
   alias Tankste.Station.OpenTimes
-  alias Tankste.Station.Repo
 
   def start_link(_opts) do
     GenStage.start_link(__MODULE__, [])
   end
 
+  @impl true
   def init(_args) do
     {:consumer, [], subscribe_to: [{Tankste.FillWeb.StationQueue, [max_demand: 100]}]}
   end
 
-  def handle_events(stations, _from, state) do
+  @impl true
+  def handle_events(stations, _from, _state) do
     process_stations(stations)
   end
 
@@ -38,7 +39,7 @@ defmodule Tankste.FillWeb.StationProcessor do
         nil ->
           Stations.insert(%{
             external_id: new_station["externalId"],
-            origin_id: 1,
+            origin_id: new_station["originId"],
             name: new_station["name"],
             brand: new_station["brand"],
             location_latitude: new_station["locationLatitude"],
@@ -67,7 +68,7 @@ defmodule Tankste.FillWeb.StationProcessor do
 
     case result do
       {:ok, station} ->
-        case upsert_open_times(station.id, new_station["openTimes"]) do
+        case upsert_open_times(station.id, new_station["originId"], new_station["openTimes"]) do
           :ok ->
             {:ok, station}
           {:error, changeset} ->
@@ -92,28 +93,28 @@ defmodule Tankste.FillWeb.StationProcessor do
     })
 
   case changeset do
-    %Ecto.Changeset{changes: %{}} ->
-      station.last_changes_at
-    _ ->
-      DateTime.utc_now()
+      %Ecto.Changeset{changes: %{}} ->
+        station.last_changes_at
+      _ ->
+        DateTime.utc_now()
+    end
   end
-  end
-  defp last_changes_date(station, %{"lastChangesDate" => last_changes}) do
+  defp last_changes_date(_station, %{"lastChangesDate" => last_changes}) do
     last_changes
   end
 
-  defp upsert_open_times(station_id, new_open_times, existing_open_times \\ nil)
-  defp upsert_open_times(_, [], _), do: :ok
-  defp upsert_open_times(station_id, new_open_times, nil) do
+  defp upsert_open_times(station_id, origin_id, new_open_times, existing_open_times \\ nil)
+  defp upsert_open_times(_, _, [], _), do: :ok
+  defp upsert_open_times(station_id, origin_id, new_open_times, nil) do
     existing_open_times = OpenTimes.list(station_id: station_id)
-    upsert_open_times(station_id, new_open_times, existing_open_times)
+    upsert_open_times(station_id, origin_id, new_open_times, existing_open_times)
   end
-  defp upsert_open_times(station_id, [new_open_time|new_open_times], existing_open_times) do
+  defp upsert_open_times(station_id, origin_id, [new_open_time|new_open_times], existing_open_times) do
     result = case Enum.find(existing_open_times, fn ot -> ot.day == new_open_time["day"] end) do
         nil ->
           OpenTimes.insert(%{
             station_id: station_id,
-            origin_id: 1,
+            origin_id: origin_id,
             day: new_open_time["day"],
             start_time: new_open_time["startTime"],
             end_time: new_open_time["endTime"]
@@ -121,7 +122,7 @@ defmodule Tankste.FillWeb.StationProcessor do
         open_time ->
           OpenTimes.update(open_time, %{
             station_id: station_id,
-            origin_id: 1,
+            origin_id: origin_id,
             day: new_open_time["day"],
             start_time: new_open_time["startTime"],
             end_time: new_open_time["endTime"]
@@ -130,7 +131,7 @@ defmodule Tankste.FillWeb.StationProcessor do
 
     case result do
       {:ok, _open_time} ->
-        upsert_open_times(station_id, new_open_times, existing_open_times)
+        upsert_open_times(station_id, origin_id, new_open_times, existing_open_times)
       {:error, changeset} ->
         {:error, changeset}
     end
