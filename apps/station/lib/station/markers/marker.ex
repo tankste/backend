@@ -22,5 +22,8 @@ defmodule Tankste.Station.Markers.Marker do
     marker
     |> cast(attrs, [:station_id, :label, :latitude, :longitude, :e5_price, :e5_price_comparison, :e10_price, :e10_price_comparison, :diesel_price, :diesel_price_comparison])
     |> validate_required([:station_id, :label, :latitude, :longitude])
+    |> validate_inclusion(:e5_price_comparison, ~w(cheap medium expensive not_available))
+    |> validate_inclusion(:e10_price_comparison, ~w(cheap medium expensive not_available))
+    |> validate_inclusion(:diesel_price_comparison, ~w(cheap medium expensive not_available))
   end
 end

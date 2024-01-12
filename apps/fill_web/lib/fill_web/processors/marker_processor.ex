@@ -94,7 +94,7 @@ defmodule Tankste.FillWeb.MarkerProcessor do
 
     case get_price(station, type) do
       nil ->
-        nil
+        "not_available"
       price_value ->
         min_price = near_prices
           |> Enum.min()

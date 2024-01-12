@@ -22,15 +22,28 @@ defmodule Tankste.Station.Stations do
   end
 
   defp query(opts) do
+    id = Keyword.get(opts, :id, nil)
     external_id = Keyword.get(opts, :external_id, nil)
     boundary = Keyword.get(opts, :boundary, nil)
     status = Keyword.get(opts, :status, nil)
 
     from(s in Station,
       select: s)
+    |> query_where_id(id)
     |> query_where_external_id(external_id)
     |> query_where_in_boundary(boundary)
     |> query_where_status(status)
+  end
+
+  defp query_where_id(query, nil), do: query
+  defp query_where_id(query, []), do: query
+  defp query_where_id(query, id) when is_list(id) do
+    query
+    |> where([s], s.id in ^id)
+  end
+  defp query_where_id(query, id) do
+    query
+    |> where([s], s.id == ^id)
   end
 
   defp query_where_external_id(query, nil), do: query
