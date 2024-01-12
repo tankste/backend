@@ -1,10 +1,12 @@
 defmodule Tankste.StationWeb.StationPriceController do
   use Tankste.StationWeb, :controller
 
+  import Tankste.StationWeb.StationController, only: [load_station: 2]
+
   alias Tankste.Station.Prices
   alias Tankste.Station.OpenTimes
 
-  # TODO: load station by plug
+  plug :load_station, [station_id: "station_id"]
 
   def index(conn, %{"station_id" => station_id}) do
     prices = case in_open_time(station_id) do

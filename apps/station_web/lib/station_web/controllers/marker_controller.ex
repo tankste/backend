@@ -3,7 +3,6 @@ defmodule Tankste.StationWeb.MarkerController do
 
   alias Tankste.Station.Markers
   alias Tankste.Station.OpenTimes
-  alias Tankste.Station.Repo
 
   # TODO: limit requests to max ~0.2 degree
   # TODO: fall back request
@@ -15,7 +14,6 @@ defmodule Tankste.StationWeb.MarkerController do
     markers = Markers.list(boundary: boundary)
       |> Enum.map(&override_states/1)
 
-    #TODO: validate open times & replace null comparisation by enum
     render(conn, "index.json", markers: markers)
   end
 
