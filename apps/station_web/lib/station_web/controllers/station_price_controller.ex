@@ -9,11 +9,13 @@ defmodule Tankste.StationWeb.StationPriceController do
   plug :load_station, [station_id: "station_id"]
 
   def index(conn, %{"station_id" => station_id}) do
+    prices = Prices.list(station_id: station_id)
     prices = case in_open_time(station_id) do
         true ->
-          Prices.list(station_id: station_id)
+          prices
         false ->
-          []
+          Prices.list(station_id: station_id)
+          |> Enum.map(fn p -> Map.put(p, :price, nil) end)
       end
 
     render(conn, "index.json", prices: prices)

@@ -23,8 +23,11 @@ defmodule Tankste.StationWeb.MarkerController do
         marker
       false ->
         marker
+        |> Map.put(:e5_price, nil)
         |> Map.put(:e5_price_comparison, "not_available")
+        |> Map.put(:e10_price, nil)
         |> Map.put(:e10_price_comparison, "not_available")
+        |> Map.put(:diesel_price, nil)
         |> Map.put(:diesel_price_comparison, "not_Available")
     end
   end
