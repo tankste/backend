@@ -25,6 +25,8 @@ defmodule Tankste.FillWeb.MarkerProcessor do
   defp process_stations([], _), do: {:noreply, [], []}
   defp process_stations([station|stations], all_stations) do
     case upsert_marker(station, all_stations) do
+      {:ok, nil} ->
+        process_stations(stations, all_stations)
       {:ok, updated_marker} ->
         process_stations(stations, all_stations)
       {:error, changeset} ->
@@ -33,6 +35,14 @@ defmodule Tankste.FillWeb.MarkerProcessor do
     end
   end
 
+  defp upsert_marker(%{:status => status} = station, _) when status != "available" do
+    case Markers.get_by_station_id(station.id) do
+      nil ->
+        {:ok, nil}
+      marker ->
+        Markers.delete(marker)
+    end
+  end
   defp upsert_marker(station, all_stations) do
     near_stations = all_stations
     |> Enum.filter(fn s -> Geocalc.within?(20_000, [s.location_longitude, s.location_latitude], [station.location_longitude, station.location_latitude]) end)

@@ -58,4 +58,8 @@ defmodule Tankste.Station.Markers do
     |> Marker.changeset(attrs)
     |> Repo.update()
   end
+
+  def delete(%Marker{} = marker) do
+    Repo.delete(marker)
+  end
 end

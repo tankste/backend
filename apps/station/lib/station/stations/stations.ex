@@ -24,11 +24,13 @@ defmodule Tankste.Station.Stations do
   defp query(opts) do
     external_id = Keyword.get(opts, :external_id, nil)
     boundary = Keyword.get(opts, :boundary, nil)
+    status = Keyword.get(opts, :status, nil)
 
     from(s in Station,
       select: s)
     |> query_where_external_id(external_id)
     |> query_where_in_boundary(boundary)
+    |> query_where_status(status)
   end
 
   defp query_where_external_id(query, nil), do: query
@@ -59,6 +61,17 @@ defmodule Tankste.Station.Stations do
 
   defp latitude({latitude, _}), do: latitude
   defp longitude({_, longitude}), do: longitude
+
+  defp query_where_status(query, nil), do: query
+  defp query_where_status(query, []), do: query
+  defp query_where_status(query, status) when is_list(status) do
+    query
+    |> where([s], s.status in ^status)
+  end
+  defp query_where_status(query, status) do
+    query
+    |> where([s], s.status == ^status)
+  end
 
   def insert(attrs \\ %{}) do
     %Station{}
