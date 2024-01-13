@@ -4,6 +4,8 @@ defmodule Tankste.FillWeb.StationProcessor do
   alias Tankste.FillWeb.MarkerQueue
   alias Tankste.Station.Stations
   alias Tankste.Station.Stations.Station
+  alias Tankste.Station.Areas
+  alias Tankste.Station.StationAreas
   alias Tankste.Station.OpenTimes
 
   def start_link(_opts) do
@@ -66,11 +68,17 @@ defmodule Tankste.FillWeb.StationProcessor do
           })
       end
 
+    # TODO: remove old open times, remove old areas
     case result do
       {:ok, station} ->
         case upsert_open_times(station.id, new_station["originId"], new_station["openTimes"]) do
           :ok ->
-            {:ok, station}
+            case upsert_areas(station.id, new_station["areaKeys"]) do
+              :ok ->
+                {:ok, station}
+              {:error, changeset} ->
+                {:error, changeset}
+            end
           {:error, changeset} ->
             {:error, changeset}
         end
@@ -134,6 +142,37 @@ defmodule Tankste.FillWeb.StationProcessor do
         upsert_open_times(station_id, origin_id, new_open_times, existing_open_times)
       {:error, changeset} ->
         {:error, changeset}
+    end
+  end
+
+  defp upsert_areas(station_id, new_area_keys, existing_areas \\ nil)
+  defp upsert_areas(station_id, new_area_keys, nil) do
+    existing_areas = StationAreas.list(station_id: station_id)
+    upsert_areas(station_id, new_area_keys, existing_areas)
+  end
+  defp upsert_areas(_station_id, [], _existing_areas), do: :ok
+  defp upsert_areas(station_id, [new_area_key|new_area_keys], existing_areas) do
+    case new_area_key |> Areas.get_by_key(new_area_key) do
+      nil ->
+        {:error, :invalid_area_key}
+      area ->
+        result = case Enum.find(existing_areas, fn sa -> sa.area_id == area.id end) do
+            nil ->
+              StationAreas.create(%{
+                station_id: station_id,
+                area_id: area.id
+              })
+            station_area ->
+              # Only n-2-n table. No update needed.
+              {:ok, station_area}
+          end
+
+        case result do
+          {:ok, _station_area} ->
+            upsert_areas(station_id, new_area_keys, existing_areas)
+          {:error, changeset} ->
+            {:error, changeset}
+        end
     end
   end
 end

@@ -21,7 +21,7 @@ defmodule Tankste.Station.Holidays do
     |> Repo.one()
   end
 
-  defp query(opts) do
+  defp query(_opts) do
     from(h in Holiday,
       select: h)
   end
