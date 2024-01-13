@@ -3,6 +3,8 @@ defmodule Tankste.StationWeb.MarkerController do
 
   alias Tankste.Station.Markers
   alias Tankste.Station.OpenTimes
+  alias Tankste.Station.StationAreas
+  alias Tankste.Station.Holidays
 
   # TODO: limit requests to max ~0.2 degree
   # TODO: fall back request
@@ -18,7 +20,7 @@ defmodule Tankste.StationWeb.MarkerController do
   end
 
   defp override_states(marker) do
-    case in_open_time(marker) do
+    case is_open(marker) do
       true ->
         marker
       false ->
@@ -32,8 +34,26 @@ defmodule Tankste.StationWeb.MarkerController do
     end
   end
 
-  defp in_open_time(marker) do
+  defp is_open(marker) do
+    case StationAreas.list(station_id: marker.station_id) do
+      [] ->
+        is_in_open_time(marker, :today)
+      station_areas ->
+        case Holidays.list(date: Date.utc_today(), area_id: station_areas |> Enum.map(fn sa -> sa.area_id end)) do
+          [] ->
+            is_in_open_time(marker, :today)
+          _holidays ->
+            is_in_open_time(marker, :holiday)
+        end
+    end
+  end
+
+  defp is_in_open_time(marker, :today) do
     OpenTimes.list(station_id: marker.station_id, day: Date.utc_today() |> Date.day_of_week() |> day())
+    |> Enum.any?(fn t -> t.start_time == t.end_time or (t.start_time <= Time.utc_now() && t.end_time >= Time.utc_now()) end)
+  end
+  defp is_in_open_time(marker, :holiday) do
+    OpenTimes.list(station_id: marker.station_id, day: "public_holiday")
     |> Enum.any?(fn t -> t.start_time == t.end_time or (t.start_time <= Time.utc_now() && t.end_time >= Time.utc_now()) end)
   end
 
