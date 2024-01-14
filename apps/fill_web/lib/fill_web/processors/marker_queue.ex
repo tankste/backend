@@ -31,6 +31,8 @@ defmodule Tankste.FillWeb.MarkerQueue do
 
   @impl true
   def handle_demand(demand, state) do
+    state = state |> Enum.uniq_by(fn s -> s.id end)
+
     stations = Enum.take(state, demand)
     state = Enum.drop(state, demand)
     {:noreply, stations, state}

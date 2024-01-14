@@ -6,6 +6,9 @@ defmodule Tankste.FillWeb.PriceProcessor do
   alias Tankste.Station.Prices
   alias Tankste.Station.Repo
 
+  @station_to_update_radius 25_000 # 25 kilometers
+  @station_to_update_area_radius_degrees 0.35 # ~ 35 kilomters
+
   def start_link(_opts) do
     GenStage.start_link(__MODULE__, [])
   end
@@ -31,9 +34,9 @@ defmodule Tankste.FillWeb.PriceProcessor do
         process_prices(prices)
       {:ok, updated_prices} ->
         station = updated_prices |> Enum.at(0) |> Map.get(:station_id) |> Stations.get()
-        # TODO: filter on database instead of fetch all items
-        Stations.list()
-        |> Enum.filter(fn s -> Geocalc.within?(20_000, [s.location_longitude, s.location_latitude], [station.location_longitude, station.location_latitude]) end)
+
+        Stations.list(boundary: [{station.location_latitude - @station_area_radius_degrees, station.location_longitude - @station_area_radius_degrees}, {station.location_latitude + @station_area_radius_degrees, station.location_longitude + @station_area_radius_degrees}])
+        |> Enum.filter(fn s -> Geocalc.within?(@station_to_update_radius, [s.location_longitude, s.location_latitude], [station.location_longitude, station.location_latitude]) end)
         |> MarkerQueue.add()
 
         process_prices(prices)

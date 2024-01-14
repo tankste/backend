@@ -5,6 +5,9 @@ defmodule Tankste.FillWeb.MarkerProcessor do
   alias Tankste.Station.Markers
   alias Tankste.Station.Repo
 
+  @station_distance_comparing_meters 20_000 # 20 kilometers
+  @station_area_radius_degrees 0.3 # ~ 30 kilomters
+
   def start_link(_opts) do
     GenStage.start_link(__MODULE__, [])
   end
@@ -16,26 +19,24 @@ defmodule Tankste.FillWeb.MarkerProcessor do
   def handle_events(stations, _from, _state) do
     stations = stations
     |> Repo.preload(:prices)
-    all_stations = Stations.list()
-      |> Repo.preload(:prices)
 
-    process_stations(stations, all_stations)
+    process_stations(stations)
   end
 
-  defp process_stations([], _), do: {:noreply, [], []}
-  defp process_stations([station|stations], all_stations) do
-    case upsert_marker(station, all_stations) do
+  defp process_stations([]), do: {:noreply, [], []}
+  defp process_stations([station|stations]) do
+    case upsert_marker(station) do
       {:ok, nil} ->
-        process_stations(stations, all_stations)
+        process_stations(stations)
       {:ok, _updated_marker} ->
-        process_stations(stations, all_stations)
+        process_stations(stations)
       {:error, changeset} ->
         IO.inspect(changeset)
         {:stop, :failed, []}
     end
   end
 
-  defp upsert_marker(%{:status => status} = station, _) when status != "available" do
+  def upsert_marker(%{:status => status} = station, _) when status != "available" do
     case Markers.get_by_station_id(station.id) do
       nil ->
         {:ok, nil}
@@ -43,9 +44,10 @@ defmodule Tankste.FillWeb.MarkerProcessor do
         Markers.delete(marker)
     end
   end
-  defp upsert_marker(station, all_stations) do
-    near_stations = all_stations
-    |> Enum.filter(fn s -> Geocalc.within?(20_000, [s.location_longitude, s.location_latitude], [station.location_longitude, station.location_latitude]) end)
+  def upsert_marker(station) do
+    near_stations = Stations.list(boundary: [{station.location_latitude - @station_area_radius_degrees, station.location_longitude - @station_area_radius_degrees}, {station.location_latitude + @station_area_radius_degrees, station.location_longitude + @station_area_radius_degrees}])
+    |> Enum.filter(fn s -> Geocalc.within?(@station_distance_comparing_meters, [s.location_longitude, s.location_latitude], [station.location_longitude, station.location_latitude]) end)
+    |> Repo.preload(:prices)
 
     case Markers.get_by_station_id(station.id) do
       nil ->
