@@ -35,7 +35,7 @@ defmodule Tankste.FillWeb.PriceProcessor do
       {:ok, updated_prices} ->
         station = updated_prices |> Enum.at(0) |> Map.get(:station_id) |> Stations.get()
 
-        Stations.list(boundary: [{station.location_latitude - @station_area_radius_degrees, station.location_longitude - @station_area_radius_degrees}, {station.location_latitude + @station_area_radius_degrees, station.location_longitude + @station_area_radius_degrees}])
+        Stations.list(boundary: [{station.location_latitude - @station_to_update_area_radius_degrees, station.location_longitude - @station_to_update_area_radius_degrees}, {station.location_latitude + @station_to_update_area_radius_degrees, station.location_longitude + @station_to_update_area_radius_degrees}])
         |> Enum.filter(fn s -> Geocalc.within?(@station_to_update_radius, [s.location_longitude, s.location_latitude], [station.location_longitude, station.location_latitude]) end)
         |> MarkerQueue.add()
 
