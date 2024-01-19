@@ -17,7 +17,7 @@ config :fill_web, Tankste.FillWeb.Endpoint,
 config :fill_web, :processor, []
 
 config :fill_web, :origin,
-  tokens: []
+  tokens: %{}
 
 # Sponsor
 config :sponsor,

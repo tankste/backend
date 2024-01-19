@@ -14,5 +14,6 @@ defmodule Tankste.Station.Areas.Area do
     open_time
     |> cast(attrs, [:key, :name])
     |> validate_required([:key, :name])
+    |> unique_constraint(:key)
   end
 end

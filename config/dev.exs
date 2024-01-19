@@ -7,7 +7,7 @@ config :station, Tankste.Station.Repo,
   database: "tankste_station_dev",
   hostname: "localhost",
   show_sensitive_data_on_connection_error: true,
-  pool_size: 50
+  pool_size: 20
 
 # Sponsor
 config :sponsor, Tankste.Sponsor.Repo,

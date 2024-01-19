@@ -15,7 +15,7 @@ defmodule Tankste.FillWeb.PriceProcessor do
 
   @impl true
   def init(_args) do
-    {:consumer, [], subscribe_to: [{Tankste.FillWeb.PriceQueue, [max_demand: 100]}]}
+    {:consumer, [], subscribe_to: [{Tankste.FillWeb.PriceQueue, [max_demand: 1_000]}]}
   end
 
   @impl true
@@ -56,17 +56,16 @@ defmodule Tankste.FillWeb.PriceProcessor do
       nil ->
         {:error, :no_station}
       station ->
-        Repo.transaction(fn ->
-          with {:ok, e5Price} <- upsert_price_type(Prices.get_by_station_id_and_type(station.id, "e5"), new_price["originId"], station.id, "e5", new_price["e5Price"], new_price["e5LastChangeDate"]),
-            {:ok, e10Price} <- upsert_price_type(Prices.get_by_station_id_and_type(station.id, "e10"), new_price["originId"], station.id, "e10", new_price["e10Price"], new_price["e10LastChangeDate"]),
-            {:ok, dieselPrice} <- upsert_price_type(Prices.get_by_station_id_and_type(station.id, "diesel"), new_price["originId"], station.id, "diesel", new_price["dieselPrice"], new_price["dieselLastChangeDate"]) do
-              [e5Price, e10Price, dieselPrice]
-              |> Enum.filter(fn price -> price != nil end)
-          else
-            {:error, changeset} ->
-              {:error, changeset}
-          end
-        end)
+        with {:ok, e5Price} <- upsert_price_type(Prices.get_by_station_id_and_type(station.id, "e5"), new_price["originId"], station.id, "e5", new_price["e5Price"], new_price["e5LastChangeDate"]),
+          {:ok, e10Price} <- upsert_price_type(Prices.get_by_station_id_and_type(station.id, "e10"), new_price["originId"], station.id, "e10", new_price["e10Price"], new_price["e10LastChangeDate"]),
+          {:ok, dieselPrice} <- upsert_price_type(Prices.get_by_station_id_and_type(station.id, "diesel"), new_price["originId"], station.id, "diesel", new_price["dieselPrice"], new_price["dieselLastChangeDate"]) do
+            prices = [e5Price, e10Price, dieselPrice]
+            |> Enum.filter(fn price -> price != nil end)
+            {:ok, prices}
+        else
+          {:error, changeset} ->
+            {:error, changeset}
+        end
     end
   end
 

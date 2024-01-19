@@ -15,9 +15,11 @@ defmodule Tankste.Station.Stations do
     |> Repo.one()
   end
 
+  # TODO: should be external ID + origin
   def get_by_external_id(external_id, opts \\ []) do
     query(opts)
     |> where([s], s.external_id == ^external_id)
+    |> limit(1)
     |> Repo.one()
   end
 

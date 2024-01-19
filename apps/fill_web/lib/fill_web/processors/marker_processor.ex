@@ -13,12 +13,12 @@ defmodule Tankste.FillWeb.MarkerProcessor do
   end
 
   def init(_args) do
-    {:consumer, [], subscribe_to: [{Tankste.FillWeb.MarkerQueue, [max_demand: 100]}]}
+    {:consumer, [], subscribe_to: [{Tankste.FillWeb.MarkerQueue, [max_demand: 1_000]}]}
   end
 
   def handle_events(stations, _from, _state) do
     stations = stations
-    |> Repo.preload(:prices)
+      |> Repo.preload(:prices)
 
     process_stations(stations)
   end

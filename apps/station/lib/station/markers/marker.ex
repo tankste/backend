@@ -25,5 +25,6 @@ defmodule Tankste.Station.Markers.Marker do
     |> validate_inclusion(:e5_price_comparison, ~w(cheap medium expensive not_available))
     |> validate_inclusion(:e10_price_comparison, ~w(cheap medium expensive not_available))
     |> validate_inclusion(:diesel_price_comparison, ~w(cheap medium expensive not_available))
+    |> unique_constraint(:station_id)
   end
 end

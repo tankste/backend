@@ -14,7 +14,7 @@ defmodule Tankste.FillWeb.StationProcessor do
 
   @impl true
   def init(_args) do
-    {:consumer, [], subscribe_to: [{Tankste.FillWeb.StationQueue, [max_demand: 100]}]}
+    {:consumer, [], subscribe_to: [{Tankste.FillWeb.StationQueue, [max_demand: 1_000]}]}
   end
 
   @impl true
@@ -68,7 +68,7 @@ defmodule Tankste.FillWeb.StationProcessor do
           })
       end
 
-    # TODO: remove old open times, remove old areas
+    # # TODO: remove old open times, remove old areas
     case result do
       {:ok, station} ->
         case upsert_open_times(station.id, new_station["originId"], new_station["openTimes"]) do

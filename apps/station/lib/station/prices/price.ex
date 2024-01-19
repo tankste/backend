@@ -20,5 +20,6 @@ defmodule Tankste.Station.Prices.Price do
     |> cast(attrs, [:station_id, :origin_id, :type, :price, :last_changes_at])
     |> validate_required([:station_id, :origin_id, :type, :price])
     |> validate_inclusion(:type, ~w(e5 e10 diesel))
+    |> unique_constraint([:station_id, :type])
   end
 end

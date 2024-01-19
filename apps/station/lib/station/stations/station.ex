@@ -32,5 +32,6 @@ defmodule Tankste.Station.Stations.Station do
     # disabled: this story should not be visible, for technical reasons
     # closed: station business has closed, don't show this station anymore
     |> validate_inclusion(:status, ~w(available disabled closed))
+    |> unique_constraint(:origin_id_and_external_id)
   end
 end
