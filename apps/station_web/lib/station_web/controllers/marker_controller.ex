@@ -34,12 +34,13 @@ defmodule Tankste.StationWeb.MarkerController do
     end
   end
 
+  # TODO: use time zone based on station location
   defp is_open(marker) do
     case StationAreas.list(station_id: marker.station_id) do
       [] ->
         is_in_open_time(marker, :today)
       station_areas ->
-        case Holidays.list(date: Date.utc_today(), area_id: station_areas |> Enum.map(fn sa -> sa.area_id end)) do
+        case Holidays.list(date: DateTime.now!("Europe/Berlin") |> DateTime.to_date(), area_id: station_areas |> Enum.map(fn sa -> sa.area_id end)) do
           [] ->
             is_in_open_time(marker, :today)
           _holidays ->
@@ -48,13 +49,17 @@ defmodule Tankste.StationWeb.MarkerController do
     end
   end
 
+  # TODO: use time zone based on station location
   defp is_in_open_time(marker, :today) do
-    OpenTimes.list(station_id: marker.station_id, day: Date.utc_today() |> Date.day_of_week() |> day())
-    |> Enum.any?(fn t -> t.start_time == t.end_time or (t.start_time <= Time.utc_now() && t.end_time >= Time.utc_now()) end)
+    now = DateTime.now!("Europe/Berlin")
+    time_now = now |> DateTime.to_time()
+    OpenTimes.list(station_id: marker.station_id, day: now |> DateTime.to_date() |> Date.day_of_week() |> day())
+    |> Enum.any?(fn t -> t.start_time == t.end_time or (t.start_time <= time_now && t.end_time >= time_now) end)
   end
   defp is_in_open_time(marker, :holiday) do
+    time_now =  DateTime.now!("Europe/Berlin") |> DateTime.to_time()
     OpenTimes.list(station_id: marker.station_id, day: "public_holiday")
-    |> Enum.any?(fn t -> t.start_time == t.end_time or (t.start_time <= Time.utc_now() && t.end_time >= Time.utc_now()) end)
+    |> Enum.any?(fn t -> t.start_time == t.end_time or (t.start_time <= time_now && t.end_time >= time_now) end)
   end
 
   defp day(1), do: "monday"

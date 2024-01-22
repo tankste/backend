@@ -1,5 +1,13 @@
 import Config
 
+config :logger, :console,
+  format: "$time $metadata[$level] $message\n",
+  metadata: [:request_id]
+
+config :phoenix, :json_library, Jason
+
+config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
+
 # Station
 config :station,
   ecto_repos: [Tankste.Station.Repo]
@@ -36,11 +44,5 @@ config :report,
 config :report_web, Tankste.ReportWeb.Endpoint,
   pubsub_server: Tankste.ReportWeb.PubSub,
   render_errors: [view: Tankste.ReportWeb.ErrorView, accepts: ~w(html json), layout: false]
-
-config :logger, :console,
-  format: "$time $metadata[$level] $message\n",
-  metadata: [:request_id]
-
-config :phoenix, :json_library, Jason
 
 import_config "#{config_env()}.exs"

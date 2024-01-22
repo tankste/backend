@@ -4,7 +4,6 @@ defmodule Tankste.FillWeb.PriceProcessor do
   alias Tankste.FillWeb.MarkerQueue
   alias Tankste.Station.Stations
   alias Tankste.Station.Prices
-  alias Tankste.Station.Repo
 
   @station_to_update_radius 25_000 # 25 kilometers
   @station_to_update_area_radius_degrees 0.35 # ~ 35 kilomters
