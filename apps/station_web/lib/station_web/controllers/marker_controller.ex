@@ -12,7 +12,7 @@ defmodule Tankste.StationWeb.MarkerController do
   @station_distance_comparing_meters 20_000 # 20 kilometers
   @station_area_radius_degrees 0.3 # ~ 30 kilomters
 
-  def index(conn, %{"boundary" => boundary_param, "runtime" => "true"}) do
+  def index(conn, %{"boundary" => boundary_param}) do
     boundary = boundary_param
       |> Enum.map(fn b -> b |> String.split(",") |> Enum.map(&String.to_float/1) end)
       |> Enum.map(fn b -> List.to_tuple(b) end)
@@ -27,16 +27,16 @@ defmodule Tankste.StationWeb.MarkerController do
 
   # TODO: limit requests to max ~0.2 degree
   # TODO: fall back request
-  def index(conn, %{"boundary" => boundary_param}) do
-    boundary = boundary_param
-      |> Enum.map(fn b -> b |> String.split(",") |> Enum.map(&String.to_float/1) end)
-      |> Enum.map(fn b -> List.to_tuple(b) end)
+  # def index(conn, %{"boundary" => boundary_param}) do
+  #   boundary = boundary_param
+  #     |> Enum.map(fn b -> b |> String.split(",") |> Enum.map(&String.to_float/1) end)
+  #     |> Enum.map(fn b -> List.to_tuple(b) end)
 
-    markers = Markers.list(boundary: boundary)
-      |> Enum.map(&override_states/1)
+  #   markers = Markers.list(boundary: boundary)
+  #     |> Enum.map(&override_states/1)
 
-    render(conn, "index.json", markers: markers)
-  end
+  #   render(conn, "index.json", markers: markers)
+  # end
 
   defp override_states(marker) do
     case is_open(marker) do

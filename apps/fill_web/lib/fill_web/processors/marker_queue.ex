@@ -6,7 +6,10 @@ defmodule Tankste.FillWeb.MarkerQueue do
   end
 
   def add(stations) do
-    GenServer.cast(__MODULE__, {:add, stations})
+    # TODO: temporary disabled
+    #   enable again later, or remove whole marker stuff
+    # GenServer.cast(__MODULE__, {:add, stations})
+    :ok
   end
 
   @impl true
