@@ -1,12 +1,9 @@
 defmodule Tankste.StationWeb.MarkerController do
   use Tankste.StationWeb, :controller
 
-  alias Tankste.Station.Markers
   alias Tankste.Station.Markers.Marker
   alias Tankste.Station.Stations
   alias Tankste.Station.OpenTimes
-  alias Tankste.Station.StationAreas
-  alias Tankste.Station.Holidays
   alias Tankste.Station.Repo
 
   @station_distance_comparing_meters 20_000 # 20 kilometers
@@ -39,7 +36,7 @@ defmodule Tankste.StationWeb.MarkerController do
   # end
 
   defp override_states(marker) do
-    case is_open(marker) do
+    case OpenTimes.is_open(marker.station_id) do
       true ->
         marker
       false ->
@@ -53,48 +50,12 @@ defmodule Tankste.StationWeb.MarkerController do
     end
   end
 
-  # TODO: use time zone based on station location
-  defp is_open(marker) do
-    case StationAreas.list(station_id: marker.station_id) do
-      [] ->
-        is_in_open_time(marker, :today)
-      station_areas ->
-        case Holidays.list(date: DateTime.now!("Europe/Berlin") |> DateTime.to_date(), area_id: station_areas |> Enum.map(fn sa -> sa.area_id end)) do
-          [] ->
-            is_in_open_time(marker, :today)
-          _holidays ->
-            is_in_open_time(marker, :holiday)
-        end
-    end
-  end
-
-  # TODO: use time zone based on station location
-  defp is_in_open_time(marker, :today) do
-    now = DateTime.now!("Europe/Berlin")
-    time_now = now |> DateTime.to_time()
-    OpenTimes.list(station_id: marker.station_id, day: now |> DateTime.to_date() |> Date.day_of_week() |> day())
-    |> Enum.any?(fn t -> t.start_time == t.end_time or (t.start_time <= time_now && t.end_time >= time_now) end)
-  end
-  defp is_in_open_time(marker, :holiday) do
-    time_now =  DateTime.now!("Europe/Berlin") |> DateTime.to_time()
-    OpenTimes.list(station_id: marker.station_id, day: "public_holiday")
-    |> Enum.any?(fn t -> t.start_time == t.end_time or (t.start_time <= time_now && t.end_time >= time_now) end)
-  end
-
-  defp day(1), do: "monday"
-  defp day(2), do: "tuesday"
-  defp day(3), do: "wednesday"
-  defp day(4), do: "thursday"
-  defp day(5), do: "friday"
-  defp day(6), do: "saturday"
-  defp day(7), do: "sunday"
-  defp day(_), do: nil
-
   # Runtime calculation parts
 
   defp gen_marker(station) do
     near_stations = Stations.list(boundary: [{station.location_latitude - @station_area_radius_degrees, station.location_longitude - @station_area_radius_degrees}, {station.location_latitude + @station_area_radius_degrees, station.location_longitude + @station_area_radius_degrees}])
     |> Enum.filter(fn s -> Geocalc.within?(@station_distance_comparing_meters, [s.location_longitude, s.location_latitude], [station.location_longitude, station.location_latitude]) end)
+    |> Enum.filter(fn s -> OpenTimes.is_open(s.id) end)
     |> Repo.preload(:prices)
 
     %Marker{
@@ -112,6 +73,7 @@ defmodule Tankste.StationWeb.MarkerController do
     }
   end
 
+  # TODO: don't compare with closed stations!!!1!1!
   defp get_price(station, type) do
     case Enum.find(station.prices, fn p -> p.type == type end) do
     nil ->

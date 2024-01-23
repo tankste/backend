@@ -5,7 +5,6 @@ defmodule Tankste.FillWeb.HealthController do
   alias Tankste.Station.Stations
   alias Tankste.Station.Prices
   alias Tankste.Station.OpenTimes
-  alias Tankste.Station.Markers
   alias Tankste.Station.Areas
   alias Tankste.Station.Holidays
 

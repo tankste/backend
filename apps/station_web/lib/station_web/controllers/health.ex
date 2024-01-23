@@ -5,7 +5,6 @@ defmodule Tankste.StationWeb.HealthController do
   alias Tankste.Station.Stations
   alias Tankste.Station.Prices
   alias Tankste.Station.OpenTimes
-  alias Tankste.Station.Markers
   alias Tankste.Station.Holidays
 
   # TODO: add query limits do prevent fetching too much data

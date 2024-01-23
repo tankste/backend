@@ -168,8 +168,7 @@ defmodule Tankste.ReportWeb.ReportController do
       nil ->
         nil
       station ->
-        # TODO: calculate current open state
-        true
+        OpenTimes.is_open(station.id)
     end
   end
   defp value_of_station_field(station_id, "open_times") do
