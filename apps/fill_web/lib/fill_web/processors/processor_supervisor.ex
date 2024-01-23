@@ -10,11 +10,9 @@ defmodule Tankste.FillWeb.ProcessorSupervisor do
     children = [
       {Tankste.FillWeb.StationQueue, []},
       {Tankste.FillWeb.PriceQueue, []},
-      {Tankste.FillWeb.MarkerQueue, []},
       {Tankste.FillWeb.HolidayQueue, []},
       station_processors(processor_instances(:station)),
       price_processors(processor_instances(:price)),
-      marker_processors(processor_instances(:marker)),
       holiday_processors(processor_instances(:holiday))
     ]
     |> List.flatten()
@@ -38,14 +36,6 @@ defmodule Tankste.FillWeb.ProcessorSupervisor do
       end)
   end
 
-  defp marker_processors(instances) do
-    0..instances - 1
-    |> Enum.map(fn i ->
-        id = "marker_processor_#{i}" |> String.to_atom()
-        Supervisor.child_spec({Tankste.FillWeb.MarkerProcessor, []}, id: id)
-      end)
-  end
-
   defp holiday_processors(instances) do
     0..instances - 1
     |> Enum.map(fn i ->
@@ -58,7 +48,6 @@ defmodule Tankste.FillWeb.ProcessorSupervisor do
 
   defp instances_default(:station), do: 5
   defp instances_default(:price), do: 10
-  defp instances_default(:marker), do: 20
   defp instances_default(:holiday), do: 1
   defp instances_default(_), do: 5
 

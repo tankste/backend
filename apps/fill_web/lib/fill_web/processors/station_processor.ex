@@ -1,7 +1,6 @@
 defmodule Tankste.FillWeb.StationProcessor do
   use GenStage
 
-  alias Tankste.FillWeb.MarkerQueue
   alias Tankste.Station.Stations
   alias Tankste.Station.Stations.Station
   alias Tankste.Station.Areas
@@ -27,8 +26,7 @@ defmodule Tankste.FillWeb.StationProcessor do
   end
   defp process_stations([station|stations]) do
     case upsert_station(station) do
-      {:ok, updated_station} ->
-        MarkerQueue.add(updated_station)
+      {:ok, _updated_station} ->
         process_stations(stations)
       {:error, changeset} ->
         IO.inspect(changeset)

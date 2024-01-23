@@ -1,65 +1,128 @@
 defmodule Tankste.Station.Markers do
-  import Ecto.Query, warn: false
 
-  alias Tankste.Station.Repo
   alias Tankste.Station.Markers.Marker
+  alias Tankste.Station.Stations
+  alias Tankste.Station.OpenTimes
+  alias Tankste.Station.Repo
 
-  def list(opts \\ []) do
-    query(opts)
-    |> Repo.all()
+  @station_distance_comparing_meters 20_000 # 20 kilometers
+  @station_area_radius_degrees 0.3 # ~ 30 kilomters
+
+  def gen_by_boundary(boundary) do
+    reduced_boundary = min_max_boundary(boundary)
+
+    scope_stations = Stations.list(boundary: reduced_boundary |> boundary_with_padding())
+      |> Enum.map(fn s -> %{s | is_open: OpenTimes.is_open(s.id)} end)
+      |> Repo.preload(:prices)
+
+    comparing_stations = scope_stations
+      |> Enum.filter(fn s -> s.is_open end)
+
+    scope_stations
+      |> Enum.filter(fn s -> in_boundary({s.location_latitude, s.location_longitude}, reduced_boundary) end)
+      |> Enum.map(fn s -> gen_marker(s, comparing_stations) end)
   end
 
-  def get(id, opts \\ []) do
-    query(opts)
-    |> where([m], m.id == ^id)
-    |> Repo.one()
+  def gen_by_station_id(station_id) do
+    station = Stations.get(station_id)
+      |> Map.put(:is_open, OpenTimes.is_open(station_id))
+      |> Repo.preload(:prices)
+
+    scope_boundary = [{station.location_latitude, station.location_longitude}, {station.location_latitude, station.location_longitude}]
+      |> boundary_with_padding()
+
+    comparing_stations = Stations.list(boundary: scope_boundary)
+      |> Enum.map(fn s -> %{s | is_open: OpenTimes.is_open(s.id)} end)
+      |> Enum.filter(fn s -> s.is_open end)
+      |> Repo.preload(:prices)
+
+      gen_marker(station, comparing_stations)
   end
 
-  def get_by_station_id(station_id, opts \\ []) do
-    query(opts)
-    |> where([m], m.station_id == ^station_id)
-    |> Repo.one()
+  defp min_max_boundary(boundary) do
+      min_lat = boundary |> Enum.map(fn c -> latitude_param(c) end) |> Enum.min()
+      max_lat = boundary |> Enum.map(fn c -> latitude_param(c) end) |> Enum.max()
+      min_lng = boundary |> Enum.map(fn c -> longitude_param(c) end) |> Enum.min()
+      max_lng = boundary |> Enum.map(fn c -> longitude_param(c) end) |> Enum.max()
+
+      [{min_lat, min_lng }, {max_lat, max_lng}]
   end
 
-  defp query(opts) do
-    boundary = Keyword.get(opts, :boundary, nil)
-
-    from(m in Marker,
-      select: m)
-    |> query_where_in_boundary(boundary)
+  defp in_boundary({latitude, longitude}, [{min_lat, min_lng}, {max_lat, max_lng}]) do
+    latitude >= min_lat and latitude <= max_lat and longitude >= min_lng and longitude <= max_lng
   end
 
-  defp query_where_in_boundary(query, nil), do: query
-  defp query_where_in_boundary(query, []), do: query
-  defp query_where_in_boundary(query, boundary) when is_list(boundary) do
-    min_lat = boundary |> Enum.map(fn c -> latitude(c) end) |> Enum.min()
-    max_lat = boundary |> Enum.map(fn c -> latitude(c) end) |> Enum.max()
-    min_lng = boundary |> Enum.map(fn c -> longitude(c) end) |> Enum.min()
-    max_lng = boundary |> Enum.map(fn c -> longitude(c) end) |> Enum.max()
-
-    query
-    |> where([m], m.latitude >= ^min_lat)
-    |> where([m], m.latitude <= ^max_lat)
-    |> where([m], m.longitude >= ^min_lng)
-    |> where([m], m.longitude <= ^max_lng)
+  defp boundary_with_padding([{min_lat, min_lng}, {max_lat, max_lng}]) do
+    [{min_lat - @station_area_radius_degrees, min_lng - @station_area_radius_degrees}, {max_lat + @station_area_radius_degrees, max_lng + @station_area_radius_degrees}]
   end
 
-  defp latitude({latitude, _}), do: latitude
-  defp longitude({_, longitude}), do: longitude
+  defp latitude_param({latitude, _}), do: latitude
+  defp longitude_param({_, longitude}), do: longitude
 
-  def insert(attrs \\ %{}) do
-    %Marker{}
-    |> Marker.changeset(attrs)
-    |> Repo.insert()
+  defp gen_marker(station, comparing_stations) do
+    near_stations = comparing_stations
+      |> Enum.filter(fn s -> Geocalc.within?(@station_distance_comparing_meters, [s.location_longitude, s.location_latitude], [station.location_longitude, station.location_latitude]) end)
+
+    case station.is_open do
+      true ->
+        %Marker{
+          id: station.id,
+          station_id: station.id,
+          label: station.brand || station.name,
+          latitude: station.location_latitude,
+          longitude: station.location_longitude,
+          e5_price: get_price(station, "e5"),
+          e5_price_comparison: get_price_comparison(station, "e5", near_stations),
+          e10_price: get_price(station, "e10"),
+          e10_price_comparison: get_price_comparison(station, "e10", near_stations),
+          diesel_price: get_price(station, "diesel"),
+          diesel_price_comparison: get_price_comparison(station, "diesel", near_stations)
+        }
+      _ ->
+        %Marker{
+          id: station.id,
+          station_id: station.id,
+          label: station.brand || station.name,
+          latitude: station.location_latitude,
+          longitude: station.location_longitude,
+          e5_price: nil,
+          e5_price_comparison: "not_available",
+          e10_price: nil,
+          e10_price_comparison: "not_available",
+          diesel_price: nil,
+          diesel_price_comparison: "not_available"
+        }
+    end
   end
 
-  def update(%Marker{} = marker, attrs \\ %{}) do
-    marker
-    |> Marker.changeset(attrs)
-    |> Repo.update()
+  # TODO: don't compare with closed stations!!!1!1!
+  defp get_price(station, type) do
+    case Enum.find(station.prices, fn p -> p.type == type end) do
+    nil ->
+      nil
+    price ->
+      price.price
+    end
   end
 
-  def delete(%Marker{} = marker) do
-    Repo.delete(marker)
+  defp get_price_comparison(station, type, near_stations) do
+    near_prices = near_stations
+      |> Enum.flat_map(fn s -> s.prices end)
+      |> Enum.filter(fn p -> p.type == type end)
+      |> Enum.map(fn p -> p.price end)
+
+    case get_price(station, type) do
+      nil ->
+        "not_available"
+      price_value ->
+        min_price = near_prices
+          |> Enum.min()
+
+        cond do
+          min_price + 0.04 >= price_value -> "cheap"
+          min_price + 0.10 >= price_value -> "medium"
+          true -> "expensive"
+        end
+    end
   end
 end

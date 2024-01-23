@@ -2,12 +2,12 @@ defmodule Tankste.StationWeb.StationController do
   use Tankste.StationWeb, :controller
 
   alias Tankste.Station.Stations
+  alias Tankste.Station.OpenTimes
 
   plug :load_station when action in [:show]
 
-  def show(conn, %{"id" => station_id}) do
-    station = Stations.get(station_id, status: "available")
-    render(conn, "show.json", station: station)
+  def show(conn, _params) do
+    render(conn, "show.json", station: station(conn))
   end
 
   def load_station(conn, opts \\ []) do
@@ -23,6 +23,9 @@ defmodule Tankste.StationWeb.StationController do
         |> halt
 
       station ->
+        station = station
+          |> Map.put(:is_open, OpenTimes.is_open(station.id))
+
         conn
         |> assign(:station, station)
     end

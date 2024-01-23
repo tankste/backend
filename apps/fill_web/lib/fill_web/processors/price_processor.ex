@@ -1,12 +1,8 @@
 defmodule Tankste.FillWeb.PriceProcessor do
   use GenStage
 
-  alias Tankste.FillWeb.MarkerQueue
   alias Tankste.Station.Stations
   alias Tankste.Station.Prices
-
-  @station_to_update_radius 25_000 # 25 kilometers
-  @station_to_update_area_radius_degrees 0.35 # ~ 35 kilomters
 
   def start_link(_opts) do
     GenStage.start_link(__MODULE__, [])
@@ -31,13 +27,7 @@ defmodule Tankste.FillWeb.PriceProcessor do
         IO.inspect "No price was updated:"
         IO.inspect price
         process_prices(prices)
-      {:ok, updated_prices} ->
-        station = updated_prices |> Enum.at(0) |> Map.get(:station_id) |> Stations.get()
-
-        Stations.list(boundary: [{station.location_latitude - @station_to_update_area_radius_degrees, station.location_longitude - @station_to_update_area_radius_degrees}, {station.location_latitude + @station_to_update_area_radius_degrees, station.location_longitude + @station_to_update_area_radius_degrees}])
-        |> Enum.filter(fn s -> Geocalc.within?(@station_to_update_radius, [s.location_longitude, s.location_latitude], [station.location_longitude, station.location_latitude]) end)
-        |> MarkerQueue.add()
-
+      {:ok, _updated_prices} ->
         process_prices(prices)
       {:error, :no_external_id} ->
         process_prices(prices)
