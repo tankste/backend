@@ -28,7 +28,7 @@ defmodule Tankste.StationWeb.StationPriceController do
       [] ->
         is_in_open_time(station_id, :today)
       station_areas ->
-        case Holidays.list(date: DateTime.now!("Europe/Berline") |> DateTime.to_date(), area_id: station_areas |> Enum.map(fn sa -> sa.area_id end)) do
+        case Holidays.list(date: DateTime.now!("Europe/Berlin") |> DateTime.to_date(), area_id: station_areas |> Enum.map(fn sa -> sa.area_id end)) do
           [] ->
             is_in_open_time(station_id, :today)
           _holidays ->

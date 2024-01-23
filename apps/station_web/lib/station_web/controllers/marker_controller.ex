@@ -25,8 +25,8 @@ defmodule Tankste.StationWeb.MarkerController do
     render(conn, "index.json", markers: markers)
   end
 
-  # TODO: limit requests to max ~0.2 degree
-  # TODO: fall back request
+  # # TODO: limit requests to max ~0.2 degree
+  # # TODO: fall back request
   # def index(conn, %{"boundary" => boundary_param}) do
   #   boundary = boundary_param
   #     |> Enum.map(fn b -> b |> String.split(",") |> Enum.map(&String.to_float/1) end)
@@ -98,6 +98,7 @@ defmodule Tankste.StationWeb.MarkerController do
     |> Repo.preload(:prices)
 
     %Marker{
+      id: station.id,
       station_id: station.id,
       label: station.brand || station.name,
       latitude: station.location_latitude,
