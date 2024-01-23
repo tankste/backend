@@ -229,6 +229,13 @@ defmodule Tankste.ReportWeb.ReportController do
         end
     end
   end
+  defp value_of_station_field(_, "availability") do
+    "yes"
+  end
+
+  defp value_of_station_field(_, "note") do
+    "-"
+  end
   defp value_of_station_field(_, _), do: nil
 
   def update(conn, params) do
