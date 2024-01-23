@@ -10,12 +10,11 @@ defmodule Tankste.StationWeb.HealthController do
 
   # TODO: add query limits do prevent fetching too much data
   def show(conn, _params) do
-    Origins.list()
-    Stations.list()
-    Prices.list()
-    OpenTimes.list()
-    Markers.list()
-    Holidays.list()
+    Origins.list(limit: 10)
+    Stations.list(limit: 10)
+    Prices.list(limit: 10)
+    OpenTimes.list(limit: 10)
+    Holidays.list(limit: 10)
 
     conn
     |> text("OK")
