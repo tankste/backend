@@ -9,6 +9,7 @@ defmodule Tankste.StationWeb.OpenTimeView do
       "day" => open_time.day,
       "startTime" => open_time.start_time,
       "endTime" => open_time.end_time,
+      "isToday" => open_time.is_today,
       "createdAt" => open_time.inserted_at,
       "updatedAt" => open_time.updated_at
     }

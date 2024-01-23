@@ -11,6 +11,7 @@ defmodule Tankste.Station.OpenTimes.OpenTime do
     field :day, :string
     field :start_time, :time
     field :end_time, :time
+    field :is_today, :boolean, virtual: true
 
     timestamps()
   end

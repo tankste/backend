@@ -5,6 +5,7 @@ defmodule Tankste.Station.OpenTimes do
   alias Tankste.Station.OpenTimes.OpenTime
   alias Tankste.Station.StationAreas
   alias Tankste.Station.Holidays
+  alias Tankste.Station.Stations
 
   def list(opts \\ []) do
     query(opts)
@@ -60,6 +61,24 @@ defmodule Tankste.Station.OpenTimes do
           _holidays ->
             is_in_open_time(station_id, :holiday)
         end
+    end
+  end
+
+  def is_today(%OpenTime{station_id: station_id, day: "publicholiday"}) do
+    station = Stations.get(station_id)
+    case Holidays.list(date: DateTime.now!("Europe/Berlin") |> DateTime.to_date(), area_id: [station.area_id]) do
+      [] ->
+        false
+      _holidays ->
+        true
+    end
+  end
+  def is_today(%OpenTime{day: day}) do
+    case DateTime.now!("Europe/Berlin") |> DateTime.to_date() |> Date.day_of_week() |> day() do
+      ^day ->
+        true
+      _ ->
+        false
     end
   end
 
