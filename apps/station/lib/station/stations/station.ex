@@ -18,6 +18,7 @@ defmodule Tankste.Station.Stations.Station do
     field :address_post_code, :string
     field :address_city, :string
     field :address_country, :string
+    field :is_open, :boolean, virtual: true
     field :last_changes_at, :utc_datetime
     field :status, :string, default: "available"
 
