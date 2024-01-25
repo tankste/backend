@@ -14,7 +14,7 @@ defmodule Tankste.ReportWeb.ReportView do
       "id" => report.id,
       "stationId" => report.station_id,
       "deviceId" => report.device_id,
-      "origin" => report.origin,
+      "originId" => report.origin_id,
       "field" => report.field,
       "wrongValue" => report.wrong_value,
       "correctValue" => report.correct_value,

@@ -25,7 +25,7 @@ defmodule Tankste.ReportWeb.ReportController do
   def create(conn, params) do
     # TODO: origin from station
     # TODO: wrong_value from station
-    case Reports.create(%{"device_id" => params["deviceId"], "station_id" => params["stationId"], "origin" => origin_of_station_field(params["stationId"], params["field"]), "field" => params["field"], "wrong_value" => value_of_station_field(params["stationId"], params["field"]), "correct_value" => params["correctValue"], "status" => "open"}) do
+    case Reports.create(%{"device_id" => params["deviceId"], "station_id" => params["stationId"], "origin_id" => origin_of_station_field(params["stationId"], params["field"]), "field" => params["field"], "wrong_value" => value_of_station_field(params["stationId"], params["field"]), "correct_value" => params["correctValue"], "status" => "open"}) do
       {:ok, report} ->
         conn
         |> put_status(:created)
@@ -40,6 +40,7 @@ defmodule Tankste.ReportWeb.ReportController do
 
   defp origin_of_station_field(station_id, "name"), do: station_origin(station_id)
   defp origin_of_station_field(station_id, "brand"), do: station_origin(station_id)
+  defp origin_of_station_field(station_id, "availability"), do: station_origin(station_id)
   defp origin_of_station_field(station_id, "location_latitude"), do: station_origin(station_id)
   defp origin_of_station_field(station_id, "location_longitude"), do: station_origin(station_id)
   defp origin_of_station_field(station_id, "address_street"), do: station_origin(station_id)
@@ -52,6 +53,7 @@ defmodule Tankste.ReportWeb.ReportController do
   defp origin_of_station_field(station_id, "price_e5"), do: price_origin(station_id, "e5")
   defp origin_of_station_field(station_id, "price_e10"), do: price_origin(station_id, "e10")
   defp origin_of_station_field(station_id, "price_diesel"), do: price_origin(station_id, "diesel")
+  defp origin_of_station_field(station_id, "note"), do: station_origin(station_id)
 
   defp station_origin(station_id) do
     case Stations.get(station_id) do
@@ -169,6 +171,7 @@ defmodule Tankste.ReportWeb.ReportController do
         nil
       station ->
         OpenTimes.is_open(station.id)
+        |> to_string()
     end
   end
   defp value_of_station_field(station_id, "open_times") do
@@ -228,10 +231,7 @@ defmodule Tankste.ReportWeb.ReportController do
         end
     end
   end
-  defp value_of_station_field(_, "availability") do
-    "yes"
-  end
-
+  defp value_of_station_field(_, "availability"), do: "available"
   defp value_of_station_field(_, "note") do
     "-"
   end
