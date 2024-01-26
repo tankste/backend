@@ -11,7 +11,7 @@ defmodule Tankste.Station.Markers do
   def gen_by_boundary(boundary) do
     reduced_boundary = min_max_boundary(boundary)
 
-    scope_stations = Stations.list(boundary: reduced_boundary |> boundary_with_padding())
+    scope_stations = Stations.list(status: "available", boundary: reduced_boundary |> boundary_with_padding())
       |> Enum.map(fn s -> %{s | is_open: OpenTimes.is_open(s.id)} end)
       |> Repo.preload(:prices)
 
@@ -24,14 +24,14 @@ defmodule Tankste.Station.Markers do
   end
 
   def gen_by_station_id(station_id) do
-    station = Stations.get(station_id)
+    station = Stations.get(station_id, status: "available")
       |> Map.put(:is_open, OpenTimes.is_open(station_id))
       |> Repo.preload(:prices)
 
     scope_boundary = [{station.location_latitude, station.location_longitude}, {station.location_latitude, station.location_longitude}]
       |> boundary_with_padding()
 
-    comparing_stations = Stations.list(boundary: scope_boundary)
+    comparing_stations = Stations.list(status: "available", boundary: scope_boundary)
       |> Enum.map(fn s -> %{s | is_open: OpenTimes.is_open(s.id)} end)
       |> Enum.filter(fn s -> s.is_open end)
       |> Repo.preload(:prices)
