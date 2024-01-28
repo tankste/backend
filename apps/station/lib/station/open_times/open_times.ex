@@ -20,10 +20,12 @@ defmodule Tankste.Station.OpenTimes do
 
   defp query(opts) do
     station_id = Keyword.get(opts, :station_id, nil)
+    day = Keyword.get(opts, :day, nil)
 
     from(ot in OpenTime,
       select: ot)
     |> query_where_station_id(station_id)
+    |> query_where_day(day)
   end
 
   defp query_where_station_id(query, nil), do: query
@@ -35,6 +37,17 @@ defmodule Tankste.Station.OpenTimes do
   defp query_where_station_id(query, station_id) do
     query
     |> where([ot], ot.station_id == ^station_id)
+  end
+
+  defp query_where_day(query, nil), do: query
+  defp query_where_station_id(query, []), do: query
+  defp query_where_day(query, day) when is_list(day) do
+    query
+    |> where([ot], ot.day in ^day)
+  end
+  defp query_where_day(query, day) do
+    query
+    |> where([ot], ot.day == ^day)
   end
 
   def insert(attrs \\ %{}) do
