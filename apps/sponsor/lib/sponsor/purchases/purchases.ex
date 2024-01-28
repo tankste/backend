@@ -4,6 +4,17 @@ defmodule Tankste.Sponsor.Purchases do
   alias Tankste.Sponsor.Repo
   alias Tankste.Sponsor.Purchases.Purchase
 
+  def get(id, opts \\ []) do
+    query(opts)
+    |> where([p], p.id == ^id)
+    |> Repo.one()
+  end
+
+  defp query(_opts) do
+    from(p in Purchase,
+      select: p)
+  end
+
   def create(attrs \\ %{}) do
     %Purchase{}
     |> Purchase.changeset(attrs)

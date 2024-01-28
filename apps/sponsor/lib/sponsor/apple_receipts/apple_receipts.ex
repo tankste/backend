@@ -4,6 +4,17 @@ defmodule Tankste.Sponsor.AppleReceipts do
   alias Tankste.Sponsor.Repo
   alias Tankste.Sponsor.AppleReceipts.AppleReceipt
 
+  def get_by_transaction_id(transaction_id, opts \\ []) do
+    query(opts)
+    |> where([ar], ar.transaction_id == ^transaction_id)
+    |> Repo.one()
+  end
+
+  defp query(_opts) do
+    from(ar in AppleReceipt,
+      select: ar)
+  end
+
   def create(attrs \\ %{}) do
     %AppleReceipt{}
     |> AppleReceipt.changeset(attrs)

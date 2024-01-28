@@ -41,7 +41,7 @@ defmodule Tankste.SponsorWeb.ApplePaymentController do
   #
   # Availble types: https://developer.apple.com/documentation/appstoreservernotifications/notificationtype#possibleValues
   defp handle_subscription_notification("DID_RENEW", %{"productId" => product_id, "appAccountToken" => device_id}, data) do
-    with {:ok, purchase} <- Purchases.create(%{"product" => product_from_apple_id(product_id), "provider" => "apple_store", "type" => "subscription"}),
+    with {:ok, purchase} <- Purchases.create(%{"device_id" => device_id, "product" => product_from_apple_id(product_id), "provider" => "apple_store", "type" => "subscription"}),
       {:ok, _receipt} <- AppleReceipts.create(%{"purchase_id" => purchase.id, "product_id" => product_id, "data" => data}),
       {:ok, _sponsorship} <- update_sponsorship(device_id, purchase.product),
       {:ok, _transaction} <- Transactions.create(%{"type" => "sponsor", "category" => "apple", "value" => value_from_product(product_id)}),

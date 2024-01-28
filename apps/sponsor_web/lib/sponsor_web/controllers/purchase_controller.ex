@@ -43,8 +43,8 @@ defmodule Tankste.SponsorWeb.PurchaseController do
   end
 
   defp create_apple_purchase(conn, purchase_params) do
-    with {:ok, purchase} <- Purchases.create(%{"product" => product_from_apple_id(purchase_params["productId"]), "provider" => "apple_store", "type" => type_from_product(product_from_apple_id(purchase_params["productId"]))}),
-      {:ok, _receipt} <- AppleReceipts.create(%{"purchase_id" => purchase.id, "product_id" => purchase_params["productId"], "data" => purchase_params["data"]}),
+    with {:ok, purchase} <- Purchases.create(%{"device_id" => purchase_params["deviceId"], "product" => product_from_apple_id(purchase_params["productId"]), "provider" => "apple_store", "type" => type_from_product(product_from_apple_id(purchase_params["productId"]))}),
+      {:ok, _receipt} <- AppleReceipts.create(%{"purchase_id" => purchase.id, "product_id" => purchase_params["productId"], "transaction_id" => purchase_params["transactionId"], "data" => purchase_params["data"]}),
       {:ok, _sponsorship} <- upsert_sponsorship(purchase_params["deviceId"], purchase.product),
       {:ok, _transaction} <- Transactions.create(%{"type" => "sponsor", "category" => "apple", "value" => value_from_product(purchase.product)}),
       {:ok, _comment} <- upsert_comment(purchase_params["deviceId"], value_from_product(purchase.product))
@@ -96,7 +96,7 @@ defmodule Tankste.SponsorWeb.PurchaseController do
   end
 
   defp create_play_purchase(conn, purchase_params) do
-    with {:ok, purchase} <- Purchases.create(%{"product" => product_from_google_id(purchase_params["productId"]), "provider" => "play_store", "type" => type_from_product(product_from_google_id(purchase_params["productId"]))}),
+    with {:ok, purchase} <- Purchases.create(%{"device_id" => purchase_params["deviceId"], "product" => product_from_google_id(purchase_params["productId"]), "provider" => "play_store", "type" => type_from_product(product_from_google_id(purchase_params["productId"]))}),
       {:ok, _receipt} <- PlayReceipts.create(%{"purchase_id" => purchase.id, "product_id" => purchase_params["productId"], "token" => purchase_params["token"], "secret" => purchase_params["secret"]}),
       {:ok, _sponsorship} <- upsert_sponsorship(purchase_params["deviceId"], purchase.product),
       {:ok, _transaction} <- Transactions.create(%{"type" => "sponsor", "category" => "google", "value" => value_from_product(purchase.product)}),

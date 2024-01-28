@@ -3,9 +3,12 @@ defmodule Tankste.Sponsor.AppleReceipts.AppleReceipt do
 
   import Ecto.Changeset
 
+  @primary_key false
+
   schema "purchase_apple_receipts" do
     belongs_to :purchase, Tankste.Sponsor.Purchases.Purchase
     field :product_id, :string
+    field :transaction_id, :string
     field :data, :string
 
     timestamps()
@@ -13,7 +16,7 @@ defmodule Tankste.Sponsor.AppleReceipts.AppleReceipt do
 
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:purchase_id, :product_id, :data])
-    |> validate_required([:purchase_id, :data])
+    |> cast(params, [:purchase_id, :product_id, :transaction_id, :data])
+    |> validate_required([:purchase_id, :product_id, :transaction_id, :data])
   end
 end

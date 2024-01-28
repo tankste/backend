@@ -41,7 +41,7 @@ defmodule Tankste.SponsorWeb.PlayPaymentController do
   # Availble types: https://developer.android.com/google/play/billing/rtdn-reference
   defp handle_subscription_notification(%{"notificationType" => type, "subscriptionId" => product_id, "purchaseToken" => secret}) when type in [2, 7, 1] do
     with {:ok, subscription} <- PlayReceipts.verify_and_acknowledge_subscription(product_id, secret),
-      {:ok, purchase} <- Purchases.create(%{"product" => product_from_google_id(product_id), "provider" => "play_store", "type" => "subscription"}),
+      {:ok, purchase} <- Purchases.create(%{"device_id" => subscription[:external_id], "product" => product_from_google_id(product_id), "provider" => "play_store", "type" => "subscription"}),
       {:ok, _receipt} <- PlayReceipts.create(%{"purchase_id" => purchase.id, "product_id" => product_from_google_id(product_id), "token" => subscription[:order_id], "secret" => secret}),
       {:ok, _sponsorship} <- update_sponsorship(subscription[:external_id], product_from_google_id(product_id)),
       {:ok, _transaction} <- Transactions.create(%{"type" => "sponsor", "category" => "google", "value" => value_from_product(purchase.product)}),

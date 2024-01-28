@@ -19,6 +19,7 @@ defmodule Tankste.SponsorWeb.Router do
     get "/health", HealthController, :show
     post "/play-payments", PlayPaymentController, :notify
     post "/apple-payments", ApplePaymentController, :notify
+    get "/apple-payments/transactions/:transaction_id/device", ApplePaymentTransactionDeviceController, :show
 
     resources "/balance", BalanceController, singleton: true, only: [:show]
     resources "/purchases", PurchaseController, only: [:create]
