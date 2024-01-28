@@ -21,9 +21,36 @@ defmodule Tankste.Station.Holidays do
     |> Repo.one()
   end
 
-  defp query(_opts) do
+  defp query(opts) do
+    date = Keyword.get(opts, :date, nil)
+    area_id = Keyword.get(opts, :area_id, nil)
+
     from(h in Holiday,
       select: h)
+    |> query_where_date(date)
+    |> query_where_area_id(area_id)
+  end
+
+  defp query_where_date(query, nil), do: query
+  defp query_where_date(query, []), do: query
+  defp query_where_date(query, date) when is_list(date) do
+    query
+    |> where([h], h.date in ^date)
+  end
+  defp query_where_date(query, date) do
+    query
+    |> where([h], h.date == ^date)
+  end
+
+  defp query_where_area_id(query, nil), do: query
+  defp query_where_area_id(query, []), do: query
+  defp query_where_area_id(query, area_id) when is_list(area_id) do
+    query
+    |> where([h], h.area_id in ^area_id)
+  end
+  defp query_where_area_id(query, area_id) do
+    query
+    |> where([h], h.area_id == ^area_id)
   end
 
   def create(attrs \\ %{}) do
