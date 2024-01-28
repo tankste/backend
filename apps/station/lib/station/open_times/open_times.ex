@@ -40,7 +40,7 @@ defmodule Tankste.Station.OpenTimes do
   end
 
   defp query_where_day(query, nil), do: query
-  defp query_where_station_id(query, []), do: query
+  defp query_where_day(query, []), do: query
   defp query_where_day(query, day) when is_list(day) do
     query
     |> where([ot], ot.day in ^day)
@@ -100,13 +100,17 @@ defmodule Tankste.Station.OpenTimes do
     now = DateTime.now!("Europe/Berlin")
     time_now = now |> DateTime.to_time()
 
+    IO.puts("is_in_open_time(#{station_id}, :today)")
     list(station_id: station_id, day: now |> DateTime.to_date() |> Date.day_of_week() |> day())
+    |> IO.inspect()
     |> Enum.any?(fn t -> t.start_time == t.end_time or (t.start_time <= time_now && t.end_time >= time_now) end)
   end
   defp is_in_open_time(station_id, :holiday) do
     time_now =  DateTime.now!("Europe/Berlin") |> DateTime.to_time()
 
+    IO.puts("is_in_open_time(#{station_id}, :holiday)")
     list(station_id: station_id, day: "public_holiday")
+    |> IO.inspect()
     |> Enum.any?(fn t -> t.start_time == t.end_time or (t.start_time <= time_now && t.end_time >= time_now) end)
   end
 
