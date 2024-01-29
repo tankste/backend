@@ -5,7 +5,6 @@ defmodule Tankste.Station.OpenTimes do
   alias Tankste.Station.OpenTimes.OpenTime
   alias Tankste.Station.StationAreas
   alias Tankste.Station.Holidays
-  alias Tankste.Station.Stations
 
   def list(opts \\ []) do
     query(opts)
@@ -78,8 +77,8 @@ defmodule Tankste.Station.OpenTimes do
   end
 
   def is_today(%OpenTime{station_id: station_id, day: "public_holiday"}) do
-    station = Stations.get(station_id)
-    case Holidays.list(date: DateTime.now!("Europe/Berlin") |> DateTime.to_date(), area_id: [station.area_id]) do
+    station_area_ids = StationAreas.list(station_id: station_id) |> Enum.map(fn sa -> sa.area_id end)
+    case Holidays.list(date: DateTime.now!("Europe/Berlin") |> DateTime.to_date(), area_id: station_area_ids) do
       [] ->
         false
       _holidays ->
