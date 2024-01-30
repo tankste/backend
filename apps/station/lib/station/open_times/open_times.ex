@@ -100,14 +100,14 @@ defmodule Tankste.Station.OpenTimes do
     time_now = now |> DateTime.to_time()
 
     list(station_id: station_id, day: now |> DateTime.to_date() |> Date.day_of_week() |> day())
-    |> Enum.map(fn t -> Map.put(t, :end_time, to_end_time(t)) end)
-    |> Enum.any?(fn t -> t.start_time == t.end_time or (t.start_time <= time_now && t.end_time >= time_now) end)
+    |> Enum.map(fn t -> Map.put(t, :end_time, to_end_time(t.end_time)) end)
+    |> Enum.any?(fn t -> t.start_time == t.end_time or (t.start_time <= time_now && t.end_time >= time_now)  end)
   end
   defp is_in_open_time(station_id, :holiday) do
     time_now =  DateTime.now!("Europe/Berlin") |> DateTime.to_time()
 
     list(station_id: station_id, day: "public_holiday")
-    |> Enum.map(fn t -> Map.put(t, :end_time, to_end_time(t)) end)
+    |> Enum.map(fn t -> Map.put(t, :end_time, to_end_time(t.end_time)) end)
     |> Enum.any?(fn t -> t.start_time == t.end_time or (t.start_time <= time_now && t.end_time >= time_now) end)
   end
 
