@@ -7,6 +7,7 @@ defmodule Tankste.Station.Stations.Station do
 
   schema "stations" do
     has_many :prices, Tankste.Station.Prices.Price
+    has_many :open_times, Tankste.Station.OpenTimes.OpenTime
     belongs_to :origin, Tankste.Station.Origins.Origin
     field :external_id, :string
     field :name, :string

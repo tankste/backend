@@ -62,16 +62,16 @@ defmodule Tankste.Station.OpenTimes do
   end
 
   # TODO: use time zone based on station location
-  def is_open(station_id) do
-    case StationAreas.list(station_id: station_id) do
+  def is_open(station) do
+    case StationAreas.list(station_id: station.id) do
       [] ->
-        is_in_open_time(station_id, :today)
+        is_in_open_time(station, :today)
       station_areas ->
         case Holidays.list(date: DateTime.now!("Europe/Berlin") |> DateTime.to_date(), area_id: station_areas |> Enum.map(fn sa -> sa.area_id end)) do
           [] ->
-            is_in_open_time(station_id, :today)
+            is_in_open_time(station, :today)
           _holidays ->
-            is_in_open_time(station_id, :holiday)
+            is_in_open_time(station, :holiday)
         end
     end
   end
@@ -95,20 +95,29 @@ defmodule Tankste.Station.OpenTimes do
   end
 
   # TODO: use time zone based on station location
-  defp is_in_open_time(station_id, :today) do
+  defp is_in_open_time(station, :today) do
     now = DateTime.now!("Europe/Berlin")
     time_now = now |> DateTime.to_time()
 
-    list(station_id: station_id, day: now |> DateTime.to_date() |> Date.day_of_week() |> day())
+    station_open_times(station, now |> DateTime.to_date() |> Date.day_of_week() |> day())
     |> Enum.map(fn t -> Map.put(t, :end_time, to_end_time(t.end_time)) end)
     |> Enum.any?(fn t -> t.start_time == t.end_time or (t.start_time <= time_now && t.end_time >= time_now)  end)
   end
-  defp is_in_open_time(station_id, :holiday) do
+  defp is_in_open_time(station, :holiday) do
     time_now =  DateTime.now!("Europe/Berlin") |> DateTime.to_time()
 
-    list(station_id: station_id, day: "public_holiday")
+    station_open_times(station, "public_holiday")
     |> Enum.map(fn t -> Map.put(t, :end_time, to_end_time(t.end_time)) end)
     |> Enum.any?(fn t -> t.start_time == t.end_time or (t.start_time <= time_now && t.end_time >= time_now) end)
+  end
+
+  defp station_open_times(station, day) do
+    case Ecto.assoc_loaded?(station.open_times) do
+      true ->
+        station.open_times |> Enum.filter(fn ot -> ot.day == day end)
+      false ->
+        list(station_id: station.id, day: day)
+    end
   end
 
   defp to_end_time(~T[00:00:00]), do: ~T[23:59:59.999999]
