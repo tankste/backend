@@ -24,7 +24,7 @@ defmodule Tankste.StationWeb.StationController do
 
       station ->
         station = station
-          |> Map.put(:is_open, OpenTimes.is_open(station.id))
+          |> Map.put(:is_open, OpenTimes.is_open(station))
 
         conn
         |> assign(:station, station)

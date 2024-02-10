@@ -26,14 +26,15 @@ defmodule Tankste.Station.Markers do
 
   def gen_by_station_id(station_id) do
     station = Stations.get(station_id, status: "available")
-      |> Map.put(:is_open, OpenTimes.is_open(station_id))
+    station = station
+      |> Map.put(:is_open, OpenTimes.is_open(station))
       |> Repo.preload(:prices)
 
     scope_boundary = [{station.location_latitude, station.location_longitude}, {station.location_latitude, station.location_longitude}]
       |> boundary_with_padding()
 
     comparing_stations = Stations.list(status: "available", boundary: scope_boundary)
-      |> Enum.map(fn s -> %{s | is_open: OpenTimes.is_open(s.id)} end)
+      |> Enum.map(fn s -> %{s | is_open: OpenTimes.is_open(s)} end)
       |> Enum.filter(fn s -> s.is_open end)
       |> Repo.preload(:prices)
 
