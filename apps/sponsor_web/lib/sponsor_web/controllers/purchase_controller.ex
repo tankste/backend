@@ -61,6 +61,8 @@ defmodule Tankste.SponsorWeb.PurchaseController do
     end
   end
 
+  defp product_from_apple_id("app.tankste.sponsor.product.1"), do: "sponsor_single_1"
+  defp product_from_apple_id("app.tankste.sponsor.product.2"), do: "sponsor_single_2"
   defp product_from_apple_id("app.tankste.sponsor.product.10"), do: "sponsor_single_10"
   defp product_from_apple_id("app.tankste.sponsor.sub.monthly.1"), do: "sponsor_subscription_monthly_1"
   defp product_from_apple_id("app.tankste.sponsor.sub.monthly.2"), do: "sponsor_subscription_monthly_2"
@@ -139,12 +141,16 @@ defmodule Tankste.SponsorWeb.PurchaseController do
     end
   end
 
+  defp product_from_google_id("app.tankste.sponsor.product.1"), do: "sponsor_single_1"
+  defp product_from_google_id("app.tankste.sponsor.product.2"), do: "sponsor_single_2"
   defp product_from_google_id("app.tankste.sponsor.product.10"), do: "sponsor_single_10"
   defp product_from_google_id("app.tankste.sponsor.sub.monthly.1"), do: "sponsor_subscription_monthly_1"
   defp product_from_google_id("app.tankste.sponsor.sub.monthly.2"), do: "sponsor_subscription_monthly_2"
   defp product_from_google_id("app.tankste.sponsor.sub.yearly.12"), do: "sponsor_subscription_yearly_12"
   defp product_from_google_id(_), do: nil
 
+  defp value_from_product("sponsor_single_1"), do: 1
+  defp value_from_product("sponsor_single_2"), do: 2
   defp value_from_product("sponsor_single_10"), do: 10
   defp value_from_product("sponsor_subscription_monthly_1"), do: 1
   defp value_from_product("sponsor_subscription_monthly_2"), do: 2
@@ -154,6 +160,8 @@ defmodule Tankste.SponsorWeb.PurchaseController do
   defp type_from_product("sponsor_subscription_monthly_1"), do: "subscription"
   defp type_from_product("sponsor_subscription_monthly_2"), do: "subscription"
   defp type_from_product("sponsor_subscription_yearly_12"), do: "subscription"
+  defp type_from_product("sponsor_single_1"), do: "single"
+  defp type_from_product("sponsor_single_2"), do: "single"
   defp type_from_product("sponsor_single_10"), do: "single"
   defp type_from_product(_), do: nil
 
