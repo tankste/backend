@@ -4,6 +4,7 @@ defmodule Tankste.Station.Areas.Area do
   import Ecto.Changeset
 
   schema "areas" do
+    has_many :holidays, Tankste.Station.Holidays.Holiday
     field :key, :string
     field :name, :string
 

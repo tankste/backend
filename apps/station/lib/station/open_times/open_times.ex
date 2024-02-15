@@ -4,6 +4,7 @@ defmodule Tankste.Station.OpenTimes do
   alias Tankste.Station.Repo
   alias Tankste.Station.OpenTimes.OpenTime
   alias Tankste.Station.StationAreas
+  alias Tankste.Station.Areas
   alias Tankste.Station.Holidays
 
   def list(opts \\ []) do
@@ -70,7 +71,7 @@ defmodule Tankste.Station.OpenTimes do
       [] ->
         is_in_open_time(station, :today)
       station_areas ->
-        {time, holidays} = :timer.tc(fn -> Holidays.list(date: DateTime.now!("Europe/Berlin") |> DateTime.to_date(), area_id: station_areas |> Enum.map(fn sa -> sa.area_id end)) end)
+        {time, holidays} = :timer.tc(fn -> station_holidays(station, DateTime.now!("Europe/Berlin") |> DateTime.to_date()) end)
     # IO.puts("areaholidayss: #{(time)}")
 
         case holidays do
@@ -123,6 +124,31 @@ defmodule Tankste.Station.OpenTimes do
         station.station_areas
       false ->
         StationAreas.list(station_id: station.id)
+    end
+  end
+
+  defp station_holidays(station, day) do
+    station_areas = station_station_areas(station)
+    areas = station_areas |> Enum.map(fn sa -> station_area_area(sa) end)
+
+    areas
+    |> Enum.map(fn area ->
+      case Ecto.assoc_loaded?(area.holidays) do
+        true ->
+          area.holidays |> Enum.filter(fn h -> h.date == day end)
+        false ->
+          Holidays.list(date: day, area_id: station_areas |> Enum.map(fn sa -> sa.area_id end))
+      end
+    end)
+    |> List.flatten()
+  end
+
+  defp station_area_area(station_area) do
+    case Ecto.assoc_loaded?(station_area.area) do
+      true ->
+        station_area.area
+      false ->
+        Areas.get(station_area.area_id)
     end
   end
 

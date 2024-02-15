@@ -31,7 +31,7 @@ defmodule Tankste.Station.Markers do
     {time, scope_stations} = :timer.tc(fn -> Stations.list(status: "available", boundary: reduced_boundary |> boundary_with_padding()) end)
     IO.puts("scope_stations_1: #{time}")
 
-    {time, scope_stations} = :timer.tc(fn -> scope_stations |> Repo.preload([:open_times, :station_areas]) end)
+    {time, scope_stations} = :timer.tc(fn -> scope_stations |> Repo.preload([:open_times, station_areas: [area: [:holidays]]]) end)
     IO.puts("scope_stations_2: #{time}")
 
     {time, scope_stations} = :timer.tc(fn -> scope_stations |> Enum.map(fn s -> %{s | is_open: OpenTimes.is_open(s)} end) end)
@@ -59,6 +59,7 @@ defmodule Tankste.Station.Markers do
   def gen_by_station_id(station_id) do
     station = Stations.get(station_id, status: "available")
     station = station
+      |> Repo.preload([:open_times, station_areas: [area: [:holidays]]])
       |> Map.put(:is_open, OpenTimes.is_open(station))
       |> Repo.preload(:prices)
 
@@ -66,6 +67,7 @@ defmodule Tankste.Station.Markers do
       |> boundary_with_padding()
 
     comparing_stations = Stations.list(status: "available", boundary: scope_boundary)
+      |> Repo.preload([:open_times, station_areas: [area: [:holidays]]])
       |> Enum.map(fn s -> %{s | is_open: OpenTimes.is_open(s)} end)
       |> Enum.filter(fn s -> s.is_open end)
       |> Repo.preload(:prices)
@@ -129,7 +131,6 @@ defmodule Tankste.Station.Markers do
     end
   end
 
-  # TODO: don't compare with closed stations!!!1!1!
   defp get_price(station, type) do
     case Enum.find(station.prices, fn p -> p.type == type end) do
     nil ->
