@@ -7,7 +7,7 @@ defmodule Tankste.Station.Repo.Migrations.CreateOpenTimesIndexes do
   end
 
   def down do
-    create index(:holidays, [:date, :area_id])
-    create index(:station_open_times, [:station_id, :day])
+    drop index(:holidays, [:date, :area_id])
+    drop index(:station_open_times, [:station_id, :day])
   end
 end

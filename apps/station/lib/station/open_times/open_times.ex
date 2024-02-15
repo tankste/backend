@@ -4,6 +4,7 @@ defmodule Tankste.Station.OpenTimes do
   alias Tankste.Station.Repo
   alias Tankste.Station.OpenTimes.OpenTime
   alias Tankste.Station.StationAreas
+  alias Tankste.Station.Areas
   alias Tankste.Station.Holidays
 
   def list(opts \\ []) do
@@ -63,11 +64,11 @@ defmodule Tankste.Station.OpenTimes do
 
   # TODO: use time zone based on station location
   def is_open(station) do
-    case StationAreas.list(station_id: station.id) do
+    case station_station_areas(station) do
       [] ->
         is_in_open_time(station, :today)
-      station_areas ->
-        case Holidays.list(date: DateTime.now!("Europe/Berlin") |> DateTime.to_date(), area_id: station_areas |> Enum.map(fn sa -> sa.area_id end)) do
+      _station_areas ->
+        case station_holidays(station, DateTime.now!("Europe/Berlin") |> DateTime.to_date()) do
           [] ->
             is_in_open_time(station, :today)
           _holidays ->
@@ -109,6 +110,40 @@ defmodule Tankste.Station.OpenTimes do
     station_open_times(station, "public_holiday")
     |> Enum.map(fn t -> Map.put(t, :end_time, to_end_time(t.end_time)) end)
     |> Enum.any?(fn t -> t.start_time == t.end_time or (t.start_time <= time_now && t.end_time >= time_now) end)
+  end
+
+  defp station_station_areas(station) do
+    case Ecto.assoc_loaded?(station.station_areas) do
+      true ->
+        station.station_areas
+      false ->
+        StationAreas.list(station_id: station.id)
+    end
+  end
+
+  defp station_holidays(station, day) do
+    station_areas = station_station_areas(station)
+    areas = station_areas |> Enum.map(fn sa -> station_area_area(sa) end)
+
+    areas
+    |> Enum.map(fn area ->
+      case Ecto.assoc_loaded?(area.holidays) do
+        true ->
+          area.holidays |> Enum.filter(fn h -> h.date == day end)
+        false ->
+          Holidays.list(date: day, area_id: station_areas |> Enum.map(fn sa -> sa.area_id end))
+      end
+    end)
+    |> List.flatten()
+  end
+
+  defp station_area_area(station_area) do
+    case Ecto.assoc_loaded?(station_area.area) do
+      true ->
+        station_area.area
+      false ->
+        Areas.get(station_area.area_id)
+    end
   end
 
   defp station_open_times(station, day) do
