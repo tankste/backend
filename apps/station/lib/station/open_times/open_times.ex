@@ -64,17 +64,11 @@ defmodule Tankste.Station.OpenTimes do
 
   # TODO: use time zone based on station location
   def is_open(station) do
-    {time, areas} = :timer.tc(fn -> station_station_areas(station) end)
-    # IO.puts("areas: #{time}")
-
-    case areas do
+    case station_station_areas(station) do
       [] ->
         is_in_open_time(station, :today)
-      station_areas ->
-        {time, holidays} = :timer.tc(fn -> station_holidays(station, DateTime.now!("Europe/Berlin") |> DateTime.to_date()) end)
-    # IO.puts("areaholidayss: #{(time)}")
-
-        case holidays do
+      _station_areas ->
+        case station_holidays(station, DateTime.now!("Europe/Berlin") |> DateTime.to_date()) do
           [] ->
             is_in_open_time(station, :today)
           _holidays ->
@@ -155,13 +149,9 @@ defmodule Tankste.Station.OpenTimes do
   defp station_open_times(station, day) do
     case Ecto.assoc_loaded?(station.open_times) do
       true ->
-        {time, ot_filter} = :timer.tc(fn -> station.open_times |> Enum.filter(fn ot -> ot.day == day end) end)
-        # IO.puts("ot_filter: #{time / 1_000_000}")
-        ot_filter
+        station.open_times |> Enum.filter(fn ot -> ot.day == day end)
       false ->
-        {time, ot_list} = :timer.tc(fn -> list(station_id: station.id, day: day) end)
-        # IO.puts("ot_list: #{time / 1_000_000}")
-        ot_list
+        list(station_id: station.id, day: day)
     end
   end
 

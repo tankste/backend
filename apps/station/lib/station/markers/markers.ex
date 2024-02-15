@@ -8,52 +8,20 @@ defmodule Tankste.Station.Markers do
   @station_distance_comparing_meters 20_000 # 20 kilometers
   @station_area_radius_degrees 0.3 # ~ 30 kilomters
 
-  # def gen_by_boundary(boundary) do
-  #   reduced_boundary = min_max_boundary(boundary)
-
-  #   scope_stations = Stations.list(status: "available", boundary: reduced_boundary |> boundary_with_padding())
-  #   |> Repo.preload(:open_times)
-  #   |> Enum.map(fn s -> %{s | is_open: OpenTimes.is_open(s)} end)
-  #   |> Repo.preload(:prices)
-
-  #   comparing_stations = scope_stations
-  #     |> Enum.filter(fn s -> s.is_open end)
-
-  #   scope_stations
-  #     |> Enum.filter(fn s -> in_boundary({s.location_latitude, s.location_longitude}, reduced_boundary) end)
-  #     |> Enum.map(fn s -> gen_marker(s, comparing_stations) end)
-  # end
-
   def gen_by_boundary(boundary) do
-    {time, reduced_boundary} = :timer.tc(fn -> min_max_boundary(boundary) end)
-    IO.puts("reduced_boundary: #{time}")
+    reduced_boundary = min_max_boundary(boundary)
 
-    {time, scope_stations} = :timer.tc(fn -> Stations.list(status: "available", boundary: reduced_boundary |> boundary_with_padding()) end)
-    IO.puts("scope_stations_1: #{time}")
+    scope_stations = Stations.list(status: "available", boundary: reduced_boundary |> boundary_with_padding())
+      |> Repo.preload([:open_times, station_areas: [area: [:holidays]]])
+      |> Enum.map(fn s -> %{s | is_open: OpenTimes.is_open(s)} end)
+      |> Repo.preload(:prices)
 
-    {time, scope_stations} = :timer.tc(fn -> scope_stations |> Repo.preload([:open_times, station_areas: [area: [:holidays]]]) end)
-    IO.puts("scope_stations_2: #{time}")
+      comparing_stations = scope_stations
+        |> Enum.filter(fn s -> s.is_open end)
 
-    {time, scope_stations} = :timer.tc(fn -> scope_stations |> Enum.map(fn s -> %{s | is_open: OpenTimes.is_open(s)} end) end)
-    IO.puts("scope_stations_3: #{time}")
-
-    {time, scope_stations} = :timer.tc(fn -> scope_stations |> Repo.preload(:prices) end)
-    IO.puts("scope_stations_4: #{time}")
-
-    {time, comparing_stations} = :timer.tc(fn ->
-      scope_stations
-      |> Enum.filter(fn s -> s.is_open end)
-    end)
-    IO.puts("comparing_stations: #{time}")
-
-    {time, result} = :timer.tc(fn ->
       scope_stations
       |> Enum.filter(fn s -> in_boundary({s.location_latitude, s.location_longitude}, reduced_boundary) end)
       |> Enum.map(fn s -> gen_marker(s, comparing_stations) end)
-    end)
-    IO.puts("result: #{time}")
-
-    result
   end
 
   def gen_by_station_id(station_id) do
