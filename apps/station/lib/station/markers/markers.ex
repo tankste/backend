@@ -26,32 +26,32 @@ defmodule Tankste.Station.Markers do
 
   def gen_by_boundary(boundary) do
     {time, reduced_boundary} = :timer.tc(fn -> min_max_boundary(boundary) end)
-    # IO.puts("reduced_boundary: #{time / 1_000_000}")
+    IO.puts("reduced_boundary: #{time}")
 
     {time, scope_stations} = :timer.tc(fn -> Stations.list(status: "available", boundary: reduced_boundary |> boundary_with_padding()) end)
-    # IO.puts("scope_stations_1: #{time / 1_000_000}")
+    IO.puts("scope_stations_1: #{time}")
 
-    {time, scope_stations} = :timer.tc(fn -> scope_stations |> Repo.preload(:open_times) end)
-    # IO.puts("scope_stations_2: #{time / 1_000_000}")
+    {time, scope_stations} = :timer.tc(fn -> scope_stations |> Repo.preload([:open_times, :station_areas]) end)
+    IO.puts("scope_stations_2: #{time}")
 
     {time, scope_stations} = :timer.tc(fn -> scope_stations |> Enum.map(fn s -> %{s | is_open: OpenTimes.is_open(s)} end) end)
-    # IO.puts("scope_stations_3: #{time / 1_000_000}")
+    IO.puts("scope_stations_3: #{time}")
 
     {time, scope_stations} = :timer.tc(fn -> scope_stations |> Repo.preload(:prices) end)
-    # IO.puts("scope_stations_4: #{time / 1_000_000}")
+    IO.puts("scope_stations_4: #{time}")
 
     {time, comparing_stations} = :timer.tc(fn ->
       scope_stations
       |> Enum.filter(fn s -> s.is_open end)
     end)
-    IO.puts("comparing_stations: #{time / 1_000_000}")
+    IO.puts("comparing_stations: #{time}")
 
     {time, result} = :timer.tc(fn ->
       scope_stations
       |> Enum.filter(fn s -> in_boundary({s.location_latitude, s.location_longitude}, reduced_boundary) end)
       |> Enum.map(fn s -> gen_marker(s, comparing_stations) end)
     end)
-    IO.puts("result: #{time / 1_000_000}")
+    IO.puts("result: #{time}")
 
     result
   end
