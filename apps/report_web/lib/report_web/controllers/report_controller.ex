@@ -171,7 +171,7 @@ defmodule Tankste.ReportWeb.ReportController do
       nil ->
         nil
       station ->
-        OpenTimes.is_open(station.id)
+        OpenTimes.is_open(station)
         |> to_string()
     end
   end
