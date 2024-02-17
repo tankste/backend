@@ -55,6 +55,7 @@ defmodule Tankste.ReportWeb.ReportController do
   defp origin_of_station_field(station_id, "price_e10"), do: price_origin(station_id, "e10")
   defp origin_of_station_field(station_id, "price_diesel"), do: price_origin(station_id, "diesel")
   defp origin_of_station_field(station_id, "note"), do: station_origin(station_id)
+  defp origin_of_station_field(_, _), do: nil
 
   defp station_origin(station_id) do
     case Stations.get(station_id) do
