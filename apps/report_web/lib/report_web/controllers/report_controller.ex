@@ -1,6 +1,7 @@
 defmodule Tankste.ReportWeb.ReportController do
   use Tankste.ReportWeb, :controller
 
+  alias Tankste.ReportWeb.ReportOpts
   alias Tankste.Report.Reports
   alias Tankste.Station.Stations
   alias Tankste.Station.OpenTimes
@@ -11,9 +12,9 @@ defmodule Tankste.ReportWeb.ReportController do
 
   # TODO: protect update endpoint by secret
 
-  # TODO: add filter for crawlers
-  def index(conn, _params) do
-    reports = Reports.list()
+  def index(conn, params) do
+    reports = ReportOpts.opts(params)
+      |> Reports.list()
     render(conn, "index.json", reports: reports)
   end
 
