@@ -1,10 +1,10 @@
-defmodule Tankste.FillWeb.OriginTokenPlug do
+defmodule Tankste.ReportWeb.OriginTokenPlug do
   import Plug.Conn
 
   alias Phoenix.Controller
   alias Tankste.Station.Origins
 
-  # TODO: same plug as in report_web, should be extracted to a shared library
+  # TODO: same plug as in fill_web, should be extracted to a shared library
 
   def load_origin(conn, _opts \\ []) do
     case get_req_header(conn, "authorization") do
@@ -51,5 +51,5 @@ defmodule Tankste.FillWeb.OriginTokenPlug do
 
   defp tokens(), do: origin_config() |> Keyword.get(:tokens, %{})
 
-  defp origin_config(), do: Application.get_env(:fill_web, :origin)
+  defp origin_config(), do: Application.get_env(:report_web, :origin)
 end

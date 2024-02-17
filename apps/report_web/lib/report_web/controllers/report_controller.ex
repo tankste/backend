@@ -1,6 +1,8 @@
 defmodule Tankste.ReportWeb.ReportController do
   use Tankste.ReportWeb, :controller
 
+  import Tankste.ReportWeb.OriginTokenPlug
+
   alias Tankste.ReportWeb.ReportOpts
   alias Tankste.Report.Reports
   alias Tankste.Station.Stations
@@ -9,8 +11,8 @@ defmodule Tankste.ReportWeb.ReportController do
   alias Tankste.ReportWeb.ChangesetView
 
   plug :load_report when action in [:show, :update, :delete]
-
-  # TODO: protect update endpoint by secret
+  plug :load_origin when action in [:update]
+  plug :require_current_origin when action in [:update]
 
   def index(conn, params) do
     reports = ReportOpts.opts(params)
@@ -24,8 +26,6 @@ defmodule Tankste.ReportWeb.ReportController do
   end
 
   def create(conn, params) do
-    # TODO: origin from station
-    # TODO: wrong_value from station
     case Reports.create(%{"device_id" => params["deviceId"], "station_id" => params["stationId"], "origin_id" => origin_of_station_field(params["stationId"], params["field"]), "field" => params["field"], "wrong_value" => value_of_station_field(params["stationId"], params["field"]), "correct_value" => params["correctValue"], "status" => "open"}) do
       {:ok, report} ->
         conn

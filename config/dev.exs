@@ -79,6 +79,13 @@ config :fill_web, :origin,
     "3" => 3
   }
 
+config :report_web, :origin,
+  tokens: %{
+    "1" => 1,
+    "2" => 2,
+    "3" => 3
+  }
+
 config :phoenix, :plug_init_mode, :runtime
 
 config :phoenix, :stacktrace_depth, 20
