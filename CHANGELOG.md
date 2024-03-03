@@ -9,6 +9,8 @@ CHANGELOG
 
 ## Upcoming version ##
 
+## 1.0.0 (03.03.2024) ##
+
 * ➕ Add report api
 * ➕ Add sponsor api
 * ➕ Add fill api
