@@ -8,7 +8,6 @@ defmodule Tankste.StationWeb.PriceView do
       "originId" => price.origin_id,
       "type" => price.type,
       "price" => price.price,
-      "currency" => price.currency,
       "lastChangesAt" => price.last_changes_at,
       "createdAt" => price.inserted_at,
       "updatedAt" => price.updated_at

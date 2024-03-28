@@ -21,6 +21,7 @@ defmodule Tankste.Station.Stations.Station do
     field :address_city, :string
     field :address_country, :string
     field :is_open, :boolean, virtual: true
+    field :currency, :string, default: "eur"
     field :last_changes_at, :utc_datetime
     field :status, :string, default: "available"
 
@@ -29,12 +30,13 @@ defmodule Tankste.Station.Stations.Station do
 
   def changeset(station, attrs) do
     station
-    |> cast(attrs, [:external_id, :origin_id, :name, :brand, :location_latitude, :location_longitude, :address_street, :address_house_number, :address_post_code, :address_city, :address_country, :last_changes_at, :status])
+    |> cast(attrs, [:external_id, :origin_id, :name, :brand, :location_latitude, :location_longitude, :address_street, :address_house_number, :address_post_code, :address_city, :address_country, :currency, :last_changes_at, :status])
     |> validate_required([:external_id, :origin_id, :name, :location_latitude, :location_longitude, :last_changes_at])
     # available: the station is available and publich visibility
     # disabled: this station should not be visible, for technical reasons
     # closed: station business has closed, don't show this station anymore
     |> validate_inclusion(:status, ~w(available disabled closed))
     |> unique_constraint(:origin_id_and_external_id)
+    |> validate_inclusion(:currency, ~w(eur isk))
   end
 end

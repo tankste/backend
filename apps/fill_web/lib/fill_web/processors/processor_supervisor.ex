@@ -46,7 +46,7 @@ defmodule Tankste.FillWeb.ProcessorSupervisor do
 
   defp processor_instances(key), do: processor_config() |> Keyword.get(key, instances_default(key))
 
-  defp instances_default(:station), do: 5
+  defp instances_default(:station), do: 1
   defp instances_default(:price), do: 10
   defp instances_default(:holiday), do: 1
   defp instances_default(_), do: 5

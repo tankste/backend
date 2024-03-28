@@ -80,7 +80,8 @@ defmodule Tankste.Station.Markers do
           e10_price: get_price(station, "e10"),
           e10_price_comparison: get_price_comparison(station, "e10", near_stations),
           diesel_price: get_price(station, "diesel"),
-          diesel_price_comparison: get_price_comparison(station, "diesel", near_stations)
+          diesel_price_comparison: get_price_comparison(station, "diesel", near_stations),
+          currency: station.currency
         }
       _ ->
         %Marker{
@@ -94,7 +95,8 @@ defmodule Tankste.Station.Markers do
           e10_price: nil,
           e10_price_comparison: "not_available",
           diesel_price: nil,
-          diesel_price_comparison: "not_available"
+          diesel_price_comparison: "not_available",
+          currency: station.currency
         }
     end
   end

@@ -3,13 +3,13 @@ defmodule Tankste.Station.Repo.Migrations.AddPriceCurrency do
 
   def up do
 
-    alter table(:station_prices) do
+    alter table(:stations) do
       add :currency, :string, null: false, default: "eur"
     end
   end
 
   def down do
-    alter table(:station_prices) do
+    alter table(:prices) do
       remove :currency
     end
   end
