@@ -45,9 +45,9 @@ defmodule Tankste.FillWeb.PriceProcessor do
       nil ->
         {:error, :no_station}
       station ->
-        with {:ok, e5Price} <- upsert_price_type(Prices.get_by_station_id_and_type(station.id, "e5"), new_price["originId"], station.id, "e5", new_price["e5Price"], new_price["e5LastChangeDate"]),
-          {:ok, e10Price} <- upsert_price_type(Prices.get_by_station_id_and_type(station.id, "e10"), new_price["originId"], station.id, "e10", new_price["e10Price"], new_price["e10LastChangeDate"]),
-          {:ok, dieselPrice} <- upsert_price_type(Prices.get_by_station_id_and_type(station.id, "diesel"), new_price["originId"], station.id, "diesel", new_price["dieselPrice"], new_price["dieselLastChangeDate"]) do
+        with {:ok, e5Price} <- upsert_price_type(Prices.get_by_station_id_and_type(station.id, "e5"), new_price["originId"], station.id, "e5", new_price["e5Price"], new_price["currency"], new_price["e5LastChangeDate"]),
+          {:ok, e10Price} <- upsert_price_type(Prices.get_by_station_id_and_type(station.id, "e10"), new_price["originId"], station.id, "e10", new_price["e10Price"], new_price["currency"], new_price["e10LastChangeDate"]),
+          {:ok, dieselPrice} <- upsert_price_type(Prices.get_by_station_id_and_type(station.id, "diesel"), new_price["originId"], station.id, "diesel", new_price["dieselPrice"], new_price["currency"], new_price["dieselLastChangeDate"]) do
             prices = [e5Price, e10Price, dieselPrice]
             |> Enum.filter(fn price -> price != nil end)
             {:ok, prices}
@@ -58,25 +58,27 @@ defmodule Tankste.FillWeb.PriceProcessor do
     end
   end
 
-  defp upsert_price_type(nil, _origin_id, _station_id, _type, nil, _last_changes_at), do: {:ok, nil}
-  defp upsert_price_type(existing_price, _origin_id, _station_id, _type, nil, _last_changes_at) when not is_nil(existing_price) do
+  defp upsert_price_type(nil, _origin_id, _station_id, _type, nil, _currency, _last_changes_at), do: {:ok, nil}
+  defp upsert_price_type(existing_price, _origin_id, _station_id, _type, nil, _currency, _last_changes_at) when not is_nil(existing_price) do
     Prices.delete(existing_price)
   end
-  defp upsert_price_type(nil,  origin_id, station_id, type, price_value, last_changes_at) do
+  defp upsert_price_type(nil,  origin_id, station_id, type, price_value, currency, last_changes_at) do
     Prices.insert(%{
       origin_id: origin_id,
       station_id: station_id,
       type: type,
       price: price_value,
+      currency: currency,
       last_changes_at: last_changes_at || DateTime.utc_now()
     })
   end
-  defp upsert_price_type(existing_price, origin_id, station_id, type, price_value, last_changes_at) do
+  defp upsert_price_type(existing_price, origin_id, station_id, type, price_value, currency, last_changes_at) do
     Prices.update(existing_price, %{
       origin_id: origin_id,
       station_id: station_id,
       type: type,
       price: price_value,
+      currency: currency,
       last_changes_at: last_price_change(existing_price, price_value, last_changes_at)
     })
   end
