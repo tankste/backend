@@ -108,6 +108,7 @@ defmodule Tankste.FillWeb.StationProcessor do
   defp last_changes_date(_station, %{"lastChangesDate" => last_changes}) do
     last_changes
   end
+  defp last_changes_date(station, new_station), do: last_changes_date(station, new_station |> Map.put("lalastChangesDate", nil))
 
   defp upsert_open_times(station_id, origin_id, new_open_times, existing_open_times \\ nil)
   defp upsert_open_times(_, _, [], _), do: :ok
