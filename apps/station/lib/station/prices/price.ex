@@ -10,7 +10,7 @@ defmodule Tankste.Station.Prices.Price do
     belongs_to :origin, Tankste.Station.Origins.Origin
     field :type, :string
     field :price, :float
-    field :currency, :string
+    field :currency, :string, default: "eur"
     field :last_changes_at, :utc_datetime
 
     timestamps()
@@ -19,7 +19,7 @@ defmodule Tankste.Station.Prices.Price do
   def changeset(station, attrs) do
     station
     |> cast(attrs, [:station_id, :origin_id, :type, :price, :currency, :last_changes_at])
-    |> validate_required([:station_id, :origin_id, :type, :price, :currency])
+    |> validate_required([:station_id, :origin_id, :type, :price])
     |> validate_inclusion(:type, ~w(e5 e10 diesel))
     |> validate_inclusion(:currency, ~w(eur isk))
     |> unique_constraint([:station_id, :type])
