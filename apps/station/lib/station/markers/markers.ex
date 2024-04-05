@@ -124,10 +124,18 @@ defmodule Tankste.Station.Markers do
           |> Enum.min()
 
         cond do
-          min_price + 0.04 >= price_value -> "cheap"
-          min_price + 0.10 >= price_value -> "medium"
+          min_price + get_price_medium_threshold_value(station.currency) >= price_value -> "cheap"
+          min_price + get_price_expensive_threshold_value(station.currency) >= price_value -> "medium"
           true -> "expensive"
         end
     end
   end
+
+  defp get_price_medium_threshold_value("eur"), do: 0.04
+  defp get_price_medium_threshold_value("isk"), do: 6.01
+  defp get_price_medium_threshold_value(_), do: 0.00
+
+  defp get_price_expensive_threshold_value("eur"), do: 0.10
+  defp get_price_expensive_threshold_value("isk"), do: 15.03
+  defp get_price_expensive_threshold_value(_), do: 0.00
 end
