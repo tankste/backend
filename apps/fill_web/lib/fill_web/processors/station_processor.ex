@@ -49,6 +49,7 @@ defmodule Tankste.FillWeb.StationProcessor do
             address_post_code: new_station["addressPostCode"],
             address_city: new_station["addressCity"],
             address_country: new_station["addressCountry"],
+            currency: new_station["currency"],
             last_changes_at: new_station["lastChangesDate"] || DateTime.utc_now()
           })
         station ->
@@ -62,6 +63,7 @@ defmodule Tankste.FillWeb.StationProcessor do
             address_post_code: new_station["addressPostCode"],
             address_city: new_station["addressCity"],
             address_country: new_station["addressCountry"],
+            currency: new_station["currency"],
             last_changes_at: last_changes_date(station, new_station)
           })
       end
@@ -96,9 +98,10 @@ defmodule Tankste.FillWeb.StationProcessor do
       address_post_code: new_station["addressPostCode"],
       address_city: new_station["addressCity"],
       address_country: new_station["addressCountry"],
+      currency: new_station["currency"]
     })
 
-  case changeset do
+    case changeset do
       %Ecto.Changeset{changes: %{}} ->
         station.last_changes_at
       _ ->
@@ -108,6 +111,7 @@ defmodule Tankste.FillWeb.StationProcessor do
   defp last_changes_date(_station, %{"lastChangesDate" => last_changes}) do
     last_changes
   end
+  defp last_changes_date(station, new_station), do: last_changes_date(station, new_station |> Map.put("lastChangesDate", nil))
 
   defp upsert_open_times(station_id, origin_id, new_open_times, existing_open_times \\ nil)
   defp upsert_open_times(_, _, [], _), do: :ok

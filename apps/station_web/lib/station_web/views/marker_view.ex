@@ -17,7 +17,8 @@ defmodule Tankste.StationWeb.MarkerView do
       "e10Price" => marker.e10_price,
       "e10PriceState" => marker.e10_price_comparison,
       "dieselPrice" => marker.diesel_price,
-      "dieselPriceState" => marker.diesel_price_comparison
+      "dieselPriceState" => marker.diesel_price_comparison,
+      "currency" => marker.currency
     }
 	end
 end

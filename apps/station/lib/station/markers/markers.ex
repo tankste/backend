@@ -80,7 +80,8 @@ defmodule Tankste.Station.Markers do
           e10_price: get_price(station, "e10"),
           e10_price_comparison: get_price_comparison(station, "e10", near_stations),
           diesel_price: get_price(station, "diesel"),
-          diesel_price_comparison: get_price_comparison(station, "diesel", near_stations)
+          diesel_price_comparison: get_price_comparison(station, "diesel", near_stations),
+          currency: station.currency
         }
       _ ->
         %Marker{
@@ -94,7 +95,8 @@ defmodule Tankste.Station.Markers do
           e10_price: nil,
           e10_price_comparison: "not_available",
           diesel_price: nil,
-          diesel_price_comparison: "not_available"
+          diesel_price_comparison: "not_available",
+          currency: station.currency
         }
     end
   end
@@ -122,10 +124,18 @@ defmodule Tankste.Station.Markers do
           |> Enum.min()
 
         cond do
-          min_price + 0.04 >= price_value -> "cheap"
-          min_price + 0.10 >= price_value -> "medium"
+          min_price + get_price_medium_threshold_value(station.currency) >= price_value -> "cheap"
+          min_price + get_price_expensive_threshold_value(station.currency) >= price_value -> "medium"
           true -> "expensive"
         end
     end
   end
+
+  defp get_price_medium_threshold_value("eur"), do: 0.04
+  defp get_price_medium_threshold_value("isk"), do: 6.01
+  defp get_price_medium_threshold_value(_), do: 0.00
+
+  defp get_price_expensive_threshold_value("eur"), do: 0.10
+  defp get_price_expensive_threshold_value("isk"), do: 15.03
+  defp get_price_expensive_threshold_value(_), do: 0.00
 end

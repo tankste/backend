@@ -28,6 +28,7 @@ defmodule Tankste.StationWeb.StationView do
         "longitude" => station.location_longitude
       },
       "isOpen" => station.is_open,
+      "currency" => station.currency,
       "lastChangesAt" => station.last_changes_at,
       "createdAt" => station.inserted_at,
       "updatedAt" => station.updated_at
