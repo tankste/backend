@@ -38,8 +38,6 @@ defmodule Tankste.StationWeb do
 
   defp view_helpers do
     quote do
-      use Phoenix.HTML
-
       import Phoenix.View
 
       alias Tankste.StationWeb.Router.Helpers, as: Routes

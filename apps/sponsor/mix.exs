@@ -29,7 +29,7 @@ defmodule Tankste.Sponsor.MixProject do
   defp deps do
     [
       {:phoenix_pubsub, "~> 2.1.1"},
-      {:ecto_sql, "~> 3.9.0"},
+      {:ecto_sql, "~> 3.11"},
       {:myxql, "~> 0.6.3"},
       {:goth, "~> 1.4.2"},
       {:google_api_android_publisher, "~> 0.30.1"},

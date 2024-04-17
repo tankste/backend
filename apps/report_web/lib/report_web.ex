@@ -38,8 +38,6 @@ defmodule Tankste.ReportWeb do
 
   defp view_helpers do
     quote do
-      use Phoenix.HTML
-
       import Phoenix.View
 
       alias Tankste.ReportWeb.Router.Helpers, as: Routes
