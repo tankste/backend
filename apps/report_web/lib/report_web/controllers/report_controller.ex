@@ -5,7 +5,7 @@ defmodule Tankste.ReportWeb.ReportController do
 
   alias Tankste.ReportWeb.ReportOpts
   alias Tankste.Report.Reports
-  alias Tankste.Station.Stations
+  alias Tankste.Station.StationInfos
   alias Tankste.Station.OpenTimes
   alias Tankste.Station.Prices
   alias Tankste.ReportWeb.ChangesetView
@@ -39,43 +39,30 @@ defmodule Tankste.ReportWeb.ReportController do
     end
   end
 
-  defp origin_of_station_field(station_id, "name"), do: station_origin(station_id)
-  defp origin_of_station_field(station_id, "brand"), do: station_origin(station_id)
-  defp origin_of_station_field(station_id, "availability"), do: station_origin(station_id)
-  defp origin_of_station_field(station_id, "location_latitude"), do: station_origin(station_id)
-  defp origin_of_station_field(station_id, "location_longitude"), do: station_origin(station_id)
-  defp origin_of_station_field(station_id, "address_street"), do: station_origin(station_id)
-  defp origin_of_station_field(station_id, "address_house_number"), do: station_origin(station_id)
-  defp origin_of_station_field(station_id, "address_post_code"), do: station_origin(station_id)
-  defp origin_of_station_field(station_id, "address_city"), do: station_origin(station_id)
-  defp origin_of_station_field(station_id, "address_country"), do: station_origin(station_id)
-  defp origin_of_station_field(station_id, "open_times"), do: open_times_origin(station_id)
-  defp origin_of_station_field(station_id, "open_times_state"), do: open_times_origin(station_id)
+  defp origin_of_station_field(station_id, "name"), do: station_info_origin(station_id)
+  defp origin_of_station_field(station_id, "brand"), do: station_info_origin(station_id)
+  defp origin_of_station_field(station_id, "availability"), do: station_info_origin(station_id)
+  defp origin_of_station_field(station_id, "location_latitude"), do: station_info_origin(station_id)
+  defp origin_of_station_field(station_id, "location_longitude"), do: station_info_origin(station_id)
+  defp origin_of_station_field(station_id, "address_street"), do: station_info_origin(station_id)
+  defp origin_of_station_field(station_id, "address_house_number"), do: station_info_origin(station_id)
+  defp origin_of_station_field(station_id, "address_post_code"), do: station_info_origin(station_id)
+  defp origin_of_station_field(station_id, "address_city"), do: station_info_origin(station_id)
+  defp origin_of_station_field(station_id, "address_country"), do: station_info_origin(station_id)
+  defp origin_of_station_field(station_id, "open_times"), do: station_info_origin(station_id)
+  defp origin_of_station_field(station_id, "open_times_state"), do: station_info_origin(station_id)
   defp origin_of_station_field(station_id, "price_e5"), do: price_origin(station_id, "e5")
   defp origin_of_station_field(station_id, "price_e10"), do: price_origin(station_id, "e10")
   defp origin_of_station_field(station_id, "price_diesel"), do: price_origin(station_id, "diesel")
-  defp origin_of_station_field(station_id, "note"), do: station_origin(station_id)
+  defp origin_of_station_field(station_id, "note"), do: station_info_origin(station_id)
   defp origin_of_station_field(_, _), do: nil
 
-  defp station_origin(station_id) do
-    case Stations.get(station_id) do
+  defp station_info_origin(station_id) do
+    case get_station_info(station_id) do
       nil ->
         nil
-      station ->
-        station.origin_id
-    end
-  end
-
-  defp open_times_origin(station_id) do
-    case OpenTimes.list(station_id: station_id) do
-      nil ->
-        nil
-      [] ->
-        nil
-      open_times ->
-        open_times
-        |> Enum.map(fn ot -> ot.origin_id end)
-        |> Enum.at(0)
+      station_info ->
+        station_info.origin_id
     end
   end
 
@@ -96,96 +83,101 @@ defmodule Tankste.ReportWeb.ReportController do
   end
 
   defp value_of_station_field(station_id, "name") do
-    case Stations.get(station_id) do
+    case get_station_info(station_id) do
       nil ->
         nil
-      station ->
-        station.name
+      station_info ->
+        station_info.name
     end
   end
   defp value_of_station_field(station_id, "brand") do
-    case Stations.get(station_id) do
+    case get_station_info(station_id) do
       nil ->
         nil
-      station ->
-        station.brand
+        station_info ->
+          station_info.brand
     end
   end
   defp value_of_station_field(station_id, "location_latitude") do
-    case Stations.get(station_id) do
+    case get_station_info(station_id) do
       nil ->
         nil
-      station ->
-        Float.to_string(station.location_latitude)
+      station_info ->
+        Float.to_string(station_info.location_latitude)
     end
   end
   defp value_of_station_field(station_id, "location_longitude") do
-    case Stations.get(station_id) do
+    case get_station_info(station_id) do
       nil ->
         nil
-      station ->
-        Float.to_string(station.location_longitude)
+      station_info ->
+        Float.to_string(station_info.location_longitude)
     end
   end
   defp value_of_station_field(station_id, "address_street") do
-    case Stations.get(station_id) do
+    case get_station_info(station_id) do
       nil ->
         nil
-      station ->
-        station.address_street
+      station_info ->
+        station_info.address_street
     end
   end
   defp value_of_station_field(station_id, "address_house_number") do
-    case Stations.get(station_id) do
+    case get_station_info(station_id) do
       nil ->
         nil
-      station ->
-        station.address_house_number
+      station_info ->
+        station_info.address_house_number
     end
   end
   defp value_of_station_field(station_id, "address_post_code") do
-    case Stations.get(station_id) do
+    case get_station_info(station_id) do
       nil ->
         nil
-      station ->
-        station.address_post_code
+      station_info ->
+        station_info.address_post_code
     end
   end
   defp value_of_station_field(station_id, "address_city") do
-    case Stations.get(station_id) do
+    case get_station_info(station_id) do
       nil ->
         nil
-      station ->
-        station.address_city
+      station_info ->
+        station_info.address_city
     end
   end
   defp value_of_station_field(station_id, "address_country") do
-    case Stations.get(station_id) do
+    case get_station_info(station_id) do
       nil ->
         nil
-      station ->
-        station.address_country
+      station_info ->
+        station_info.address_country
     end
   end
   defp value_of_station_field(station_id, "open_times_state") do
-    case Stations.get(station_id) do
+    case get_station_info(station_id) do
       nil ->
         nil
-      station ->
-        OpenTimes.is_open(station)
+      station_info ->
+        OpenTimes.is_open(station_info)
         |> to_string()
     end
   end
   defp value_of_station_field(station_id, "open_times") do
-    case OpenTimes.list(station_id: station_id) do
+    case get_station_info(station_id) do
       nil ->
         nil
-      [] ->
-        nil
-      open_times ->
-        open_times
-        |> Enum.map(fn ot -> "#{ot.day}: #{ot.start_time} - #{ot.end_time}" end)
-        |> Enum.join(", ")
+      station_info ->
+        case OpenTimes.list(station_info_id: station_info.station_id) do
+          nil ->
+            nil
+          [] ->
+            nil
+          open_times ->
+            open_times
+            |> Enum.map(fn ot -> "#{ot.day}: #{ot.start_time} - #{ot.end_time}" end)
+            |> Enum.join(", ")
+        end
     end
   end
   defp value_of_station_field(station_id, "price_e5") do
@@ -230,7 +222,7 @@ defmodule Tankste.ReportWeb.ReportController do
             nil
           price ->
             Float.to_string(price |> Map.get(:price))
-        end
+      end
     end
   end
   defp value_of_station_field(_, "availability"), do: "available"
@@ -238,6 +230,11 @@ defmodule Tankste.ReportWeb.ReportController do
     "-"
   end
   defp value_of_station_field(_, _), do: nil
+
+  defp get_station_info(station_id) do
+    StationInfos.list(station_id: station_id)
+    |> Enum.max_by(fn si -> si.priority end)
+  end
 
   def update(conn, params) do
     case Reports.update(report(conn), %{"reported_to_origin_date" => params["reportedToOriginDate"]}) do
