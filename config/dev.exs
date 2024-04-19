@@ -67,7 +67,8 @@ config :report_web, Tankste.ReportWeb.Endpoint,
   code_reloader: true,
   check_origin: false
 
-config :logger, :console, format: "[$level] $message\n"
+config :logger, :console, format: "[$level] $message\n",
+  level: :debug
 
 config :sponsor, :goth,
   source: %{}
@@ -76,14 +77,16 @@ config :fill_web, :origin,
   tokens: %{
     "1" => 1,
     "2" => 2,
-    "3" => 3
+    "3" => 3,
+    "4" => 4
   }
 
 config :report_web, :origin,
   tokens: %{
     "1" => 1,
     "2" => 2,
-    "3" => 3
+    "3" => 3,
+    "4" => 4
   }
 
 config :phoenix, :plug_init_mode, :runtime

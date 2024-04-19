@@ -19,24 +19,24 @@ defmodule Tankste.Station.OpenTimes do
   end
 
   defp query(opts) do
-    station_id = Keyword.get(opts, :station_id, nil)
+    station_info_id = Keyword.get(opts, :station_info_id, nil)
     day = Keyword.get(opts, :day, nil)
 
     from(ot in OpenTime,
       select: ot)
-    |> query_where_station_id(station_id)
+    |> query_where_station_info_id(station_info_id)
     |> query_where_day(day)
   end
 
-  defp query_where_station_id(query, nil), do: query
-  defp query_where_station_id(query, []), do: query
-  defp query_where_station_id(query, station_ids) when is_list(station_ids) do
+  defp query_where_station_info_id(query, nil), do: query
+  defp query_where_station_info_id(query, []), do: query
+  defp query_where_station_info_id(query, station_info_ids) when is_list(station_info_ids) do
     query
-    |> where([ot], ot.station_id in ^station_ids)
+    |> where([ot], ot.station_info_id in ^station_info_ids)
   end
-  defp query_where_station_id(query, station_id) do
+  defp query_where_station_info_id(query, station_info_id) do
     query
-    |> where([ot], ot.station_id == ^station_id)
+    |> where([ot], ot.station_info_id == ^station_info_id)
   end
 
   defp query_where_day(query, nil), do: query
@@ -63,22 +63,22 @@ defmodule Tankste.Station.OpenTimes do
   end
 
   # TODO: use time zone based on station location
-  def is_open(station) do
-    case station_station_areas(station) do
+  def is_open(station_info) do
+    case station_station_areas(station_info) do
       [] ->
-        is_in_open_time(station, :today)
+        is_in_open_time(station_info, :today)
       _station_areas ->
-        case station_holidays(station, DateTime.now!("Europe/Berlin") |> DateTime.to_date()) do
+        case station_holidays(station_info, DateTime.now!("Europe/Berlin") |> DateTime.to_date()) do
           [] ->
-            is_in_open_time(station, :today)
+            is_in_open_time(station_info, :today)
           _holidays ->
-            is_in_open_time(station, :holiday)
+            is_in_open_time(station_info, :holiday)
         end
     end
   end
 
-  def is_today(%OpenTime{station_id: station_id, day: "public_holiday"}) do
-    station_area_ids = StationAreas.list(station_id: station_id) |> Enum.map(fn sa -> sa.area_id end)
+  def is_today(%OpenTime{station_info_id: station_info_id, day: "public_holiday"}) do
+    station_area_ids = StationAreas.list(station_info_id: station_info_id) |> Enum.map(fn sa -> sa.area_id end)
     case Holidays.list(date: DateTime.now!("Europe/Berlin") |> DateTime.to_date(), area_id: station_area_ids) do
       [] ->
         false
@@ -96,33 +96,33 @@ defmodule Tankste.Station.OpenTimes do
   end
 
   # TODO: use time zone based on station location
-  defp is_in_open_time(station, :today) do
+  defp is_in_open_time(station_info, :today) do
     now = DateTime.now!("Europe/Berlin")
     time_now = now |> DateTime.to_time()
 
-    station_open_times(station, now |> DateTime.to_date() |> Date.day_of_week() |> day())
+    station_open_times(station_info, now |> DateTime.to_date() |> Date.day_of_week() |> day())
     |> Enum.map(fn t -> Map.put(t, :end_time, to_end_time(t.end_time)) end)
     |> Enum.any?(fn t -> t.start_time == t.end_time or (t.start_time <= time_now && t.end_time >= time_now)  end)
   end
-  defp is_in_open_time(station, :holiday) do
+  defp is_in_open_time(station_info, :holiday) do
     time_now =  DateTime.now!("Europe/Berlin") |> DateTime.to_time()
 
-    station_open_times(station, "public_holiday")
+    station_open_times(station_info, "public_holiday")
     |> Enum.map(fn t -> Map.put(t, :end_time, to_end_time(t.end_time)) end)
     |> Enum.any?(fn t -> t.start_time == t.end_time or (t.start_time <= time_now && t.end_time >= time_now) end)
   end
 
-  defp station_station_areas(station) do
-    case Ecto.assoc_loaded?(station.station_areas) do
+  defp station_station_areas(station_info) do
+    case Ecto.assoc_loaded?(station_info.station_areas) do
       true ->
-        station.station_areas
+        station_info.station_areas
       false ->
-        StationAreas.list(station_id: station.id)
+        StationAreas.list(station_info_id: station_info.id)
     end
   end
 
-  defp station_holidays(station, day) do
-    station_areas = station_station_areas(station)
+  defp station_holidays(station_info, day) do
+    station_areas = station_station_areas(station_info)
     areas = station_areas |> Enum.map(fn sa -> station_area_area(sa) end)
 
     areas
@@ -146,12 +146,12 @@ defmodule Tankste.Station.OpenTimes do
     end
   end
 
-  defp station_open_times(station, day) do
-    case Ecto.assoc_loaded?(station.open_times) do
+  defp station_open_times(station_info, day) do
+    case Ecto.assoc_loaded?(station_info.open_times) do
       true ->
-        station.open_times |> Enum.filter(fn ot -> ot.day == day end)
+        station_info.open_times |> Enum.filter(fn ot -> ot.day == day end)
       false ->
-        list(station_id: station.id, day: day)
+        list(station_info_id: station_info.id, day: day)
     end
   end
 
