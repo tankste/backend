@@ -1,7 +1,7 @@
 defmodule Tankste.FillWeb.PriceProcessor do
   use GenStage
 
-  alias Tankste.Station.Stations
+  alias Tankste.Station.StationInfos
   alias Tankste.Station.Prices
 
   def start_link(_opts) do
@@ -39,15 +39,16 @@ defmodule Tankste.FillWeb.PriceProcessor do
     end
   end
 
+  defp upsert_price(%{"originId" => nil}), do: {:error, :no_origin_id}
   defp upsert_price(%{"externalId" => nil}), do: {:error, :no_external_id}
-  defp upsert_price(%{"externalId" => external_id} = new_price) do
-    case Stations.get_by_external_id(external_id) do
+  defp upsert_price(%{"originId" => origin_id, "externalId" => external_id} = new_price) do
+    case StationInfos.get_by_external_id(origin_id, external_id) do
       nil ->
         {:error, :no_station}
-      station ->
-        with {:ok, e5Price} <- upsert_price_type(Prices.get_by_station_id_and_type(station.id, "e5"), new_price["originId"], station.id, "e5", new_price["e5Price"], new_price["e5LastChangeDate"]),
-          {:ok, e10Price} <- upsert_price_type(Prices.get_by_station_id_and_type(station.id, "e10"), new_price["originId"], station.id, "e10", new_price["e10Price"], new_price["e10LastChangeDate"]),
-          {:ok, dieselPrice} <- upsert_price_type(Prices.get_by_station_id_and_type(station.id, "diesel"), new_price["originId"], station.id, "diesel", new_price["dieselPrice"], new_price["dieselLastChangeDate"]) do
+      station_info ->
+        with {:ok, e5Price} <- upsert_price_type(Prices.get_by_station_id_and_type(station_info.station_id, "e5"), origin_id, station_info.station_id, "e5", new_price["e5Price"], new_price["e5LastChangeDate"]),
+          {:ok, e10Price} <- upsert_price_type(Prices.get_by_station_id_and_type(station_info.station_id, "e10"), origin_id, station_info.station_id, "e10", new_price["e10Price"], new_price["e10LastChangeDate"]),
+          {:ok, dieselPrice} <- upsert_price_type(Prices.get_by_station_id_and_type(station_info.station_id, "diesel"), origin_id, station_info.station_id, "diesel", new_price["dieselPrice"], new_price["dieselLastChangeDate"]) do
             prices = [e5Price, e10Price, dieselPrice]
             |> Enum.filter(fn price -> price != nil end)
             {:ok, prices}
@@ -62,7 +63,7 @@ defmodule Tankste.FillWeb.PriceProcessor do
   defp upsert_price_type(existing_price, _origin_id, _station_id, _type, nil, _last_changes_at) when not is_nil(existing_price) do
     Prices.delete(existing_price)
   end
-  defp upsert_price_type(nil,  origin_id, station_id, type, price_value, last_changes_at) do
+  defp upsert_price_type(nil, origin_id, station_id, type, price_value, last_changes_at) do
     Prices.insert(%{
       origin_id: origin_id,
       station_id: station_id,

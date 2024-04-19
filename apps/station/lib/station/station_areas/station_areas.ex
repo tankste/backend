@@ -16,29 +16,29 @@ defmodule Tankste.Station.StationAreas do
     |> Repo.one()
   end
 
-  def get_by_station_id_and_area_id(station_id, area_id, opts \\ []) do
+  def get_by_station_info_id_and_area_id(station_info_id, area_id, opts \\ []) do
     query(opts)
-    |> where([sa], sa.station_id == ^station_id and sa.area_id == ^area_id)
+    |> where([sa], sa.station_info_id == ^station_info_id and sa.area_id == ^area_id)
     |> Repo.one()
   end
 
   defp query(opts) do
-    station_id = Keyword.get(opts, :station_id, nil)
+    station_info_id = Keyword.get(opts, :station_info_id, nil)
 
     from(sa in StationArea,
       select: sa)
-    |> query_where_station_id(station_id)
+    |> query_where_station_info_id(station_info_id)
   end
 
-  defp query_where_station_id(query, nil), do: query
-  defp query_where_station_id(query, []), do: query
-  defp query_where_station_id(query, station_ids) when is_list(station_ids) do
+  defp query_where_station_info_id(query, nil), do: query
+  defp query_where_station_info_id(query, []), do: query
+  defp query_where_station_info_id(query, station_info_ids) when is_list(station_info_ids) do
     query
-    |> where([sa], sa.station_id in ^station_ids)
+    |> where([sa], sa.station_info_id in ^station_info_ids)
   end
-  defp query_where_station_id(query, station_id) do
+  defp query_where_station_info_id(query, station_info_id) do
     query
-    |> where([sa], sa.station_id == ^station_id)
+    |> where([sa], sa.station_info_id == ^station_info_id)
   end
 
   def create(attrs \\ %{}) do
