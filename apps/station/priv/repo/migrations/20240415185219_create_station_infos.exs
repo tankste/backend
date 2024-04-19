@@ -23,7 +23,7 @@ defmodule Tankste.Station.Repo.Migrations.CreateStationInfos do
 
     flush()
 
-    stations = Tankste.Station.Repo.all(Tankste.Station.Stations.StationLegacy)
+    Tankste.Station.Repo.all(Tankste.Station.Stations.StationLegacy)
       |> Enum.map(fn s ->
         %{
           id: s.id,
@@ -44,8 +44,11 @@ defmodule Tankste.Station.Repo.Migrations.CreateStationInfos do
           inserted_at: s.inserted_at,
           updated_at: s.updated_at,
         }
+        end)
+      |> Enum.chunk_every(2000)
+      |> Enum.each(fn stations ->
+        Tankste.Station.Repo.insert_all(Tankste.Station.StationInfos.StationInfo, stations)
       end)
-    Tankste.Station.Repo.insert_all(Tankste.Station.StationInfos.StationInfo, stations)
 
     flush()
 
