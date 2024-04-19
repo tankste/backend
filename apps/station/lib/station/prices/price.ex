@@ -9,8 +9,8 @@ defmodule Tankste.Station.Prices.Price do
     belongs_to :station, Tankste.Station.Stations.Station
     belongs_to :origin, Tankste.Station.Origins.Origin
     field :type, :string
-
     field :price, :float
+    field :priority, :integer, default: 0
     field :last_changes_at, :utc_datetime
 
     timestamps()
