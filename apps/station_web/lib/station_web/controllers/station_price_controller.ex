@@ -12,6 +12,8 @@ defmodule Tankste.StationWeb.StationPriceController do
     prices = case station_info(conn).is_open do
         true ->
           prices
+          |> Enum.sort_by(fn p -> p.priority end, :desc)
+          |> Enum.uniq_by(fn p -> p.type end)
         _ ->
           []
       end

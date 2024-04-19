@@ -18,6 +18,12 @@ defmodule Tankste.Station.Markers do
       |> Enum.filter(fn si -> si.station.status == "available" end)
       |> Enum.map(fn si -> %{si | is_open: OpenTimes.is_open(si)} end)
       |> Repo.preload(station: [:prices])
+      |> Enum.map(fn si ->
+        prices = Enum.sort_by(si.station.prices, fn p -> p.priority end, :desc)
+        |> Enum.uniq_by(fn p -> p.type end)
+
+        Map.put(si, :station, Map.put(si.station, :prices, prices))
+      end)
 
       comparing_station_infos = scope_station_infos
         |> Enum.filter(fn si -> si.is_open end)
@@ -39,6 +45,8 @@ defmodule Tankste.Station.Markers do
       |> Map.put(:is_open, OpenTimes.is_open(station_info))
       |> Repo.preload(station: [:prices])
 
+    station_info = Map.put(station_info, :station, Map.put(station_info.station, :prices, Enum.sort_by(station_info.station.prices, fn p -> p.priority end) |> Enum.uniq_by(fn p -> p.type end)))
+
     scope_boundary = [{station_info.location_latitude, station_info.location_longitude}, {station_info.location_latitude, station_info.location_longitude}]
       |> boundary_with_padding()
 
@@ -50,6 +58,12 @@ defmodule Tankste.Station.Markers do
       |> Enum.map(fn si -> %{si | is_open: OpenTimes.is_open(si)} end)
       |> Enum.filter(fn s -> s.is_open end)
       |> Repo.preload(station: [:prices])
+      |> Enum.map(fn si ->
+        prices = Enum.sort_by(si.station.prices, fn p -> p.priority end, :desc)
+          |> Enum.uniq_by(fn p -> p.type end)
+
+        Map.put(si, :station, Map.put(si.station, :prices, prices))
+      end)
 
       gen_marker(station_info, comparing_station_infos)
   end
