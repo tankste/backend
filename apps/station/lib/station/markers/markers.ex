@@ -1,7 +1,6 @@
 defmodule Tankste.Station.Markers do
 
   alias Tankste.Station.Markers.Marker
-  alias Tankste.Station.Stations
   alias Tankste.Station.StationInfos
   alias Tankste.Station.OpenTimes
   alias Tankste.Station.Repo

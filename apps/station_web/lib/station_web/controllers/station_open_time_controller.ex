@@ -7,7 +7,7 @@ defmodule Tankste.StationWeb.StationOpenTimeController do
 
   plug :load_station, [station_id: "station_id"]
 
-  def index(conn, %{"station_id" => station_id}) do
+  def index(conn, _params) do
     open_times = OpenTimes.list(station_info_id: station_info(conn).id)
       |> Enum.map(fn ot -> Map.put(ot, :origin_id, station_info(conn).origin_id) end)
       |> Enum.map(fn ot -> Map.put(ot, :is_today, OpenTimes.is_today(ot)) end)

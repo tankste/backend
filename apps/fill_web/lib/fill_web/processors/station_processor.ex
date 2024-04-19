@@ -2,7 +2,6 @@ defmodule Tankste.FillWeb.StationProcessor do
   use GenStage
 
   alias Tankste.Station.Stations
-  alias Tankste.Station.Stations.Station
   alias Tankste.Station.StationInfos
   alias Tankste.Station.StationInfos.StationInfo
   alias Tankste.Station.Areas
