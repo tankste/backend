@@ -32,7 +32,7 @@ defmodule Tankste.Station.StationInfos.StationInfo do
     station
     |> cast(attrs, [:station_id, :external_id, :origin_id, :name, :brand, :location_latitude, :location_longitude, :address_street, :address_house_number, :address_post_code, :address_city, :address_country, :currency, :priority, :last_changes_at])
     |> validate_required([:station_id, :external_id, :origin_id, :name, :location_latitude, :location_longitude, :last_changes_at])
-    |> unique_constraint(:origin_id_and_external_id)
+    |> unique_constraint([:origin_id, :external_id])
     |> validate_inclusion(:currency, ~w(eur isk))
   end
 end

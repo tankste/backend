@@ -9,6 +9,10 @@ CHANGELOG
 
 ## Upcoming version ##
 
+## 1.1.1 (2024-04-20) ##
+
+- 🐞 Add missing constrains & indexes to station infos table
+
 ## 1.1.0 (2024-04-19) ##
 
 - 🛠 Allow multiple data origins for stations, prices & related data ([#7](https://github.com/tankste/backend/issues/7))
