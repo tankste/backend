@@ -11,7 +11,7 @@ CHANGELOG
 
 ## 1.1.1 (2024-04-20) ##
 
-- 🐞 Add missing constrains & indexes to station infos table
+- 🐞 Clean constrains & indexes after table migrations
 
 ## 1.1.0 (2024-04-19) ##
 
