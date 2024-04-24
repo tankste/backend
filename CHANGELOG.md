@@ -9,6 +9,10 @@ CHANGELOG
 
 ## Upcoming version ##
 
+## 1.1.2 (2024-04-24) ##
+
+- 🛠 Add more sponsor products
+
 ## 1.1.1 (2024-04-20) ##
 
 - 🐞 Clean constrains & indexes after table migrations

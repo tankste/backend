@@ -63,7 +63,10 @@ defmodule Tankste.SponsorWeb.PurchaseController do
 
   defp product_from_apple_id("app.tankste.sponsor.product.1"), do: "sponsor_single_1"
   defp product_from_apple_id("app.tankste.sponsor.product.2"), do: "sponsor_single_2"
+  defp product_from_apple_id("app.tankste.sponsor.product.5"), do: "sponsor_single_5"
   defp product_from_apple_id("app.tankste.sponsor.product.10"), do: "sponsor_single_10"
+  defp product_from_apple_id("app.tankste.sponsor.product.20"), do: "sponsor_single_20"
+  defp product_from_apple_id("app.tankste.sponsor.product.50"), do: "sponsor_single_50"
   defp product_from_apple_id("app.tankste.sponsor.sub.monthly.1"), do: "sponsor_subscription_monthly_1"
   defp product_from_apple_id("app.tankste.sponsor.sub.monthly.2"), do: "sponsor_subscription_monthly_2"
   defp product_from_apple_id("app.tankste.sponsor.sub.yearly.12"), do: "sponsor_subscription_yearly_12"
@@ -143,7 +146,10 @@ defmodule Tankste.SponsorWeb.PurchaseController do
 
   defp product_from_google_id("app.tankste.sponsor.product.1"), do: "sponsor_single_1"
   defp product_from_google_id("app.tankste.sponsor.product.2"), do: "sponsor_single_2"
+  defp product_from_google_id("app.tankste.sponsor.product.5"), do: "sponsor_single_5"
   defp product_from_google_id("app.tankste.sponsor.product.10"), do: "sponsor_single_10"
+  defp product_from_google_id("app.tankste.sponsor.product.20"), do: "sponsor_single_20"
+  defp product_from_google_id("app.tankste.sponsor.product.50"), do: "sponsor_single_50"
   defp product_from_google_id("app.tankste.sponsor.sub.monthly.1"), do: "sponsor_subscription_monthly_1"
   defp product_from_google_id("app.tankste.sponsor.sub.monthly.2"), do: "sponsor_subscription_monthly_2"
   defp product_from_google_id("app.tankste.sponsor.sub.yearly.12"), do: "sponsor_subscription_yearly_12"
@@ -151,7 +157,10 @@ defmodule Tankste.SponsorWeb.PurchaseController do
 
   defp value_from_product("sponsor_single_1"), do: 1
   defp value_from_product("sponsor_single_2"), do: 2
+  defp value_from_product("sponsor_single_5"), do: 5
   defp value_from_product("sponsor_single_10"), do: 10
+  defp value_from_product("sponsor_single_20"), do: 20
+  defp value_from_product("sponsor_single_50"), do: 50
   defp value_from_product("sponsor_subscription_monthly_1"), do: 1
   defp value_from_product("sponsor_subscription_monthly_2"), do: 2
   defp value_from_product("sponsor_subscription_yearly_12"), do: 12
@@ -162,7 +171,10 @@ defmodule Tankste.SponsorWeb.PurchaseController do
   defp type_from_product("sponsor_subscription_yearly_12"), do: "subscription"
   defp type_from_product("sponsor_single_1"), do: "single"
   defp type_from_product("sponsor_single_2"), do: "single"
+  defp type_from_product("sponsor_single_5"), do: "single"
   defp type_from_product("sponsor_single_10"), do: "single"
+  defp type_from_product("sponsor_single_20"), do: "single"
+  defp type_from_product("sponsor_single_50"), do: "single"
   defp type_from_product(_), do: nil
 
   defp expiration_days_from_product("sponsor_subscription_monthly_1"), do: 30
