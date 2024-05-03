@@ -25,6 +25,7 @@ defmodule Tankste.CockpitWeb.Router do
 
     get "/", PageController, :home
 
+    resources "/stations", StationController, only: [:index, :show, :new, :create, :edit, :update]
     resources "/reports", ReportController, only: [:index, :show, :edit, :update]
   end
 
