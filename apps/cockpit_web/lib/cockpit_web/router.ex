@@ -24,6 +24,8 @@ defmodule Tankste.CockpitWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+
+    resources "/reports", ReportController, only: [:index, :show, :edit, :update]
   end
 
   # Other scopes may use custom stacks.

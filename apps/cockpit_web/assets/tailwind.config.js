@@ -8,8 +8,9 @@ const path = require("path")
 module.exports = {
   content: [
     "./js/**/*.js",
+    './node_modules/flowbite/**/*.js',
     "../lib/cockpit_web.ex",
-    "../lib/cockpit_web/**/*.*ex"
+    "../lib/cockpit_web/**/*.*ex",
   ],
   theme: {
     extend: {
@@ -70,6 +71,7 @@ module.exports = {
           }
         }
       }, {values})
-    })
+    }),
+    require('flowbite/plugin')
   ]
 }
