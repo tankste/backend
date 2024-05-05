@@ -35,6 +35,7 @@ defmodule Tankste.Station.StationInfos do
     station_id = Keyword.get(opts, :station_id, nil)
     external_id = Keyword.get(opts, :external_id, nil)
     boundary = Keyword.get(opts, :boundary, nil)
+    search = Keyword.get(opts, :search, nil)
 
     from(si in StationInfo,
       select: si)
@@ -42,6 +43,7 @@ defmodule Tankste.Station.StationInfos do
     |> query_where_station_id(station_id)
     |> query_where_external_id(external_id)
     |> query_where_in_boundary(boundary)
+    |> query_where_search(search)
   end
 
   defp query_where_id(query, nil), do: query
@@ -94,6 +96,17 @@ defmodule Tankste.Station.StationInfos do
 
   defp latitude({latitude, _}), do: latitude
   defp longitude({_, longitude}), do: longitude
+
+  defp query_where_search(query, nil), do: query
+  defp query_where_search(query, ""), do: query
+  defp query_where_search(query, search) when is_integer(search) do
+    query
+    |> where([si], si.station_id == ^search or like(si.external_id, ^"%#{search}%") or like(si.name, ^"%#{search}%") or like(si.brand, ^"%#{search}%") or like(si.brand, ^"%#{search}%") or like(si.address_street, ^"%#{search}%"))
+  end
+  defp query_where_search(query, search) do
+    query
+    |> where([si], like(si.external_id, ^"%#{search}%") or like(si.name, ^"%#{search}%") or like(si.brand, ^"%#{search}%") or like(si.brand, ^"%#{search}%") or like(si.address_street, ^"%#{search}%"))
+  end
 
   def create(attrs \\ %{}) do
     %StationInfo{}

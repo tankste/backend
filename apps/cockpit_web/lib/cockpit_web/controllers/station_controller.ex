@@ -6,7 +6,9 @@ defmodule Tankste.CockpitWeb.StationController do
 
   # TODO: clean up paging logic, too messy output today
   def index(conn, params) do
-    all_station_infos = StationInfos.list()
+    search = Map.get(params, "search")
+
+    all_station_infos = StationInfos.list(search: search)
     |> Enum.sort_by(fn si -> si.priority end, :desc)
     |> Enum.uniq_by(fn si -> si.station_id end)
 
@@ -33,7 +35,8 @@ defmodule Tankste.CockpitWeb.StationController do
           ^stations_count ->
             nil
           _ -> page + 1
-        end
+        end,
+      search: search || ""
     )
   end
 end
