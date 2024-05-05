@@ -2,6 +2,7 @@ defmodule Tankste.CockpitWeb.StationController do
   use Tankste.CockpitWeb, :controller
 
   alias Tankste.Station.Repo
+  alias Tankste.Station.Stations
   alias Tankste.Station.StationInfos
 
   # TODO: clean up paging logic, too messy output today
@@ -38,5 +39,11 @@ defmodule Tankste.CockpitWeb.StationController do
         end,
       search: search || ""
     )
+  end
+
+  def show(conn, %{"id" => id}) do
+    station = Stations.get(id)
+    station_infos = StationInfos.list(station_id: id)
+    render(conn, :show, station: station, station_infos: station_infos)
   end
 end
