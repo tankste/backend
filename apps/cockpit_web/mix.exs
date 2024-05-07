@@ -31,6 +31,7 @@ defmodule Tankste.CockpitWeb.MixProject do
     [
       {:station, in_umbrella: true},
       {:report, in_umbrella: true},
+      {:plug_cowboy, "~> 2.7.1"},
       {:phoenix, "~> 1.7.11"},
       {:phoenix_html, "~> 4.0"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
