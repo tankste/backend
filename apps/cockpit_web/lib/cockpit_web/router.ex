@@ -27,6 +27,8 @@ defmodule Tankste.CockpitWeb.Router do
 
     get "/auth", AuthController, :show
     post "/auth/login", AuthController, :login
+    get "/auth/logout", AuthController, :logout
+
     resources "/stations", StationController, only: [:index, :show, :new, :create, :edit, :update]
     resources "/reports", ReportController, only: [:index, :show, :edit, :update]
   end

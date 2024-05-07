@@ -9,7 +9,7 @@ defmodule Tankste.CockpitWeb.AuthController do
 
   def login(conn, %{"user" => user, "password" => password}) do
     hashed_password = :crypto.hash(:sha256, password) |> Base.encode16() |> String.downcase()
-    IO.inspect hashed_password
+
     case Map.get(logins(), user) do
       user_password when user_password == hashed_password  ->
         conn
@@ -21,6 +21,13 @@ defmodule Tankste.CockpitWeb.AuthController do
         |> put_flash(:error, "Invalid email or password")
         |> redirect(to: ~p"/auth")
     end
+  end
+
+  def logout(conn, _params) do
+    conn
+    |> put_session(:current_user, nil)
+    |> put_flash(:info, "Logged out successfully!")
+    |> redirect(to: ~p"/auth")
   end
 
   defp logins(), do: auth_config() |> Keyword.fetch!(:logins)

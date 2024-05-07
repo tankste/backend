@@ -1,9 +1,14 @@
 defmodule Tankste.CockpitWeb.StationController do
   use Tankste.CockpitWeb, :controller
 
+  import Tankste.CockpitWeb.AuthPlug
+
   alias Tankste.Station.Repo
   alias Tankste.Station.Stations
   alias Tankste.Station.StationInfos
+
+  plug :load_current_user
+  plug :require_current_user
 
   # TODO: clean up paging logic, too messy output today
   def index(conn, params) do
@@ -43,7 +48,7 @@ defmodule Tankste.CockpitWeb.StationController do
 
   def show(conn, %{"id" => id}) do
     station = Stations.get(id)
-    station_infos = StationInfos.list(station_id: id)
+    station_infos = StationInfos.list(station_id: id) |> Repo.preload([:origin]) |> Enum.sort_by(fn si -> si.priority end, :desc)
     render(conn, :show, station: station, station_infos: station_infos)
   end
 end
