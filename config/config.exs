@@ -69,6 +69,10 @@ config :tailwind,
     cd: Path.expand("../apps/cockpit_web/assets", __DIR__)
   ]
 
+config :cockpit_web, :auth,
+  logins: %{
+  }
+
 import_config "#{config_env()}.exs"
 
 

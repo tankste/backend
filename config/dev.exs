@@ -121,6 +121,11 @@ config :report_web, :origin,
     "4" => 4
   }
 
+config :cockpit_web, :auth,
+  logins: %{
+    "admin" => "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918" # admin:admin
+  }
+
 config :phoenix, :plug_init_mode, :runtime
 
 config :phoenix_live_view, :debug_heex_annotations, true

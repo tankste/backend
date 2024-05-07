@@ -15,8 +15,20 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        brand: "#FD4F00",
-      }
+        primary: { "50": "#c8a9d1", "100": "#bd97c8", "200": "#b286bf", "300": "#a775b6", "400": "#9c64ad", "500": "#9253A4", "600": "#834a93", "700": "#744283", "800": "#663a72", "900": "#573162" }
+      },
+      fontFamily: {
+        'sans': ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'system-ui', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'],
+        'body': ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'system-ui', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'],
+        'mono': ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace']
+      },
+      transitionProperty: {
+        'width': 'width'
+      },
+      textDecoration: ['active'],
+      minWidth: {
+        'kanban': '28rem'
+      },
     },
   },
   plugins: [
