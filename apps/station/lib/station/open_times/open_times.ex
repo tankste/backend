@@ -78,6 +78,11 @@ defmodule Tankste.Station.OpenTimes do
   end
 
   def is_today(%OpenTime{station_info_id: station_info_id, day: "public_holiday"}) do
+    is_today(%OpenTime{station_info_id: station_info_id, day: "public_holiday"}, list(station_info_id: station_info_id))
+  end
+
+  # TODO: if open time entry not exists (means 'closed today') we can't detect the today status
+  def is_today(%OpenTime{station_info_id: station_info_id, day: "public_holiday"}, _all_open_times) do
     station_area_ids = StationAreas.list(station_info_id: station_info_id) |> Enum.map(fn sa -> sa.area_id end)
     case Holidays.list(date: DateTime.now!("Europe/Berlin") |> DateTime.to_date(), area_id: station_area_ids) do
       [] ->
@@ -86,12 +91,24 @@ defmodule Tankste.Station.OpenTimes do
         true
     end
   end
-  def is_today(%OpenTime{day: day}) do
-    case DateTime.now!("Europe/Berlin") |> DateTime.to_date() |> Date.day_of_week() |> day() do
-      ^day ->
-        true
-      _ ->
-        false
+  def is_today(%OpenTime{station_info_id: station_info_id, day: day}, all_open_times) do
+    today = DateTime.now!("Europe/Berlin") |> DateTime.to_date() |> Date.day_of_week()
+    station_area_ids = StationAreas.list(station_info_id: station_info_id) |> Enum.map(fn sa -> sa.area_id end)
+    case Holidays.list(date: DateTime.now!("Europe/Berlin") |> DateTime.to_date(), area_id: station_area_ids) do
+      [] ->
+        case today |> day() do
+          ^day ->
+            true
+          _ ->
+            false
+        end
+      _holidays ->
+        case all_open_times |> Enum.any?(fn ot -> ot.day == "public_holiday" end) do
+          true ->
+            false # Today is holiday, and a special holiday open time exists
+          false ->
+            day == "sunday" # Today is holiday, but no special holiday open time exists. Use sunday as fallback
+        end
     end
   end
 
@@ -107,9 +124,18 @@ defmodule Tankste.Station.OpenTimes do
   defp is_in_open_time(station_info, :holiday) do
     time_now =  DateTime.now!("Europe/Berlin") |> DateTime.to_time()
 
-    station_open_times(station_info, "public_holiday")
+    holiday_open_times(station_info)
     |> Enum.map(fn t -> Map.put(t, :end_time, to_end_time(t.end_time)) end)
     |> Enum.any?(fn t -> t.start_time == t.end_time or (t.start_time <= time_now && t.end_time >= time_now) end)
+  end
+
+  defp holiday_open_times(station_info) do
+    case station_open_times(station_info, "public_holiday") do
+      [] ->
+        station_open_times(station_info, "sunday")
+      holiday_open_times ->
+        holiday_open_times
+    end
   end
 
   defp station_station_areas(station_info) do

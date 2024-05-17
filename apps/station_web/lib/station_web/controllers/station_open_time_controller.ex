@@ -9,8 +9,9 @@ defmodule Tankste.StationWeb.StationOpenTimeController do
 
   def index(conn, _params) do
     open_times = OpenTimes.list(station_info_id: station_info(conn).id)
+    open_times = open_times
       |> Enum.map(fn ot -> Map.put(ot, :origin_id, station_info(conn).origin_id) end)
-      |> Enum.map(fn ot -> Map.put(ot, :is_today, OpenTimes.is_today(ot)) end)
+      |> Enum.map(fn ot -> Map.put(ot, :is_today, OpenTimes.is_today(ot, open_times)) end)
 
     render(conn, "index.json", open_times: open_times)
   end

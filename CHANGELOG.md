@@ -9,6 +9,10 @@ CHANGELOG
 
 ## Upcoming version ##
 
+## 1.1.3 (2024-05-17) ##
+
+- 🛠 Fallback to sunday open times on holidays, because most stations don't provide holiday open times
+
 ## 1.1.2 (2024-04-24) ##
 
 - 🛠 Add more sponsor products
