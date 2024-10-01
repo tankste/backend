@@ -20,6 +20,7 @@ defmodule Tankste.Report.Reports do
     status = Keyword.get(opts, :status, nil)
     reported_to_origin_date = Keyword.get(opts, :reported_to_origin_date, nil)
     limit = Keyword.get(opts, :limit, nil)
+    sort = Keyword.get(opts, :sort, [{:asc, :inserted_at}])
 
     from(r in Report,
       select: r)
@@ -27,6 +28,7 @@ defmodule Tankste.Report.Reports do
     |> query_where_status(status)
     |> query_where_reported_to_origin_date(reported_to_origin_date)
     |> query_limit(limit)
+    |> query_order(sort)
   end
 
   defp query_where_field(query, nil), do: query
@@ -65,6 +67,13 @@ defmodule Tankste.Report.Reports do
   defp query_limit(query, limit) do
     query
     |> limit([r], ^limit)
+  end
+
+  defp query_order(query, []), do: query
+  defp query_order(query, [sort|others]) do
+    query
+    |> order_by([r], ^[sort])
+    |> query_order(others)
   end
 
   def create(attrs \\ %{}) do

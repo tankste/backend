@@ -9,7 +9,7 @@ defmodule Tankste.CockpitWeb.ReportController do
   plug :require_current_user
 
   def index(conn, _params) do
-    reports = Reports.list()
+    reports = Reports.list(sort: [{:desc, :inserted_at}])
     render(conn, :index, reports: reports)
   end
 end
