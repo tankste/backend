@@ -66,7 +66,7 @@
     
       <div class="col-span-6 sm:col-span-3">
         <div class="text-base font-medium text-gray-500 dark:text-gray-400">Reported to origin</div>
-        <div class="text-base font-semibold text-gray-700 dark:text-white"><%= @report.reported_to_origin_date %></div>
+        <div class="text-base font-semibold text-gray-700 dark:text-white"><%= @report.reported_to_origin_date || "-" %></div>
       </div>
     
       <div class="col-span-6 sm:col-span-3">
