@@ -76,6 +76,11 @@ defmodule Tankste.Report.Reports do
     |> query_order(others)
   end
 
+  def change(%Report{} = report, attrs \\ %{}) do
+    report
+    |> Report.changeset(attrs)
+  end
+
   def create(attrs \\ %{}) do
     %Report{}
     |> Report.changeset(attrs)
