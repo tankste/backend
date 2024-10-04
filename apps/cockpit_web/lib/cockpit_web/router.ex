@@ -25,6 +25,8 @@ defmodule Tankste.CockpitWeb.Router do
 
     get "/", PageController, :home
 
+    get "/health", HealthController, :show
+
     get "/auth", AuthController, :show
     post "/auth/login", AuthController, :login
     get "/auth/logout", AuthController, :logout
