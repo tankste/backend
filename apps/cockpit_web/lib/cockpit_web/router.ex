@@ -10,16 +10,6 @@ defmodule Tankste.CockpitWeb.Router do
     plug :put_secure_browser_headers
   end
 
-  pipeline :api do
-    plug :accepts, ["json"]
-  end
-
-  # scope "/", Tankste.CockpitWeb do
-  #   pipe_through :api
-
-  #   get "/health", HealthController, :show
-  # end
-
   scope "/", Tankste.CockpitWeb do
     pipe_through :browser
 
@@ -31,7 +21,9 @@ defmodule Tankste.CockpitWeb.Router do
     post "/auth/login", AuthController, :login
     get "/auth/logout", AuthController, :logout
 
-    resources "/stations", StationController, only: [:index, :show, :new, :create, :edit, :update]
+    resources "/stations", StationController, only: [:index, :show, :edit, :update] do
+      resources "/infos", StationInfoController, only: [:show, :edit, :update]
+    end
     resources "/reports", ReportController, only: [:index, :show, :edit, :update]
   end
 
