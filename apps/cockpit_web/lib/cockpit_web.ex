@@ -85,6 +85,7 @@ defmodule Tankste.CockpitWeb do
       import Phoenix.HTML
       # Core UI components and translation
       import Tankste.CockpitWeb.CoreComponents
+      import Tankste.CockpitWeb.MenuComponents
       import Tankste.CockpitWeb.Gettext
 
       # Shortcut for generating JS commands

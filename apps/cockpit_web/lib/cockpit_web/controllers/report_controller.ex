@@ -7,7 +7,6 @@ defmodule Tankste.CockpitWeb.ReportController do
   alias Tankste.Station.Stations
   alias Tankste.Station.StationInfos
   alias Tankste.Station.Origins
-  alias Tankste.Station.Repo
 
   plug :load_current_user
   plug :require_current_user
