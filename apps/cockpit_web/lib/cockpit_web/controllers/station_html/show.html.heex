@@ -17,111 +17,146 @@
             <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">Station details</h1>
         </div>
         <div class="items-center justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700">
-            <div class="flex items-center mb-4 sm:mb-0">
-                
-            </div>
-            <button id="createProductButton" class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800" type="button" data-drawer-target="drawer-create-product-default" data-drawer-show="drawer-create-product-default" aria-controls="drawer-create-product-default" data-drawer-placement="right">
-                Edit station
-            </button>
+            <div class="flex items-center mb-4 sm:mb-0"></div>
+
+            <a href={~p"/stations/#{@station.id}/edit"} class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+              Update status
+            </a>
         </div>
     </div>
 </div>
 
-<div class="flex flex-col">
-  <div class="overflow-x-auto">
-      <div class="inline-block min-w-full align-middle">
-          <div class="overflow-hidden shadow">
-              <table class="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-600">
-                  <thead class="bg-gray-100 dark:bg-gray-700">
-                      <tr>
-                          <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
-                              Priority
-                          </th>
-                          <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
-                              ID
-                          </th>
-                          <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
-                              Origin
-                          </th>
-                          <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
-                              Name
-                          </th>
-                          <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
-                              Address
-                          </th>
-                          <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
-                              Location
-                          </th>
-                          <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
-                              Currency
-                          </th>
-                          <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
-                              Last updated
-                          </th>
-                          <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"></th>
-                      </tr>
-                  </thead>
-                  <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                  
-                      <%= for {station_info, index} <- Enum.with_index(@station_infos) do %>
+<div class="col-span-full xl:col-auto p-4">
+  <div class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
+    <div class="grid grid-cols-6 gap-6">
+      <div class="col-span-6 sm:col-span-3">
+        <div class="text-base font-medium text-gray-500 dark:text-gray-400">Status</div>
+        <%= if @station.status == "available" do %>
+          <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-green-700 dark:text-green-400 border border-green-100 dark:border-green-500">Available</span>
+        <% end %>
 
-                          <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                              <%= if index == 0 do %>
-                                  <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-green-700 dark:text-green-400 border border-green-100 dark:border-green-500"><%= station_info.priority %></span>
-                              <% else %>
-                                  <span class="bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-gray-400 border border-gray-100 dark:border-gray-500"><%= station_info.priority %></span>
-                              <% end %>
-                            
-                            </td>  
-                            <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"><%= station_info.id %></td>
-                              <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                                  <div class="text-base font-semibold text-gray-900 dark:text-white">
-                                      <%= station_info.external_id %>
-                                  </div>
-                                  <div class="inline-flex items-center text-sm font-normal text-gray-500 dark:text-gray-400">
-                                      <img src={station_info.origin.icon_image_url} class="w-4 h-4 mr-2" /> <%= station_info.origin.short_name %>
-                                  </div>
-                              </td>
+        <%= if @station.status == "closed" do %>
+          <span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-red-400 border border-red-100 dark:border-red-500">Closed</span>
+        <% end %>
 
-                              <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                                <div class="text-base font-semibold text-gray-900 dark:text-white">
-                                    <%= station_info.name %>
-                                </div>
-                                <div class="text-sm font-normal text-gray-500 dark:text-gray-400">
-                                    <%= station_info.brand %>
-                                </div>
-                              </td>
+        <%= if @station.status == "disabled" do %>
+          <span class="bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-gray-400 border border-gray-100 dark:border-gray-500">Disabled</span>
+        <% end %>
+      </div>
+    
+      <div class="col-span-6 sm:col-span-3"></div>
+    
+      <div class="col-span-6 sm:col-span-3">
+        <div class="text-base font-medium text-gray-500 dark:text-gray-400">Created</div>
+        <div class="text-base font-semibold text-gray-700 dark:text-white"><%= @station.inserted_at %></div>
+      </div>
+    
+      <div class="col-span-6 sm:col-span-3">
+        <div class="text-base font-medium text-gray-500 dark:text-gray-400">Updated</div>
+        <div class="text-base font-semibold text-gray-700 dark:text-white"><%= @station.updated_at %></div>
+      </div>
+    </div>
+  </div>
+</div>
 
-                              <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                                <%= station_info.address_street %> <%= station_info.address_house_number %><br />
-                                <%= station_info.address_post_code %> <%= station_info.address_city %><br />
-                                <%= station_info.address_country %>
-                              </td>
-
-                              <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                                <%= station_info.location_latitude %>, <%= station_info.location_longitude %>
-                              </td>
-
-                              <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"><%= station_info.currency %></td>  
-
-                              <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"><%= station_info.last_changes_at %></td>
-
-                              <td class="p-4 space-x-2 whitespace-nowrap">
-                                  <a href={~p"/stations/#{station_info.station_id}"} class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
-                                      <svg class="w-4 h-4 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                          <path fill-rule="evenodd" d="M4.998 7.78C6.729 6.345 9.198 5 12 5c2.802 0 5.27 1.345 7.002 2.78a12.713 12.713 0 0 1 2.096 2.183c.253.344.465.682.618.997.14.286.284.658.284 1.04s-.145.754-.284 1.04a6.6 6.6 0 0 1-.618.997 12.712 12.712 0 0 1-2.096 2.183C17.271 17.655 14.802 19 12 19c-2.802 0-5.27-1.345-7.002-2.78a12.712 12.712 0 0 1-2.096-2.183 6.6 6.6 0 0 1-.618-.997C2.144 12.754 2 12.382 2 12s.145-.754.284-1.04c.153-.315.365-.653.618-.997A12.714 12.714 0 0 1 4.998 7.78ZM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd"/>
-                                      </svg>                                          
-                                      Show
-                                  </a>
-                              </td>
+<div class="col-span-full xl:col-auto p-4">
+  <div class="mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700  dark:bg-gray-800">
+    <div class="flex flex-col">
+      <div class="overflow-x-auto">
+          <div class="inline-block min-w-full align-middle">
+              <div class="overflow-hidden shadow">
+                  <table class="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-600">
+                      <thead class="bg-gray-100 dark:bg-gray-700">
+                          <tr>
+                              <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
+                                  Priority
+                              </th>
+                              <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
+                                  ID
+                              </th>
+                              <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
+                                  Origin
+                              </th>
+                              <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
+                                  Name
+                              </th>
+                              <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
+                                  Address
+                              </th>
+                              <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
+                                  Location
+                              </th>
+                              <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
+                                  Currency
+                              </th>
+                              <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
+                                  Last updated
+                              </th>
+                              <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"></th>
                           </tr>
-
-                      <% end %>
+                      </thead>
+                      <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                       
-                  </tbody>
-              </table>
+                          <%= for {station_info, index} <- Enum.with_index(@station_infos) do %>
+
+                              <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
+                                <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                  <%= if station_info.priority == 0 do %>
+                                      <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-green-700 dark:text-green-400 border border-green-100 dark:border-green-500"><%= station_info.priority %></span>
+                                  <% else %>
+                                      <span class="bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-gray-400 border border-gray-100 dark:border-gray-500"><%= station_info.priority %></span>
+                                  <% end %>
+                                </td>  
+                                <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"><%= station_info.id %></td>
+                                  <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
+                                      <div class="text-base font-semibold text-gray-900 dark:text-white">
+                                          <%= station_info.external_id %>
+                                      </div>
+                                      <div class="inline-flex items-center text-sm font-normal text-gray-500 dark:text-gray-400">
+                                          <img src={station_info.origin.icon_image_url} class="w-4 h-4 mr-2" /> <%= station_info.origin.short_name %>
+                                      </div>
+                                  </td>
+
+                                  <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
+                                    <div class="text-base font-semibold text-gray-900 dark:text-white">
+                                        <%= station_info.name %>
+                                    </div>
+                                    <div class="text-sm font-normal text-gray-500 dark:text-gray-400">
+                                        <%= station_info.brand %>
+                                    </div>
+                                  </td>
+
+                                  <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
+                                    <%= station_info.address_street %> <%= station_info.address_house_number %><br />
+                                    <%= station_info.address_post_code %> <%= station_info.address_city %><br />
+                                    <%= station_info.address_country %>
+                                  </td>
+
+                                  <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
+                                    <%= station_info.location_latitude %>, <%= station_info.location_longitude %>
+                                  </td>
+
+                                  <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"><%= station_info.currency %></td>  
+
+                                  <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"><%= station_info.last_changes_at %></td>
+
+                                  <td class="p-4 space-x-2 whitespace-nowrap">
+                                      <a href={~p"/stations/#{@station.id}/infos/#{station_info.id}"} class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+                                          <svg class="w-4 h-4 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                              <path fill-rule="evenodd" d="M4.998 7.78C6.729 6.345 9.198 5 12 5c2.802 0 5.27 1.345 7.002 2.78a12.713 12.713 0 0 1 2.096 2.183c.253.344.465.682.618.997.14.286.284.658.284 1.04s-.145.754-.284 1.04a6.6 6.6 0 0 1-.618.997 12.712 12.712 0 0 1-2.096 2.183C17.271 17.655 14.802 19 12 19c-2.802 0-5.27-1.345-7.002-2.78a12.712 12.712 0 0 1-2.096-2.183 6.6 6.6 0 0 1-.618-.997C2.144 12.754 2 12.382 2 12s.145-.754.284-1.04c.153-.315.365-.653.618-.997A12.714 12.714 0 0 1 4.998 7.78ZM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd"/>
+                                          </svg>                                          
+                                          Show
+                                      </a>
+                                  </td>
+                              </tr>
+
+                          <% end %>
+                          
+                      </tbody>
+                  </table>
+              </div>
           </div>
       </div>
+    </div>
   </div>
 </div>

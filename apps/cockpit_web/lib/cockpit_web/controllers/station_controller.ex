@@ -51,4 +51,22 @@ defmodule Tankste.CockpitWeb.StationController do
     station_infos = StationInfos.list(station_id: id) |> Repo.preload([:origin]) |> Enum.sort_by(fn si -> si.priority end, :desc)
     render(conn, :show, station: station, station_infos: station_infos)
   end
+
+  def edit(conn, %{"id" => id}) do
+    station = Stations.get(id)
+    changeset = Stations.change(station)
+    render(conn, :edit, station: station, changeset: changeset)
+  end
+
+  def update(conn, %{"id" => id, "station" => station_params}) do
+    station = Stations.get(id)
+    case Stations.update(station, %{:status => station_params["status"]}) do
+      {:ok, station} ->
+        conn
+        |> put_flash(:info, gettext("Station status updated successfully."))
+        |> redirect(to: ~p"/stations/#{station.id}")
+      {:error, changeset} ->
+        render(conn, :edit, station: station, changeset: changeset)
+    end
+  end
 end

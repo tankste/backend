@@ -55,6 +55,11 @@ defmodule Tankste.Station.Stations do
     |> where([s], s.status == ^status)
   end
 
+  def change(%Station{} = station, attrs \\ %{}) do
+    station
+    |> Station.changeset(attrs)
+  end
+
   def create(attrs \\ %{}) do
     %Station{}
     |> Station.changeset(attrs)
