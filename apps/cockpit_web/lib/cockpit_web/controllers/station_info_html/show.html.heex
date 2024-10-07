@@ -25,6 +25,13 @@
             </nav>
             <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">Station info</h1>
         </div>
+        <div class="items-center justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700">
+          <div class="flex items-center mb-4 sm:mb-0"></div>
+
+          <a href={~p"/stations/#{@station.id}/infos/#{@station_info.id}/edit"} class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+            Edit
+          </a>
+      </div>
     </div>
 </div>
 
