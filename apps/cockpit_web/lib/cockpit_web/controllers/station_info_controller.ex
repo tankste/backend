@@ -6,6 +6,7 @@ defmodule Tankste.CockpitWeb.StationInfoController do
   alias Tankste.Station.Stations
   alias Tankste.Station.StationInfos
   alias Tankste.Station.Origins
+  alias Tankste.Station.OpenTimes
 
   plug :load_current_user
   plug :require_current_user
@@ -15,7 +16,8 @@ defmodule Tankste.CockpitWeb.StationInfoController do
     station_info = StationInfos.get(station_info_id)
     max_priority = StationInfos.list(station_id: station_id) |> Enum.map(fn si -> si.priority end) |> Enum.max()
     origin = Origins.get(station_info.origin_id)
-    render(conn, :show, station: station, station_info: station_info, origin: origin, max_priority: max_priority)
+    open_times = OpenTimes.list(station_info_id: station_info.id)
+    render(conn, :show, station: station, station_info: station_info, origin: origin, open_times: open_times, max_priority: max_priority)
   end
 
   def new(conn, %{"station_id" => station_id}) do
