@@ -108,7 +108,7 @@ defmodule Tankste.Station.StationInfos do
     |> where([si], like(si.external_id, ^"%#{search}%") or like(si.name, ^"%#{search}%") or like(si.brand, ^"%#{search}%") or like(si.brand, ^"%#{search}%") or like(si.address_street, ^"%#{search}%"))
   end
 
-  def change(%StationInfo{} = station_info, attrs \\ %{}) do
+  def change(%StationInfo{} = station_info \\ %StationInfo{}, attrs \\ %{}) do
     station_info
     |> StationInfo.changeset(attrs)
   end

@@ -101,7 +101,7 @@
 
                               <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
                                 <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                  <%= if station_info.priority == 0 do %>
+                                  <%= if index == 0 do %>
                                       <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-green-700 dark:text-green-400 border border-green-100 dark:border-green-500"><%= station_info.priority %></span>
                                   <% else %>
                                       <span class="bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-gray-400 border border-gray-100 dark:border-gray-500"><%= station_info.priority %></span>
