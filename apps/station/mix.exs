@@ -29,7 +29,7 @@ defmodule Tankste.Station.MixProject do
   defp deps do
     [
       {:phoenix_pubsub, "~> 2.1.1"},
-      {:ecto_sql, "~> 3.9.0"},
+      {:ecto_sql, "~> 3.11"},
       {:myxql, "~> 0.6.3"},
       {:geocalc, "~> 0.8"},
       {:tzdata, "~> 1.1"},

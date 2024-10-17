@@ -11,7 +11,7 @@ defmodule Tankste.FillWeb.MixProject do
       lockfile: "../../mix.lock",
       elixir: "~> 1.7",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:phoenix] ++ Mix.compilers(),
+      compilers: [] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       releases: [
@@ -37,9 +37,9 @@ defmodule Tankste.FillWeb.MixProject do
   defp deps do
     [
       {:station, in_umbrella: true},
-      {:plug_cowboy, "~> 2.6.0"},
-      {:phoenix, "~> 1.6.15"},
-      {:phoenix_html, "~> 3.2.0"},
+      {:plug_cowboy, "~> 2.7.1"},
+      {:phoenix, "~> 1.7.11"},
+      {:phoenix_view, "~> 2.0.3"},
       {:phoenix_live_reload, "~> 1.4.0", only: :dev},
       {:jason, "~> 1.4.0"},
       {:geocalc, "~> 0.8"},

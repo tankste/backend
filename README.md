@@ -10,15 +10,16 @@ This repository holds the source code for our backend server.
 
 ## Modules ##
 
-| Name          | Description                      |
-| ------------- | -------------------------------- |
-| `fill_web`    | Import endpoint                  |
-| `station_web` | Station & price data endpoint    |
-| `station`     | Station business logic           |
-| `report_web`  | Wrong data report endpoint       |
-| `report`      | Wrong data report business logic |
-| `sponsor_web` | Sponsorhip endpoint              |
-| `sponsor`     | Sponsorhip business logic        |
+| Name          | Description                                        |
+| ------------- | -------------------------------------------------- |
+| `fill_web`    | Import endpoint                                    |
+| `station_web` | Station & price data endpoint                      |
+| `station`     | Station business logic                             |
+| `report_web`  | Wrong data report endpoint                         |
+| `report`      | Wrong data report business logic                   |
+| `sponsor_web` | Sponsorhip endpoint                                |
+| `sponsor`     | Sponsorhip business logic                          |
+| `cockpit_web` | Admin panel for data management and configurations |
 
 ## License ##
 

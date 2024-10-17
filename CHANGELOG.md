@@ -9,6 +9,14 @@ CHANGELOG
 
 ## Upcoming version ##
 
+## 1.2.0 (2024-10-17) ##
+
+- ➕ Add cockpit (aka admin panel) to mange data
+    - Stations
+    - Station infos
+    - Open times
+    - Reports
+
 ## 1.1.3 (2024-05-17) ##
 
 - 🛠 Fallback to sunday open times on holidays, because most stations don't provide holiday open times

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Created with Vectornator (http://vectornator.io/) -->
+<svg height="100%" stroke-miterlimit="10" style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;" version="1.1" viewBox="0 0 1024 1024" width="100%" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs/>
+<g id="Background">
+<path d="M0 0L1024 0L1024 1024L0 1024L0 0Z" fill="#9253a4" fill-rule="evenodd" opacity="1" stroke="none"/>
+</g>
+<g id="Template" visibility="hidden">
+<path d="M0 512C0 229.23 229.23 0 512 0C794.77 0 1024 229.23 1024 512C1024 794.77 794.77 1024 512 1024C229.23 1024 0 794.77 0 512Z" fill="#ff0000" fill-rule="evenodd" opacity="0" stroke="none"/>
+</g>
+<g id="Icon">
+<path d="M678.696 746L710.696 746L710.696 810L262.696 810L262.696 746L294.696 746L294.696 234C294.696 198.8 323.496 170 358.696 170L614.696 170C650.042 170 678.696 198.654 678.696 234L678.696 746ZM358.696 234L358.696 426L614.696 426L614.696 234L358.696 234ZM678.696 490L710.696 490C746.042 490 774.696 518.654 774.696 554L774.696 650C774.696 667.673 789.023 682 806.696 682C824.369 682 838.696 667.673 838.696 650L838.696 490L774.696 426L774.696 362L710.696 298L742.696 266L902.696 426L902.696 650C902.696 703.019 859.715 746 806.696 746C753.677 746 710.696 703.019 710.696 650L710.696 554L678.696 554C678.696 554 678.696 490 678.696 490Z" fill="#ffffff" fill-rule="evenodd" opacity="1" stroke="none"/>
+</g>
+</svg>

@@ -50,7 +50,15 @@ defmodule Tankste.Station.OpenTimes do
     |> where([ot], ot.day == ^day)
   end
 
-  def insert(attrs \\ %{}) do
+  def change(%OpenTime{} = open_time \\ %OpenTime{}, attrs \\ %{}) do
+    open_time
+    |> OpenTime.changeset(attrs)
+  end
+
+  # TODO: remove this function name
+  def insert(attrs \\ %{}), do: create(attrs)
+
+  def create(attrs \\ %{}) do
     %OpenTime{}
     |> OpenTime.changeset(attrs)
     |> Repo.insert()
