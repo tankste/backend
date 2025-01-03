@@ -9,6 +9,10 @@ CHANGELOG
 
 ## Upcoming version ##
 
+## 1.2.1 (2025-01-03) ##
+
+- 🐞 Fix not recognized station info priority by `get_by_station_id`
+
 ## 1.2.0 (2024-10-17) ##
 
 - ➕ Add cockpit (aka admin panel) to mange data

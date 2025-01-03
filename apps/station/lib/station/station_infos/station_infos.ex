@@ -25,7 +25,7 @@ defmodule Tankste.Station.StationInfos do
   def get_by_station_id(station_id, opts \\ []) do
     query(opts)
     |> where([si], si.station_id == ^station_id)
-    # TODO: order by origin priority or by specific field
+    |> order_by([si], desc: si.priority)
     |> limit(1)
     |> Repo.one()
   end
