@@ -3,11 +3,13 @@ CHANGELOG
 
 | Symbol | Meaning             |
 |--------|---------------------|
-| ➕     | New function        |
+| 🌟     | New function        |
 | 🛠     | Improvement changes |
 | 🐞     | Bug fixing          |
 
 ## Upcoming version ##
+
+- 🌟 Add cronjob to automatically close stations when the prices are no longer updated
 
 ## 1.2.1 (2025-01-03) ##
 
@@ -15,7 +17,7 @@ CHANGELOG
 
 ## 1.2.0 (2024-10-17) ##
 
-- ➕ Add cockpit (aka admin panel) to mange data
+- 🌟 Add cockpit (aka admin panel) to mange data
     - Stations
     - Station infos
     - Open times
@@ -40,8 +42,8 @@ CHANGELOG
 
 ## 1.0.0 (2024-03-03) ##
 
-* ➕ Add report api
-* ➕ Add sponsor api
-* ➕ Add fill api
-* ➕ Add station api
-* ➕ Initial setup
+* 🌟 Add report api
+* 🌟 Add sponsor api
+* 🌟 Add fill api
+* 🌟 Add station api
+* 🌟 Initial setup

@@ -20,6 +20,7 @@ defmodule Tankste.Station.Stations.Station do
     # available: the station is available and publich visibility
     # disabled: this station should not be visible, for technical reasons
     # closed: station business has closed, don't show this station anymore
-    |> validate_inclusion(:status, ~w(available disabled closed))
+    # auto_closed: same like `closed`, but set automatically by the cronjob
+    |> validate_inclusion(:status, ~w(available disabled closed auto_closed))
   end
 end
