@@ -23,6 +23,7 @@ defmodule Tankste.StationWeb.Router do
       resources "/prices", StationPriceController, only: [:index]
       resources "/open-times", StationOpenTimeController, only: [:index]
       resources "/marker", StationMarkerController, singleton: true, only: [:show]
+      resources "/price-snapshots", StationPriceSnapshotController, only: [:index]
     end
     resources "/markers", MarkerController, only: [:index]
 
