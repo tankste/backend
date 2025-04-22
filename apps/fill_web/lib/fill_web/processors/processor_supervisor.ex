@@ -49,7 +49,6 @@ defmodule Tankste.FillWeb.ProcessorSupervisor do
   defp instances_default(:station), do: 1
   defp instances_default(:price), do: 10
   defp instances_default(:holiday), do: 1
-  defp instances_default(_), do: 5
 
   defp processor_config(), do: Application.get_env(:fill_web, :processor)
 end

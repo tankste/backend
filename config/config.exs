@@ -12,6 +12,11 @@ config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
 config :station,
   ecto_repos: [Tankste.Station.Repo]
 
+config :station, Tankste.Station.Scheduler,
+  jobs: [
+    {"0 0 * * *", {Tankste.Station.ClosingJob, :run, []}}
+  ]
+
 # Station Web
 config :station_web, Tankste.StationWeb.Endpoint,
   pubsub_server: Tankste.StationWeb.PubSub,
