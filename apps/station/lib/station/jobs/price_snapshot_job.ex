@@ -22,7 +22,7 @@ defmodule Tankste.Station.PriceSnapshotJob do
 
   defp create_price_snapshots(_, []), do: :ok
   defp create_price_snapshots(snapshot_date, [station|stations]) do
-    IO.inspect PriceSnapshots.insert(%{
+    PriceSnapshots.create(%{
       station_id: station.id,
       snapshot_date: snapshot_date,
       petrol_price: station |> price("petrol"),

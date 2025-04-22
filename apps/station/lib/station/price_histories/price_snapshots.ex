@@ -19,12 +19,13 @@ defmodule Tankste.Station.PriceSnapshots do
   defp query(opts) do
     station_id = Keyword.get(opts, :station_id, nil)
     type = Keyword.get(opts, :type, nil)
-    # TODO: limit
+    start = Keyword.get(opts, :start, nil)
 
     from(ps in PriceSnapshot,
       select: ps)
     |> query_where_station_id(station_id)
     |> query_where_type(type)
+    |> query_where_start(start)
   end
 
   defp query_where_station_id(query, nil), do: query
@@ -49,7 +50,13 @@ defmodule Tankste.Station.PriceSnapshots do
     |> where([ps], ps.type == ^type)
   end
 
-  def insert(attrs \\ %{}) do
+  defp query_where_start(query, nil), do: query
+  defp query_where_start(query, start) do
+    query
+    |> where([ps], ps.snapshot_date >= ^start)
+  end
+
+  def create(attrs \\ %{}) do
     %PriceSnapshot{}
     |> PriceSnapshot.changeset(attrs)
     |> Repo.insert()
