@@ -14,7 +14,8 @@ config :station,
 
 config :station, Tankste.Station.Scheduler,
   jobs: [
-    {"0 0 * * *", {Tankste.Station.ClosingJob, :run, []}}
+    {"0 0 * * *", {Tankste.Station.ClosingJob, :run, []}},
+    {"*/15 * * * *", {Tankste.Station.PriceSnapshotJob, :run, []}}
   ]
 
 # Station Web
