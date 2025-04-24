@@ -13,10 +13,7 @@ config :station,
   ecto_repos: [Tankste.Station.Repo]
 
 config :station, Tankste.Station.Scheduler,
-  jobs: [
-    {"0 0 * * *", {Tankste.Station.ClosingJob, :run, []}},
-    {"*/15 * * * *", {Tankste.Station.PriceSnapshotJob, :run, []}}
-  ]
+  jobs: []
 
 # Station Web
 config :station_web, Tankste.StationWeb.Endpoint,

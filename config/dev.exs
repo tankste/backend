@@ -126,6 +126,13 @@ config :cockpit_web, :auth,
     "admin" => "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918" # admin:admin
   }
 
+# Appended to all modules, so cronjobs are configured 4 times.
+config :station, Tankste.Station.Scheduler,
+  jobs: [
+    {"0 0 * * *", {Tankste.Station.ClosingJob, :run, []}},
+    {"*/15 * * * *", {Tankste.Station.PriceSnapshotJob, :run, []}}
+  ]
+
 config :phoenix, :plug_init_mode, :runtime
 
 config :phoenix_live_view, :debug_heex_annotations, true
