@@ -133,6 +133,11 @@ config :station, Tankste.Station.Scheduler,
     {"*/15 * * * *", {Tankste.Station.PriceSnapshotJob, :run, []}}
   ]
 
+config :station, :stats,
+  host: "",
+  credentials: "",
+  table: ""
+
 config :phoenix, :plug_init_mode, :runtime
 
 config :phoenix_live_view, :debug_heex_annotations, true
