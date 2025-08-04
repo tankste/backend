@@ -33,7 +33,8 @@ defmodule Tankste.Station.MixProject do
       {:myxql, "~> 0.6.3"},
       {:geocalc, "~> 0.8"},
       {:tzdata, "~> 1.1"},
-      {:quantum, "~> 3.5"}
+      {:quantum, "~> 3.5"},
+      {:httpoison, "~> 2.1.0"},
     ]
   end
 end
