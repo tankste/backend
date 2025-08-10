@@ -3,10 +3,7 @@ tankste! - Backend
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-Your open source gas station mobile app. We love the minimalistic of the Bertha app from Mercedes
-and want to keep them alive! 
-
-This repository holds the source code for our backend server.
+The backend code for your open source gas station mobile app tankste! The mission is to give you one app. that you can use in all countries.
 
 ## Modules ##
 
@@ -27,7 +24,7 @@ This repository holds the source code for our backend server.
 > This license refers to the source code in this repository. The content provided by the backend server is protected by copyright.
 
 tankste! - Your open source gas station mobile app.
-Copyright (c) 2024 Fabian Keunecke
+Copyright (c) 2025 Fabian Keunecke
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

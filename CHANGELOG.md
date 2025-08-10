@@ -9,6 +9,8 @@ CHANGELOG
 
 ## Upcoming version ##
 
+## 1.3.0 (2025-08-11) ##
+
 - 🛠 Automatically forward price reports to origin
 - 🌟 Add price storing for price history ([#17](https://github.com/tankste/backend/issues/17))
 - 🌟 Add cronjob to automatically close stations when the prices are no longer updated ([#15](https://github.com/tankste/backend/issues/15))
