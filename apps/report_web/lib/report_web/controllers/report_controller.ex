@@ -26,7 +26,7 @@ defmodule Tankste.ReportWeb.ReportController do
   end
 
   def create(conn, params) do
-    case Reports.create(%{"device_id" => params["deviceId"], "station_id" => params["stationId"], "origin_id" => origin_of_station_field(params["stationId"], params["field"]), "field" => params["field"], "wrong_value" => value_of_station_field(params["stationId"], params["field"]), "correct_value" => params["correctValue"], "status" => "open"}) do
+    case Reports.create(%{"device_id" => params["deviceId"], "station_id" => params["stationId"], "origin_id" => origin_of_station_field(params["stationId"], params["field"]), "field" => params["field"], "wrong_value" => value_of_station_field(params["stationId"], params["field"]), "correct_value" => params["correctValue"], "status" => status_for_field(params["field"])}) do
       {:ok, report} ->
         conn
         |> put_status(:created)
@@ -230,6 +230,11 @@ defmodule Tankste.ReportWeb.ReportController do
     "-"
   end
   defp value_of_station_field(_, _), do: nil
+
+  defp status_for_field("price_e5"), do: "forwarded"
+  defp status_for_field("price_e10"), do: "forwarded"
+  defp status_for_field("price_diesel"), do: "forwarded"
+  defp status_for_field(_), do: "open"
 
   defp get_station_info(station_id) do
     StationInfos.list(station_id: station_id)
