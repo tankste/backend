@@ -53,7 +53,7 @@ defmodule Tankste.Station.ClosingJob do
     |> Map.get(:prices, [])
     |> Enum.max_by(
       fn p -> p.last_changes_at end,
-      fn d1, d2 -> DateTime.compare(d1, d2) == :lt or DateTime.compare(d1, d2) == :eq end,
+      fn d1, d2 -> DateTime.compare(d1, d2) == :gt or DateTime.compare(d1, d2) == :eq end,
       fn -> nil end
     )
   end
