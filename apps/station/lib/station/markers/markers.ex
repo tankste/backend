@@ -2,6 +2,7 @@ defmodule Tankste.Station.Markers do
 
   alias Tankste.Station.Markers.Marker
   alias Tankste.Station.StationInfos
+  alias Tankste.Station.Prices.Price
   alias Tankste.Station.OpenTimes
   alias Tankste.Station.Repo
 
@@ -131,7 +132,10 @@ defmodule Tankste.Station.Markers do
     nil ->
       nil
     price ->
-      price.price
+      case Price.is_outdated?(price) do
+        false -> price.price
+        true -> nil
+      end
     end
   end
 

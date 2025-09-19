@@ -2,6 +2,7 @@ defmodule Tankste.Station.ClosingJob do
   use Quantum, otp_app: :station
 
   alias Tankste.Station.Stations
+  alias Tankste.Station.Prices.Price
   alias Tankste.Station.Repo
 
   def run() do
@@ -25,7 +26,7 @@ defmodule Tankste.Station.ClosingJob do
 
   defp close_outdated_stations([]), do: :ok
   defp close_outdated_stations([station|stations]) do
-    case station |> last_changed_price_date() |> is_outdated?() do
+    case station |> last_changed_price_date() |> Price.is_outdated?() do
       true ->
         Stations.update(station, %{status: "auto_closed"})
       _ ->
@@ -37,7 +38,7 @@ defmodule Tankste.Station.ClosingJob do
 
   defp open_reactive_stations([]), do: :ok
   defp open_reactive_stations([station|stations]) do
-    case station |> last_changed_price_date() |> is_outdated?() do
+    case station |> last_changed_price_date() |> Price.is_outdated?() do
       false ->
         Stations.update(station, %{status: "available"})
       _ ->
@@ -55,14 +56,5 @@ defmodule Tankste.Station.ClosingJob do
       fn d1, d2 -> DateTime.compare(d1, d2) == :lt or DateTime.compare(d1, d2) == :eq end,
       fn -> nil end
     )
-  end
-
-  defp is_outdated?(nil), do: true
-  defp is_outdated?(last_changed_price) do
-    threshold = DateTime.now!("Europe/Berlin") |> DateTime.add(-7, :day)
-    case  DateTime.compare(threshold, last_changed_price.last_changes_at) do
-      :gt -> true
-      _ -> false
-    end
   end
 end

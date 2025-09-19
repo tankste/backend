@@ -34,4 +34,19 @@ defmodule Tankste.Station.Prices.Price do
     |> validate_inclusion(:type, ~w(petrol e5 e10 petrol_super_plus petrol_shell_power petrol_aral_ultimate diesel diesel_truck diesel_shell_power diesel_aral_ultimate lpg))
     |> unique_constraint([:station_id, :type])
   end
+
+  def is_outdated?(%Tankste.Station.Prices.Price{} = price) do
+    case price.last_changes_at do
+      nil -> false
+      last_changes_at ->  is_outdated?(last_changes_at)
+    end
+  end
+  def is_outdated?(%DateTime{} = last_changes_at) do 
+    threshold = DateTime.now!("Europe/Berlin") |> DateTime.add(-7, :day)
+    case  DateTime.compare(threshold, last_changes_at) do
+      :gt -> true
+      _ -> false
+    end
+  end
+  def is_outdated?(nil), do: true
 end
