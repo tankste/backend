@@ -3,6 +3,8 @@ defmodule Tankste.Station.Prices.Price do
 
   import Ecto.Changeset
 
+  alias Tankste.Station.Origins
+
   # TODO: define fields & validations (required fields) independend of the MTS-K schema
 
   schema "station_prices" do
@@ -38,15 +40,24 @@ defmodule Tankste.Station.Prices.Price do
   def is_outdated?(%Tankste.Station.Prices.Price{} = price) do
     case price.last_changes_at do
       nil -> false
-      last_changes_at ->  is_outdated?(last_changes_at)
+      last_changes_at ->  is_outdated?(last_changes_at, price |> get_outdated_days_threshold())
     end
   end
-  def is_outdated?(%DateTime{} = last_changes_at) do 
-    threshold = DateTime.now!("Europe/Berlin") |> DateTime.add(-7, :day)
+  def is_outdated?(%DateTime{} = last_changes_at, outdated_days_threshold) do
+    threshold = DateTime.now!("Europe/Berlin") |> DateTime.add(-outdated_days_threshold, :day)
     case  DateTime.compare(threshold, last_changes_at) do
       :gt -> true
       _ -> false
     end
   end
   def is_outdated?(nil), do: true
+
+  defp get_outdated_days_threshold(%Tankste.Station.Prices.Price{} = price) do
+    case Ecto.assoc_loaded?(price.origin) do
+      true ->
+        price.origin.price_outdated_after_days || 30
+      false ->
+        Origins.get(price.origin_id).price_outdated_after_days || 30
+    end
+  end
 end

@@ -7,6 +7,7 @@ defmodule Tankste.Station.Prices do
   def list(opts \\ []) do
     query(opts)
     |> Repo.all()
+    |> Repo.preload(:origin)
     |> Enum.filter(fn p -> not Price.is_outdated?(p) end)
   end
 
