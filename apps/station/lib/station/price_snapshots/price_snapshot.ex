@@ -10,7 +10,7 @@ defmodule Tankste.Station.PriceSnapshots.PriceSnapshot do
     :petrol_shell_power_price,
     :petrol_aral_ultimate_price,
     :diesel_price,
-    :diesel_hv100_price,
+    :diesel_hvo100_price,
     :diesel_truck_price,
     :diesel_shell_power_price,
     :diesel_aral_ultimate_price,

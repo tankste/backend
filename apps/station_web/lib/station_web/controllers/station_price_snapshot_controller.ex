@@ -16,6 +16,7 @@ defmodule Tankste.StationWeb.StationPriceSnapshotController do
     petrol_shell_power
     petrol_aral_ultimate
     diesel
+    diese_hvo100
     diesel_truck
     diesel_shell_power
     diesel_aral_ultimate
@@ -23,22 +24,18 @@ defmodule Tankste.StationWeb.StationPriceSnapshotController do
   )
 
   def index(conn, %{"station_id" => station_id, "type" => type}) when type in @allowed_types do
-    price_snapshots = PriceSnapshots.list(
-        station_id: station_id,
-        start: DateTime.utc_now() |> DateTime.add(-7, :day)
-      )
-      |> Enum.map(fn price_snapshot ->
+    price_snapshots = PriceSnapshots.list(station_id, DateTime.utc_now() |> DateTime.add(-30, :day))
+    price_snapshot_response = Enum.map(price_snapshots, fn price_snapshot ->
         %{
-          id: price_snapshot.id,
           station_id: price_snapshot.station_id,
           type: type,
-          price: PriceSnapshot.price(price_snapshot, type |> String.to_atom()),
+          price: Map.get(price_snapshot, String.to_atom(type <> "_price")),
           snapshot_date: price_snapshot.snapshot_date
         }
-      end)
-      |> Enum.filter(fn price_snapshot -> not is_nil(price_snapshot.price) end)
+    end)
+    |> Enum.filter(fn ps -> ps.price != nil end)
 
-    render(conn, "index.json", price_snapshots: price_snapshots)
+    render(conn, "index.json", price_snapshots: price_snapshot_response)
   end
   def index(conn, _params) do
     conn

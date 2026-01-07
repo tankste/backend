@@ -8,6 +8,7 @@ CREATE TABLE 'station_prices' (
 	petrol_shell_power_price FLOAT,
 	petrol_aral_ultimate_price FLOAT,
 	diesel_price FLOAT,
+	diesel_hvo100_price FLOAT,
 	diesel_truck_price FLOAT,
 	diesel_shell_power_price FLOAT,
 	diesel_aral_ultimate_price FLOAT,
