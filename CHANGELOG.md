@@ -9,6 +9,12 @@ CHANGELOG
 
 ## Upcoming version ##
 
+## 1.4.0 (2026-01-xx) ##
+
+- 🐞 Use dynamic auto-closing value based on origin
+- 🐞 Fix auto-closing, when only a single price is outdated
+- 🐞 Don't responde outdated prices
+
 ## 1.3.0 (2025-08-11) ##
 
 - 🛠 Automatically forward price reports to origin

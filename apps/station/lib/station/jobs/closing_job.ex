@@ -7,7 +7,7 @@ defmodule Tankste.Station.ClosingJob do
 
   def run() do
     stations = Stations.list()
-      |> Repo.preload(:prices)
+      |> Repo.preload(prices: [:origin])
       |> Enum.map(fn s ->
         prices = Enum.sort_by(s.prices, fn p -> p.priority end, :desc)
         |> Enum.uniq_by(fn p -> p.type end)

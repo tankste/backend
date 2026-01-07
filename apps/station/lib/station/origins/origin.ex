@@ -9,13 +9,14 @@ defmodule Tankste.Station.Origins.Origin do
     field :icon_image_url, :string
     field :image_url, :string
     field :website_url, :string
+    field :price_outdated_after_days, :integer
 
     timestamps()
   end
 
   def changeset(station, attrs) do
     station
-    |> cast(attrs, [:name, :short_name, :icon_image_url, :image_url, :website_url])
+    |> cast(attrs, [:name, :short_name, :icon_image_url, :image_url, :website_url, :price_outdated_after_days])
     |> validate_required([:name, :short_name, :icon_image_url, :image_url])
   end
 end
