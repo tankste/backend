@@ -11,6 +11,7 @@ CHANGELOG
 
 ## 1.4.0 (2026-01-xx) ##
 
+- 🌟 Add price snapshots (history) API
 - 🐞 Use dynamic auto-closing value based on origin
 - 🐞 Fix auto-closing, when only a single price is outdated
 - 🐞 Don't responde outdated prices

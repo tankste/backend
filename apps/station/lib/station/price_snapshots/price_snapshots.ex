@@ -4,6 +4,55 @@ defmodule Tankste.Station.PriceSnapshots do
   alias Tankste.Station.Repo
   alias Tankste.Station.PriceSnapshots.PriceSnapshot
 
+  def list(station_id, from) do
+    {safe_station_id, _} = Integer.parse(station_id)
+
+    credentials_encoded = Base.encode64(credentials())
+    headers = [
+      {"Authorization", "Basic #{credentials_encoded}"}
+    ]
+    params = [
+      {"query", "SELECT station_id, timestamp, petrol_price, petrol_super_e5_price, petrol_super_e10_price, petrol_super_plus_price, petrol_shell_power_price, petrol_aral_ultimate_price, diesel_price, diesel_hvo100_price,diesel_truck_price, diesel_shell_power_price, diesel_aral_ultimate_price, lpg_price FROM station_prices WHERE station_id = -5 AND timestamp >= '#{DateTime.to_iso8601(from)}'"}
+    ]
+    case HTTPoison.get("https://#{host()}/exec", headers, params: params) do
+      {:ok, %{status_code: 200, body: body}} ->
+        parse_response(body)
+      err ->
+        IO.puts("List price snapshots failed")
+        IO.inspect err
+        {:error, :failed}
+    end
+  end
+
+  defp parse_response(body) do
+    case Jason.decode(body) do
+      {:ok, result} ->
+        result["dataset"]
+        |> Enum.map(fn row ->
+          %PriceSnapshot{
+            station_id: Enum.at(row, 0),
+            snapshot_date: Enum.at(row, 1),
+            petrol_price: Enum.at(row, 2),
+            petrol_super_e5_price: Enum.at(row, 3),
+            petrol_super_e10_price: Enum.at(row, 4),
+            petrol_super_plus_price: Enum.at(row, 5),
+            petrol_shell_power_price: Enum.at(row, 6),
+            petrol_aral_ultimate_price: Enum.at(row, 7),
+            diesel_price: Enum.at(row, 8),
+            diesel_hvo100_price: Enum.at(row, 9),
+            diesel_truck_price: Enum.at(row, 10),
+            diesel_shell_power_price: Enum.at(row, 11),
+            diesel_aral_ultimate_price: Enum.at(row, 12),
+            lpg_price: Enum.at(row, 13),
+          }
+        end)
+      err ->
+        IO.puts("Parce list of price snapshots failed")
+        IO.inspect err
+        {:error, :failed}
+    end
+  end
+
   def create(price_snapshots) when is_list(price_snapshots) do
     # TODO: VERY HACKY x.x
     line_break = """
@@ -28,7 +77,7 @@ defmodule Tankste.Station.PriceSnapshots do
       {"Content-Type", "multipart/form-data"}
     ]
     case HTTPoison.post("https://#{host()}/imp?create=false&name=#{table()}", {:multipart, [{"data", data}]}, headers) do
-      {:ok, %{status_code: 200, body: body}} ->
+      {:ok, %{status_code: 200, body: _body}} ->
         :ok
       err ->
         IO.puts("Create price snapshot failed")

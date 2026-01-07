@@ -34,6 +34,7 @@ defmodule Tankste.Station.PriceSnapshotJob do
         petrol_shell_power_price: station |> price("petrol_shell_power"),
         petrol_aral_ultimate_price: station |> price("petrol_aral_ultimate"),
         diesel_price: station |> price("diesel"),
+        diesel_hvo100_price: station |> price("diesel_hvo100"),
         diesel_truck_price: station |> price("diesel_truck"),
         diesel_shell_power_price: station |> price("diesel_shell_power"),
         diesel_aral_ultimate_price: station |> price("diesel_aral_ultimate"),
