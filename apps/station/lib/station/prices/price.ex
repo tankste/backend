@@ -29,11 +29,12 @@ defmodule Tankste.Station.Prices.Price do
     # petrol_shell_power: Shell V-Power Racing (100 Oktan)
     # petrol_aral_ultimate: Aral Ultimate (102 Oktan)
     # diesel: Diesel (PKW)
+    # diesel_hvo100: Diesel HVO100
     # diesel_truck: Diesel (LKW)
     # diesel_shell_power: Shell V-Power Diesel
     # diesel_aral_ultimate: Ultimate Diesel von Aral
     # lpg: Autogas
-    |> validate_inclusion(:type, ~w(petrol e5 e10 petrol_super_plus petrol_shell_power petrol_aral_ultimate diesel diesel_truck diesel_shell_power diesel_aral_ultimate lpg))
+    |> validate_inclusion(:type, ~w(petrol e5 e10 petrol_super_plus petrol_shell_power petrol_aral_ultimate diesel diesel_hvo100 diesel_truck diesel_shell_power diesel_aral_ultimate lpg))
     |> unique_constraint([:station_id, :type])
   end
 
