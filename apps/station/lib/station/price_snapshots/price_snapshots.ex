@@ -1,7 +1,6 @@
 defmodule Tankste.Station.PriceSnapshots do
   import Ecto.Query, warn: false
 
-  alias Tankste.Station.Repo
   alias Tankste.Station.PriceSnapshots.PriceSnapshot
 
   def list(station_id, from) do
@@ -12,7 +11,7 @@ defmodule Tankste.Station.PriceSnapshots do
       {"Authorization", "Basic #{credentials_encoded}"}
     ]
     params = [
-      {"query", "SELECT station_id, timestamp, petrol_price, petrol_super_e5_price, petrol_super_e10_price, petrol_super_plus_price, petrol_shell_power_price, petrol_aral_ultimate_price, diesel_price, diesel_hvo100_price,diesel_truck_price, diesel_shell_power_price, diesel_aral_ultimate_price, lpg_price FROM station_prices WHERE station_id = -5 AND timestamp >= '#{DateTime.to_iso8601(from)}'"}
+      {"query", "SELECT station_id, timestamp, petrol_price, petrol_super_e5_price, petrol_super_e10_price, petrol_super_plus_price, petrol_shell_power_price, petrol_aral_ultimate_price, diesel_price, diesel_hvo100_price,diesel_truck_price, diesel_shell_power_price, diesel_aral_ultimate_price, lpg_price FROM station_prices WHERE station_id = #{safe_station_id} AND timestamp >= '#{DateTime.to_iso8601(from)}'"}
     ]
     case HTTPoison.get("https://#{host()}/exec", headers, params: params) do
       {:ok, %{status_code: 200, body: body}} ->
@@ -85,8 +84,7 @@ defmodule Tankste.Station.PriceSnapshots do
         {:error, :failed}
     end
   end
-
-  def create(attrs \\ %{}) do
+  def create(attrs) do
     header = attrs |> Map.keys() |> Enum.join(",")
     value = attrs |> Map.values() |> Enum.join(",")
 
@@ -101,7 +99,7 @@ defmodule Tankste.Station.PriceSnapshots do
       {"Content-Type", "multipart/form-data"}
     ]
     case HTTPoison.post("https://#{host()}/imp?create=false&name=#{table()}", {:multipart, [{"data", data}]}, headers) do
-      {:ok, %{status_code: 200, body: body}} ->
+      {:ok, %{status_code: 200, body: _body}} ->
         :ok
       err ->
         IO.puts("Create price snapshot failed")
