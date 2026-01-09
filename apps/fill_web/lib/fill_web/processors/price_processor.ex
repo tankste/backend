@@ -48,8 +48,13 @@ defmodule Tankste.FillWeb.PriceProcessor do
       station_info ->
         with {:ok, e5Price} <- upsert_price_type(Prices.get_by_station_id_and_type(station_info.station_id, "e5"), origin_id, station_info.station_id, "e5", new_price["e5Price"], new_price["e5LastChangeDate"]),
           {:ok, e10Price} <- upsert_price_type(Prices.get_by_station_id_and_type(station_info.station_id, "e10"), origin_id, station_info.station_id, "e10", new_price["e10Price"], new_price["e10LastChangeDate"]),
-          {:ok, dieselPrice} <- upsert_price_type(Prices.get_by_station_id_and_type(station_info.station_id, "diesel"), origin_id, station_info.station_id, "diesel", new_price["dieselPrice"], new_price["dieselLastChangeDate"]) do
-            prices = [e5Price, e10Price, dieselPrice]
+          {:ok, dieselPrice} <- upsert_price_type(Prices.get_by_station_id_and_type(station_info.station_id, "diesel"), origin_id, station_info.station_id, "diesel", new_price["dieselPrice"], new_price["dieselLastChangeDate"]),
+          {:ok, petrolPrice} <- upsert_price_type(Prices.get_by_station_id_and_type(station_info.station_id, "petrol"), origin_id, station_info.station_id, "petrol", new_price["petrolPrice"], new_price["petrolLastChangeDate"]),
+          {:ok, petrolSuperPlusPrice} <- upsert_price_type(Prices.get_by_station_id_and_type(station_info.station_id, "petrol_super_plus"), origin_id, station_info.station_id, "petrol_super_plus", new_price["petrolSuperPlusPrice"], new_price["petrolSuperPlusLastChangeDate"]),
+          {:ok, dieselHvo100Price} <- upsert_price_type(Prices.get_by_station_id_and_type(station_info.station_id, "diesel_hvo100"), origin_id, station_info.station_id, "diesel_hvo100", new_price["dieselHvo100Price"], new_price["dieselHvo100LastChangeDate"]),
+          {:ok, dieselTruckPrice} <- upsert_price_type(Prices.get_by_station_id_and_type(station_info.station_id, "diesel_truck"), origin_id, station_info.station_id, "diesel_truck", new_price["dieselTruckPrice"], new_price["dieselTruckLastChangeDate"]),
+          {:ok, lpgPrice} <- upsert_price_type(Prices.get_by_station_id_and_type(station_info.station_id, "lpg"), origin_id, station_info.station_id, "lpg", new_price["lpgPrice"], new_price["lpgLastChangeDate"]) do
+            prices = [e5Price, e10Price, dieselPrice, petrolPrice, petrolSuperPlusPrice, dieselHvo100Price, dieselTruckPrice, lpgPrice]
             |> Enum.filter(fn price -> price != nil end)
             {:ok, prices}
         else
