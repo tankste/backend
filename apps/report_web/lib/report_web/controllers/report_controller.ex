@@ -8,6 +8,7 @@ defmodule Tankste.ReportWeb.ReportController do
   alias Tankste.Station.StationInfos
   alias Tankste.Station.OpenTimes
   alias Tankste.Station.Prices
+  alias Tankste.Station.Prices.Price
   alias Tankste.ReportWeb.ChangesetView
 
   plug :load_report when action in [:show, :update, :delete]
@@ -67,7 +68,7 @@ defmodule Tankste.ReportWeb.ReportController do
   end
 
   defp price_origin(station_id, type) do
-    case Prices.list(station_id: station_id) do
+    case Prices.list(station_id: station_id) |> Enum.filter(fn p -> not Price.is_outdated?(p) end) do
       nil ->
         nil
       [] ->
@@ -181,7 +182,7 @@ defmodule Tankste.ReportWeb.ReportController do
     end
   end
   defp value_of_station_field(station_id, "price_e5") do
-    case Prices.list(station_id: station_id) do
+    case Prices.list(station_id: station_id) |> Enum.filter(fn p -> not Price.is_outdated?(p) end) do
       nil ->
         nil
       [] ->
@@ -196,7 +197,7 @@ defmodule Tankste.ReportWeb.ReportController do
     end
   end
   defp value_of_station_field(station_id, "price_e10") do
-    case Prices.list(station_id: station_id) do
+    case Prices.list(station_id: station_id) |> Enum.filter(fn p -> not Price.is_outdated?(p) end) do
       nil ->
         nil
       [] ->
@@ -211,7 +212,7 @@ defmodule Tankste.ReportWeb.ReportController do
     end
   end
   defp value_of_station_field(station_id, "price_diesel") do
-    case Prices.list(station_id: station_id) do
+    case Prices.list(station_id: station_id) |> Enum.filter(fn p -> not Price.is_outdated?(p) end) do
       nil ->
         nil
       [] ->
