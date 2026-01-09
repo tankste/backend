@@ -8,7 +8,6 @@ defmodule Tankste.Station.Prices do
     query(opts)
     |> Repo.all()
     |> Repo.preload(:origin)
-    |> Enum.filter(fn p -> not Price.is_outdated?(p) end)
   end
 
   def get(id, opts \\ []) do
@@ -21,7 +20,6 @@ defmodule Tankste.Station.Prices do
     query(opts)
     |> where([p], p.station_id == ^station_id and p.type == ^type)
     |> Repo.one()
-    |> then(fn p -> if(Price.is_outdated?(p), do: p) end)
   end
 
   defp query(opts) do
