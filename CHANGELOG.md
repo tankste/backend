@@ -9,8 +9,9 @@ CHANGELOG
 
 ## Upcoming version ##
 
-## 1.4.0 (2026-01-xx) ##
+## 1.4.0 (2026-01-09) ##
 
+- 🌟 Add Danish Krone (DKK) currency
 - 🌟 Add price snapshots (history) API
 - 🐞 Use dynamic auto-closing value based on origin
 - 🐞 Fix auto-closing, when only a single price is outdated

@@ -28,9 +28,10 @@ defmodule Tankste.Station.PriceSnapshots do
       {:ok, result} ->
         result["dataset"]
         |> Enum.map(fn row ->
+          {:ok, date, _} = DateTime.from_iso8601(Enum.at(row, 1))
           %PriceSnapshot{
             station_id: Enum.at(row, 0),
-            snapshot_date: Enum.at(row, 1),
+            snapshot_date: date |> DateTime.truncate(:second),
             petrol_price: Enum.at(row, 2),
             petrol_super_e5_price: Enum.at(row, 3),
             petrol_super_e10_price: Enum.at(row, 4),

@@ -161,10 +161,12 @@ defmodule Tankste.Station.Markers do
   end
 
   defp get_price_medium_threshold_value("eur"), do: 0.04
+  defp get_price_medium_threshold_value("dkk"), do: 0.30
   defp get_price_medium_threshold_value("isk"), do: 6.01
   defp get_price_medium_threshold_value(_), do: 0.00
 
   defp get_price_expensive_threshold_value("eur"), do: 0.10
+  defp get_price_expensive_threshold_value("dkk"), do: 0.75
   defp get_price_expensive_threshold_value("isk"), do: 15.03
   defp get_price_expensive_threshold_value(_), do: 0.00
 end
