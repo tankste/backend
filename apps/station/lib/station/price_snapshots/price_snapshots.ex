@@ -11,7 +11,7 @@ defmodule Tankste.Station.PriceSnapshots do
       {"Authorization", "Basic #{credentials_encoded}"}
     ]
     params = [
-      {"query", "SELECT station_id, timestamp, petrol_price, petrol_super_e5_price, petrol_super_e10_price, petrol_super_plus_price, petrol_shell_power_price, petrol_aral_ultimate_price, diesel_price, diesel_hvo100_price,diesel_truck_price, diesel_shell_power_price, diesel_aral_ultimate_price, lpg_price FROM station_prices WHERE station_id = #{safe_station_id} AND timestamp >= '#{DateTime.to_iso8601(from)}'"}
+      {"query", "SELECT station_id, timestamp, petrol_price, petrol_super_e5_price, petrol_super_e5_additive_price, petrol_super_e10_price, petrol_super_e10_additive_price, petrol_super_plus_price, petrol_super_plus_additive_price, diesel_price, diesel_additive_price, diesel_hvo100_price, diesel_hvo100_additive_price, diesel_truck_price, diesel_hvo100_truck_price, lpg_price, adblue_price FROM station_prices WHERE station_id = #{safe_station_id} AND timestamp >= '#{DateTime.to_iso8601(from)}'"}
     ]
     case HTTPoison.get("https://#{host()}/exec", headers, params: params) do
       {:ok, %{status_code: 200, body: body}} ->
@@ -34,16 +34,19 @@ defmodule Tankste.Station.PriceSnapshots do
             snapshot_date: date |> DateTime.truncate(:second),
             petrol_price: Enum.at(row, 2),
             petrol_super_e5_price: Enum.at(row, 3),
-            petrol_super_e10_price: Enum.at(row, 4),
-            petrol_super_plus_price: Enum.at(row, 5),
-            petrol_shell_power_price: Enum.at(row, 6),
-            petrol_aral_ultimate_price: Enum.at(row, 7),
-            diesel_price: Enum.at(row, 8),
-            diesel_hvo100_price: Enum.at(row, 9),
-            diesel_truck_price: Enum.at(row, 10),
-            diesel_shell_power_price: Enum.at(row, 11),
-            diesel_aral_ultimate_price: Enum.at(row, 12),
-            lpg_price: Enum.at(row, 13),
+            petrol_super_e5_additive_price: Enum.at(row, 4),
+            petrol_super_e10_price: Enum.at(row, 5),
+            petrol_super_e10_additive_price: Enum.at(row, 6),
+            petrol_super_plus_price: Enum.at(row, 7),
+            petrol_super_plus_additive_price: Enum.at(row, 8),
+            diesel_price: Enum.at(row, 9),
+            diesel_additive_price: Enum.at(row, 10),
+            diesel_hvo100_price: Enum.at(row, 11),
+            diesel_hvo100_additive_price: Enum.at(row, 12),
+            diesel_truck_price: Enum.at(row, 13),
+            diesel_hvo100_truck_price: Enum.at(row, 14),
+            lpg_price: Enum.at(row, 15),
+            adblue_price: Enum.at(row, 16)
           }
         end)
       err ->

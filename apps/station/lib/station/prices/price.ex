@@ -12,6 +12,7 @@ defmodule Tankste.Station.Prices.Price do
     belongs_to :origin, Tankste.Station.Origins.Origin
     field :type, :string
     field :price, :float
+    field :label, :string
     field :priority, :integer, default: 0
     field :last_changes_at, :utc_datetime
 
@@ -20,21 +21,24 @@ defmodule Tankste.Station.Prices.Price do
 
   def changeset(station, attrs) do
     station
-    |> cast(attrs, [:station_id, :origin_id, :type, :price, :last_changes_at, :priority])
+    |> cast(attrs, [:station_id, :origin_id, :type, :price, :label, :last_changes_at, :priority])
     |> validate_required([:station_id, :origin_id, :type, :price])
     # petrol: Benzin (91 Oktan)
-    # (e5) petrol_super_e5: Benzin E5 (95 Oktan)
-    # (e10) petrol_super_e10: Benzin E10 (95 Oktan)
-    # petrol_super_plus: Benzin (98 Oktan)
-    # petrol_shell_power: Shell V-Power Racing (100 Oktan)
-    # petrol_aral_ultimate: Aral Ultimate (102 Oktan)
+    # petrol_super_e5: Benzin E5 (95 Oktan / E5)
+    # petrol_super_e5_additive: Benzin E5 (95 Oktan / E5) mit Additiven
+    # petrol_super_e10: Benzin E10 (95 Oktan / E10)
+    # petrol_super_e10_additive: Benzin E10 (95 Oktan / E10) mit Additiven
+    # petrol_super_plus: Benzin (98 Oktan - 100 Oktan)
+    # petrol_super_plus_additive: Benzin (98 Oktan oder mehr)  mit Additiven
     # diesel: Diesel (PKW)
+    # diesel_additive: Diesel (PKW) mit Additiven
     # diesel_hvo100: Diesel HVO100
+    # diesel_hvo100_additive: Diesel HVO100 mit Additiven
     # diesel_truck: Diesel (LKW)
-    # diesel_shell_power: Shell V-Power Diesel
-    # diesel_aral_ultimate: Ultimate Diesel von Aral
+    # diesel_hvo100_truck: Diesel HVO100 (LKW)
     # lpg: Autogas
-    |> validate_inclusion(:type, ~w(petrol e5 e10 petrol_super_plus petrol_shell_power petrol_aral_ultimate diesel diesel_hvo100 diesel_truck diesel_shell_power diesel_aral_ultimate lpg))
+    # adblue: AdBlue
+    |> validate_inclusion(:type, ~w(petrol petrol_super_e5 petrol_super_e5_additive petrol_super_e10 petrol_super_e10_additive petrol_super_plus petrol_super_plus_additive diesel diesel_additive diesel_hvo100 diesel_hvo100_additive diesel_truck diesel_hvo100_truck lpg adblue))
     |> unique_constraint([:station_id, :type])
   end
 
@@ -44,6 +48,8 @@ defmodule Tankste.Station.Prices.Price do
       last_changes_at ->  is_outdated?(last_changes_at, price |> get_outdated_days_threshold())
     end
   end
+  def is_outdated?(nil), do: true
+
   def is_outdated?(%DateTime{} = last_changes_at, outdated_days_threshold) do
     threshold = DateTime.now!("Europe/Berlin") |> DateTime.add(-outdated_days_threshold, :day)
     case  DateTime.compare(threshold, last_changes_at) do
@@ -51,7 +57,6 @@ defmodule Tankste.Station.Prices.Price do
       _ -> false
     end
   end
-  def is_outdated?(nil), do: true
 
   defp get_outdated_days_threshold(%Tankste.Station.Prices.Price{} = price) do
     case Ecto.assoc_loaded?(price.origin) do

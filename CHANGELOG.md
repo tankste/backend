@@ -9,8 +9,9 @@ CHANGELOG
 
 ## Upcoming version ##
 
-## 1.4.0 (2026-01-09) ##
+## 1.4.0 (2026-01-10) ##
 
+- 🛠 Make fuel types generic
 - 🌟 Add Danish Krone (DKK) currency
 - 🌟 Add price snapshots (history) API
 - 🐞 Use dynamic auto-closing value based on origin
