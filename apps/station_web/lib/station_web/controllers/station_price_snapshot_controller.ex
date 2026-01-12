@@ -11,16 +11,19 @@ defmodule Tankste.StationWeb.StationPriceSnapshotController do
   @allowed_types ~w(
     petrol
     petrol_super_e5
+    petrol_super_e5_additive
     petrol_super_e10
+    petrol_super_e10_additive
     petrol_super_plus
-    petrol_shell_power
-    petrol_aral_ultimate
+    petrol_super_plus_additive
     diesel
-    diese_hvo100
+    diesel_additive
+    diesel_hvo100
+    diesel_hvo100_additive
     diesel_truck
-    diesel_shell_power
-    diesel_aral_ultimate
+    diesel_hvo100_truck
     lpg
+    adblue
   )
 
   def index(conn, %{"station_id" => station_id, "type" => type}) when type in @allowed_types do

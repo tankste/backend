@@ -28,17 +28,20 @@ defmodule Tankste.Station.PriceSnapshotJob do
         station_id: station.id,
         timestamp: snapshot_timestamp,
         petrol_price: station |> price("petrol"),
-        petrol_super_e5_price: station |> price("e5"),
-        petrol_super_e10_price: station |> price("e10"),
+        petrol_super_e5_price: station |> price("petrol_super_e5"),
+        petrol_super_e5_additive_price: station |> price("petrol_super_e5_additive"),
+        petrol_super_e10_price: station |> price("petrol_super_e10"),
+        petrol_super_e10_additive_price: station |> price("petrol_super_e10_additive"),
         petrol_super_plus_price: station |> price("petrol_super_plus"),
-        petrol_shell_power_price: station |> price("petrol_shell_power"),
-        petrol_aral_ultimate_price: station |> price("petrol_aral_ultimate"),
+        petrol_super_plus_additive_price: station |> price("petrol_super_plus_additive"),
         diesel_price: station |> price("diesel"),
+        diesel_additive_price: station |> price("diesel_additive"),
         diesel_hvo100_price: station |> price("diesel_hvo100"),
+        diesel_hvo100_additive_price: station |> price("diesel_hvo100_additive"),
         diesel_truck_price: station |> price("diesel_truck"),
-        diesel_shell_power_price: station |> price("diesel_shell_power"),
-        diesel_aral_ultimate_price: station |> price("diesel_aral_ultimate"),
-        lpg_price: station |> price("lpg")
+        diesel_hvo100_truck_price: station |> price("diesel_hvo100_truck"),
+        lpg_price: station |> price("lpg"),
+        adblue_price: station |> price("adblue"),
       }
     ] ++ generate_price_snapshots(snapshot_timestamp, stations)
   end
