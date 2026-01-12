@@ -1,5 +1,6 @@
 CREATE TABLE 'station_prices' (
 	timestamp TIMESTAMP, 
+    station_id LONG,
     petrol_price FLOAT,
     petrol_super_e5_price FLOAT,
     petrol_super_e5_additive_price FLOAT,
