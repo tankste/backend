@@ -9,7 +9,7 @@ CHANGELOG
 
 ## Upcoming version ##
 
-## 1.4.0 (2026-01-10) ##
+## 1.4.0 (2026-01-12) ##
 
 - 🛠 Make fuel types generic
 - 🌟 Add Danish Krone (DKK) currency
