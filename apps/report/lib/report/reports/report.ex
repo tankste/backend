@@ -20,7 +20,7 @@ defmodule Tankste.Report.Reports.Report do
     station
     |> cast(attrs, [:station_id, :device_id, :origin_id, :field, :wrong_value, :correct_value, :reported_to_origin_date, :status])
     |> validate_required([:station_id, :device_id, :origin_id, :field, :wrong_value, :correct_value, :status])
-    |> validate_inclusion(:field, ~w(name brand location_latitude location_longitude address_street address_house_number address_post_code address_city address_country open_times_state open_times price_e5 price_e10 price_diesel availability note))
+    |> validate_inclusion(:field, ~w(name brand location_latitude location_longitude address_street address_house_number address_post_code address_city address_country open_times_state open_times availability note price_petrol price_petrol_super_e5 price_petrol_super_e5_additive price_petrol_super_e10 price_petrol_super_e10_additive price_petrol_super_plus price_petrol_super_plus_additive price_diesel price_diesel_additive price_diesel_hvo100 price_diesel_hvo100_additive price_diesel_truck price_diesel_hvo100_truck price_lpg price_adblue))
     # open: New report, a review is needed
     # corrected: The report seems correct. The data were corrected on our internal database
     # forwarded: The report will forwarded to the origin. Check `reported_to_origin_date` for forward status

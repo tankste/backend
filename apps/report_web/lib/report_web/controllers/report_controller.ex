@@ -52,9 +52,7 @@ defmodule Tankste.ReportWeb.ReportController do
   defp origin_of_station_field(station_id, "address_country"), do: station_info_origin(station_id)
   defp origin_of_station_field(station_id, "open_times"), do: station_info_origin(station_id)
   defp origin_of_station_field(station_id, "open_times_state"), do: station_info_origin(station_id)
-  defp origin_of_station_field(station_id, "price_e5"), do: price_origin(station_id, "e5")
-  defp origin_of_station_field(station_id, "price_e10"), do: price_origin(station_id, "e10")
-  defp origin_of_station_field(station_id, "price_diesel"), do: price_origin(station_id, "diesel")
+  defp origin_of_station_field(station_id, "price_" <> type), do: price_origin(station_id, type)
   defp origin_of_station_field(station_id, "note"), do: station_info_origin(station_id)
   defp origin_of_station_field(_, _), do: nil
 
@@ -181,49 +179,19 @@ defmodule Tankste.ReportWeb.ReportController do
         end
     end
   end
-  defp value_of_station_field(station_id, "price_e5") do
+  defp value_of_station_field(station_id, "price_" <> type) do
     case Prices.list(station_id: station_id) |> Enum.filter(fn p -> not Price.is_outdated?(p) end) do
       nil ->
         nil
       [] ->
         nil
       prices ->
-        case prices |> Enum.find(fn p -> p.type == "e5" end) do
+        case prices |> Enum.find(fn p -> p.type == type end) do
           nil ->
             nil
           price ->
             Float.to_string(price |> Map.get(:price))
         end
-    end
-  end
-  defp value_of_station_field(station_id, "price_e10") do
-    case Prices.list(station_id: station_id) |> Enum.filter(fn p -> not Price.is_outdated?(p) end) do
-      nil ->
-        nil
-      [] ->
-        nil
-      prices ->
-        case prices |> Enum.find(fn p -> p.type == "e10" end) do
-          nil ->
-            nil
-          price ->
-            Float.to_string(price |> Map.get(:price))
-        end
-    end
-  end
-  defp value_of_station_field(station_id, "price_diesel") do
-    case Prices.list(station_id: station_id) |> Enum.filter(fn p -> not Price.is_outdated?(p) end) do
-      nil ->
-        nil
-      [] ->
-        nil
-      prices ->
-        case prices |> Enum.find(fn p -> p.type == "diesel" end) do
-          nil ->
-            nil
-          price ->
-            Float.to_string(price |> Map.get(:price))
-      end
     end
   end
   defp value_of_station_field(_, "availability"), do: "available"
@@ -232,9 +200,7 @@ defmodule Tankste.ReportWeb.ReportController do
   end
   defp value_of_station_field(_, _), do: nil
 
-  defp status_for_field("price_e5"), do: "forwarded"
-  defp status_for_field("price_e10"), do: "forwarded"
-  defp status_for_field("price_diesel"), do: "forwarded"
+  defp status_for_field("price_" <> _), do: "forwarded"
   defp status_for_field(_), do: "open"
 
   defp get_station_info(station_id) do
