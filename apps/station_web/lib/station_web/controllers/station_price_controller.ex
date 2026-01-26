@@ -9,15 +9,18 @@ defmodule Tankste.StationWeb.StationPriceController do
   plug :load_station, [station_id: "station_id"]
 
   def index(conn, %{"station_id" => station_id}) do
-    prices = Prices.list(station_id: station_id) |> Enum.filter(fn p -> not Price.is_outdated?(p) end)
+    prices = Prices.list(station_id: station_id)
+      |> Enum.filter(fn p -> not Price.is_outdated?(p) end)
+      |> Enum.sort_by(fn p -> p.priority end, :desc)
+      |> Enum.uniq_by(fn p -> p.type end)
+
     prices = case station_info(conn).is_open do
-        true ->
-          prices
-          |> Enum.sort_by(fn p -> p.priority end, :desc)
-          |> Enum.uniq_by(fn p -> p.type end)
-        _ ->
-          []
-      end
+      true ->
+        prices
+      _ ->
+        prices
+        |> Enum.map(fn p -> p |> Map.put(:price, nil) end)
+    end
 
     render(conn, "index.json", prices: prices)
   end

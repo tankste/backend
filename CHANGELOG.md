@@ -9,6 +9,8 @@ CHANGELOG
 
 ## Upcoming version ##
 
+- 🐞 Adopt new price fuel types to report module
+
 ## 1.4.0 (2026-01-12) ##
 
 - 🛠 Make fuel types generic
