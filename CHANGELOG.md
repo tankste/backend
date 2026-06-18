@@ -9,6 +9,9 @@ CHANGELOG
 
 ## Upcoming version ##
 
+## 1.4.1 (2026-06-18) ##
+
+- 🛠 Send `NULL` prices on closed stations instead of empty list
 - 🐞 Adopt new price fuel types to report module
 
 ## 1.4.0 (2026-01-12) ##
